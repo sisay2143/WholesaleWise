@@ -107,27 +107,8 @@ class _LoginViewState extends State<LoginView> {
                   // Handle login error
                 }
               },
-
-                    // Navigate to the home page after successful login
-                    // Navigator.pushReplacement(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //       builder: (context) => HomepageManager()),
-                    // );
-                    // final UserCredential = await FirebaseAuth.instance
-                    //     .createUserWithEmailAndPassword(
-                    //   email: email,
-                    //   password: password,
-                    // );
-                //     print(UserCredential);
-                //   } on FirebaseAuthException catch (e) {
-                //     if (e.code == 'user-not-found') {
-                //       print('user not found');
-                //     } else if (e.code == 'invalid-credential') {
-                //       print('wrong password');
-                //     }
-                //   }
-                // },
+               
+                   
                 child: Text('Login'),
               ),
             ],
@@ -138,6 +119,5 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  // const Homepage({super.key});
-  // @override
+  
 }
