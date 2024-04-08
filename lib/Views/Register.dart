@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:untitled/Views/login.dart';
 import 'package:untitled/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -14,6 +15,8 @@ class RegisterView extends StatefulWidget {
 class _RegisterViewState extends State<RegisterView> {
   late final TextEditingController _email;
   late final TextEditingController _password;
+  final TextEditingController _name = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
@@ -68,15 +71,22 @@ class _RegisterViewState extends State<RegisterView> {
                       email: email,
                       password: password,
                     );
+
+                    await _firestore
+                        .collection('users')
+                        .doc(UserCredential.user!.uid)
+                        .set({
+                      'name': _name.text,
+                      'email': _email.text,
+                      'role': 'manager',
+                    });
                     print(UserCredential);
                   } on FirebaseAuthException catch (e) {
                     if (e.code == 'weak-password') {
                       print('weak password');
-                    }
-                    else if(e.code == 'email-already-in-use') {
-                      print('Email is already in use'); 
-                    }
-                    else if (e.code == 'invalid-email') {
+                    } else if (e.code == 'email-already-in-use') {
+                      print('Email is already in use');
+                    } else if (e.code == 'invalid-email') {
                       print('invalid email entered');
                     }
                   }
