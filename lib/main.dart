@@ -3,8 +3,8 @@
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled/Manager.dart';
-import 'package:untitled/Views/Register.dart';
+import 'package:untitled/Views/HomeManager.dart';
+import 'package:untitled/Views/RegisterManager.dart';
 import 'package:untitled/Views/login.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:untitled/Views/login.dart';
@@ -23,7 +23,7 @@ void main() async{
           seedColor: const Color.fromARGB(255, 27, 18, 41)),
       // useMaterial3: true,
     ),
-    home:  RegisterView(),
+    home:  LoginView(),
   ));
 }
 

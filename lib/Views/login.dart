@@ -1,9 +1,16 @@
+// ignore_for_file: prefer_const_constructors, avoid_print
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:untitled/Views/HomeManager.dart';
 import 'package:untitled/firebase_options.dart';
-// import 'package:firebase_core/firebase_core.dart'; 
+// import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'HomeSales.dart';
+import 'HomeWarehouse.dart';
+
 
 class LoginView extends StatefulWidget {
   @override
@@ -14,6 +21,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   late final TextEditingController _email;
   late final TextEditingController _password;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
@@ -56,7 +64,7 @@ class _LoginViewState extends State<LoginView> {
                   obscureText: true,
                   enableSuggestions: false,
                   autocorrect: false,
-                  keyboardType: TextInputType.emailAddress,
+                  keyboardType: TextInputType.text,
                   decoration: InputDecoration(hintText: 'Enter password here')),
               TextButton(
                 onPressed: () async {
@@ -66,22 +74,60 @@ class _LoginViewState extends State<LoginView> {
                     final UserCredential = await FirebaseAuth.instance
                         .signInWithEmailAndPassword(
                             email: email, password: password);
+
+                            // Retrieve user role from Firestore
+                  final userDoc = await _firestore
+                      .collection('users')
+                      .doc(UserCredential.user!.uid)
+                      .get();
+                  final userRole = userDoc['role'];
+
+                   // Navigate to the appropriate homepage based on user role
+                  if (userRole == 'manager') {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomepageManager()),
+                    );
+                  } else if (userRole == 'wholesale distributor') {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePageWarehouse()),
+                    );
+                  } else if (userRole == 'sales personnel') {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomepageSales()),
+                    );
+                  } else {
+                    // Handle unknown role
+                    print('Unknown role: $userRole');
+                  }
+                } catch (e) {
+                  print('Error logging in: $e');
+                  // Handle login error
+                }
+              },
+
+                    // Navigate to the home page after successful login
+                    // Navigator.pushReplacement(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //       builder: (context) => HomepageManager()),
+                    // );
                     // final UserCredential = await FirebaseAuth.instance
                     //     .createUserWithEmailAndPassword(
                     //   email: email,
                     //   password: password,
                     // );
-                    print(UserCredential);
-                  } on FirebaseAuthException catch (e) {
-                    if (e.code == 'user-not-found') {
-                      print('user not found');
-                    } 
-                    else if (e.code == 'invalid-credential') {
-                      print('wrong password');
-                    }
-                  } 
-                 
-                },
+                //     print(UserCredential);
+                //   } on FirebaseAuthException catch (e) {
+                //     if (e.code == 'user-not-found') {
+                //       print('user not found');
+                //     } else if (e.code == 'invalid-credential') {
+                //       print('wrong password');
+                //     }
+                //   }
+                // },
                 child: Text('Login'),
               ),
             ],
