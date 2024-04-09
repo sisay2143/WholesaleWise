@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:untitled/Views/login.dart';
 // import 'package:untitled/Views/login.dart';
 import 'package:untitled/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -17,6 +18,11 @@ class _RegisterViewState extends State<RegisterView> {
   late final TextEditingController _password;
   final TextEditingController _name = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  Color _passwordBorderColor =
+      Colors.grey; // Initial border color for password input field
+
+  String? _errorMessage; // Variable to hold error message
+  bool _showErrorMessage = false;
 
   @override
   void initState() {
@@ -32,72 +38,147 @@ class _RegisterViewState extends State<RegisterView> {
     super.dispose();
   }
 
+  void _checkPasswordStrength(String value) {
+    setState(() {
+      // Check the strength of the password and update the border color
+      if (value.length < 6) {
+        // If password is weak, set border color to red
+        _passwordBorderColor = Color.fromARGB(255, 255, 17, 0);
+      } else {
+        // If password is strong, set border color to default
+        _passwordBorderColor = Colors.grey;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Register')),
+      appBar: AppBar(
+        title: Text('Create User'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              // Perform logout operation
+              FirebaseAuth.instance.signOut();
+
+              // Navigate back to login view
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LoginView()),
+              );
+            },
+            child: Text(
+              'Logout',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
       body: FutureBuilder(
         future: Firebase.initializeApp(
           options: DefaultFirebaseOptions.currentPlatform,
         ),
         builder: (context, snapshot) {
-          // Switch (snapshot.connectionState) {
-          //  case ConnectionState.done:
-
-          //  break;
-          // }
-          return Column(
-            children: [
-              TextField(
-                  controller: _email,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(hintText: 'Enter email here')),
-              TextField(
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            // Handle initialization error
+            return Center(
+              child: Text('Error initializing Firebase: ${snapshot.error}'),
+            );
+          } else {
+            return Column(
+              children: [
+                TextField(
+                    controller: _email,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(hintText: 'Enter email here')),
+                // TextField(
+                //     controller: _password,
+                //     obscureText: true,
+                //     enableSuggestions: false,
+                //     autocorrect: false,
+                //     keyboardType: TextInputType.text,
+                //     decoration: InputDecoration(hintText: 'Enter password here')),
+                TextField(
                   controller: _password,
+                  onSubmitted: _checkPasswordStrength,
                   obscureText: true,
                   enableSuggestions: false,
                   autocorrect: false,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(hintText: 'Enter password here')),
-              TextButton(
-                onPressed: () async {
-                  final email = _email.text;
-                  final password = _password.text;
-                  try {
-                    final UserCredential = await FirebaseAuth.instance
-                        .createUserWithEmailAndPassword(
-                      email: email,
-                      password: password,
-                    );
-
-                    await _firestore
-                        .collection('users')
-                        .doc(UserCredential.user!.uid)
-                        .set({
-                      'name': _name.text,
-                      'email': _email.text,
-                      'role': 'manager',
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    hintText: 'Enter password here',
+                    // Set border color dynamically based on password strength
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: _passwordBorderColor),
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    setState(() {
+                      _errorMessage = null; // Reset error message
+                      _showErrorMessage = false; // Reset flag
                     });
-                    print(UserCredential);
-                  } on FirebaseAuthException catch (e) {
-                    if (e.code == 'weak-password') {
-                      print('weak password');
-                    } else if (e.code == 'email-already-in-use') {
-                      print('Email is already in use');
-                    } else if (e.code == 'invalid-email') {
-                      print('invalid email entered');
-                    }
-                  }
+                    final email = _email.text;
+                    final password = _password.text;
+                    try {
+                      final UserCredential = await FirebaseAuth.instance
+                          .createUserWithEmailAndPassword(
+                        email: email,
+                        password: password,
+                      );
 
-                  print(UserCredential);
-                },
-                child: Text('Register'),
-              ),
-            ],
-          );
-          // default: return Text('Loading...');
+                      await _firestore
+                          .collection('users')
+                          .doc(UserCredential.user!.uid)
+                          .set({
+                        'name': _name.text,
+                        'email': _email.text,
+                        'role': 'manager',
+                      });
+                      print(UserCredential);
+                    } on FirebaseAuthException catch (e) {
+                      if (e.code == 'weak-password') {
+                        _errorMessage = 'Weak password';
+                        print('weak password');
+                      } else if (e.code == 'email-already-in-use') {
+                        _errorMessage = 'Email is already in use';
+                        print('Email is already in use');
+                      } else if (e.code == 'invalid-email') {
+                        _errorMessage = 'Invalid email entered';
+                        print('invalid email entered');
+                      } else {
+                        _errorMessage = 'An error occurred: ${e.message}';
+                      }
+                      _showErrorMessage =
+                          true; // Set flag to show error message
+
+                      // });
+                      Future.delayed(const Duration(seconds: 3), () {
+                        setState(() {
+                          _showErrorMessage = false; // Hide error message
+                        });
+                      });
+                      // });
+                    }
+
+                    print(UserCredential);
+                  },
+                  child: Text('Register'),
+                ),
+                if (_errorMessage != null)
+                  Text(
+                    _errorMessage ?? '',
+                    style: const TextStyle(color: Colors.red),
+                  ),
+              ],
+            );
+          }
         },
       ),
     );
