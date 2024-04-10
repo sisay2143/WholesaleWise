@@ -2,19 +2,24 @@
 
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/Views/HomeManager.dart';
 import 'package:untitled/Views/RegisterManager.dart';
 import 'package:untitled/Views/login.dart';
+import 'package:untitled/controllers/VerifyEmail.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
-import 'package:untitled/Views/login.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'controllers/AuthProvider.dart';
+import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'Views/HomeWarehouse.dart';
+import 'Views/HomeSales.dart';
 
-void main() async{
-  // WidgetsFlutterBinding.ensureInitialized();
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp();
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     title: 'Flutter Demo',

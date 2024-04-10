@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+<<<<<<< HEAD
+=======
+import 'package:untitled/Views/HomeManager.dart';
+import 'package:untitled/Views/RegisterManager.dart';
+import 'package:untitled/firebase_options.dart';
+// import 'package:firebase_core/firebase_core.dart';
+>>>>>>> ca0069d79b4ff557a7643d2806ab6668a112cadd
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:untitled/Views/HomeManager.dart';
 import 'HomeSales.dart';
 import 'HomeWarehouse.dart';
+<<<<<<< HEAD
 import 'package:untitled/firebase_options.dart';
+=======
+>>>>>>> ca0069d79b4ff557a7643d2806ab6668a112cadd
 
 class LoginView extends StatefulWidget {
   @override
@@ -36,6 +46,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+<<<<<<< HEAD
       appBar: null,
       body: SingleChildScrollView(
         child: Column(
@@ -73,6 +84,85 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ),
                 ],
+=======
+      appBar: AppBar(title: Text('Login')),
+      body: FutureBuilder(
+        future: Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        ),
+        builder: (context, snapshot) {
+          // Switch (snapshot.connectionState) {
+          //  case ConnectionState.done:
+
+          //  break;
+          // }
+          return Column(
+            children: [
+              TextField(
+                  controller: _email,
+                  enableSuggestions: false,
+                  autocorrect: false,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(hintText: 'Enter email here')),
+              TextField(
+                  controller: _password,
+                  obscureText: true,
+                  enableSuggestions: false,
+                  autocorrect: false,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(hintText: 'Enter password here')),
+              TextButton(
+                onPressed: () async {
+                  final email = _email.text;
+                  final password = _password.text;
+                  try {
+                    final UserCredential = await FirebaseAuth.instance
+                        .signInWithEmailAndPassword(
+                            email: email, password: password);
+
+                    // Retrieve user role from Firestore
+                    final userDoc = await _firestore
+                        .collection('users')
+                        .doc(UserCredential.user!.uid)
+                        .get();
+                    final userRole = userDoc['role'];
+
+                    // Navigate to the appropriate homepage based on user role
+                    if (userRole == 'manager') {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomepageManager()),
+                      );
+                    }  else if (userRole == 'admin') {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => RegisterView()),
+                    );
+                  } 
+                    else if (userRole == 'wholesale distributor') {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomePageWarehouse()),
+                      );
+                    } else if (userRole == 'sales personnel') {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => HomepageSales()),
+                      );
+                    } else {
+                      // Handle unknown role
+                      print('Unknown role: $userRole');
+                    }
+                  } catch (e) {
+                    print('Error logging in: $e');
+                    //     // Handle login error
+                  }
+                },
+                child: Text('Login'),
+>>>>>>> ca0069d79b4ff557a7643d2806ab6668a112cadd
               ),
             ),
             Container(
@@ -225,6 +315,7 @@ class _LoginViewState extends State<LoginView> {
       ),
     );
   }
+<<<<<<< HEAD
 
   Widget _buildTextField({
     required TextEditingController controller,
@@ -260,4 +351,6 @@ class _LoginViewState extends State<LoginView> {
       ),
     );
   }
+=======
+>>>>>>> ca0069d79b4ff557a7643d2806ab6668a112cadd
 }
