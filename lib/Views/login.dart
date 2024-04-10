@@ -1,16 +1,10 @@
-// ignore_for_file: prefer_const_constructors, avoid_print
-
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:untitled/Views/HomeManager.dart';
-import 'package:untitled/firebase_options.dart';
-// import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:untitled/Views/HomeManager.dart';
 import 'HomeSales.dart';
 import 'HomeWarehouse.dart';
-
+import 'package:untitled/firebase_options.dart';
 
 class LoginView extends StatefulWidget {
   @override
@@ -18,10 +12,12 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  @override
   late final TextEditingController _email;
   late final TextEditingController _password;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  bool _isPasswordVisible = false;
+  String? _emailErrorText;
+  String? _passwordErrorText;
 
   @override
   void initState() {
@@ -40,104 +36,228 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
-        builder: (context, snapshot) {
-          // Switch (snapshot.connectionState) {
-          //  case ConnectionState.done:
-
-          //  break;
-          // }
-          return Column(
-            children: [
-              TextField(
-                  controller: _email,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(hintText: 'Enter email here')),
-              TextField(
-                  controller: _password,
-                  obscureText: true,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(hintText: 'Enter password here')),
-              TextButton(
-                onPressed: () async {
-                  final email = _email.text;
-                  final password = _password.text;
-                  try {
-                    final UserCredential = await FirebaseAuth.instance
-                        .signInWithEmailAndPassword(
-                            email: email, password: password);
-
-                            // Retrieve user role from Firestore
-                  final userDoc = await _firestore
-                      .collection('users')
-                      .doc(UserCredential.user!.uid)
-                      .get();
-                  final userRole = userDoc['role'];
-
-                   // Navigate to the appropriate homepage based on user role
-                  if (userRole == 'manager') {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomepageManager()),
-                    );
-                  } else if (userRole == 'wholesale distributor') {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePageWarehouse()),
-                    );
-                  } else if (userRole == 'sales personnel') {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomepageSales()),
-                    );
-                  } else {
-                    // Handle unknown role
-                    print('Unknown role: $userRole');
-                  }
-                } catch (e) {
-                  print('Error logging in: $e');
-                  // Handle login error
-                }
-              },
-
-                    // Navigate to the home page after successful login
-                    // Navigator.pushReplacement(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //       builder: (context) => HomepageManager()),
-                    // );
-                    // final UserCredential = await FirebaseAuth.instance
-                    //     .createUserWithEmailAndPassword(
-                    //   email: email,
-                    //   password: password,
-                    // );
-                //     print(UserCredential);
-                //   } on FirebaseAuthException catch (e) {
-                //     if (e.code == 'user-not-found') {
-                //       print('user not found');
-                //     } else if (e.code == 'invalid-credential') {
-                //       print('wrong password');
-                //     }
-                //   }
-                // },
-                child: Text('Login'),
+      appBar: null,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.4,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 40.0),
+                          Text(
+                            '    Hello, Dear',
+                            style: TextStyle(
+                              fontSize: 29.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            textAlign: TextAlign.start,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Positioned.fill(
+                    top: MediaQuery.of(context).size.height * 0.05,
+                    child: Image.asset(
+                      'lib/assets/login1.jpg',
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          );
-          // default: return Text('Loading...');
-        },
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 40.0),
+                    Container(
+                      width: double.infinity,
+                      child: _buildTextField(
+                        controller: _email,
+                        labelText: 'Email',
+                        icon: Icons.email,
+                        errorText: _emailErrorText,
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    Container(
+                      width: double.infinity,
+                      child: _buildTextField(
+                        controller: _password,
+                        labelText: 'Password',
+                        icon: Icons.lock,
+                        isPassword: true,
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                          icon: Icon(
+                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            color: Colors.black,
+                          ),
+                        ),
+                        errorText: _passwordErrorText,
+                      ),
+                    ),
+                    SizedBox(height: 24.0),
+                    ElevatedButton(
+                      onPressed: () async {
+                        // Clear previous error messages
+                        setState(() {
+                          _emailErrorText = null;
+                          _passwordErrorText = null;
+                        });
+
+                        final email = _email.text.trim();
+                        final password = _password.text.trim();
+
+                        // Check for empty fields
+                        if (email.isEmpty) {
+                          setState(() {
+                            _emailErrorText = 'Email is required';
+                          });
+                          return;
+                        }
+
+                        if (password.isEmpty) {
+                          setState(() {
+                            _passwordErrorText = 'Password is required';
+                          });
+                          return;
+                        }
+
+                        try {
+                          final UserCredential = await FirebaseAuth.instance
+                              .signInWithEmailAndPassword(
+                                email: email,
+                                password: password,
+                              );
+
+                          final userDoc = await _firestore
+                              .collection('users')
+                              .doc(UserCredential.user!.uid)
+                              .get();
+                          final userRole = userDoc['role'];
+
+                          if (userRole == 'manager') {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => HomepageManager()),
+                            );
+                          } else if (userRole == 'wholesale distributor') {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => HomePageWarehouse()),
+                            );
+                          } else if (userRole == 'sales personnel') {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => HomepageSales()),
+                            );
+                          } else {
+                            print('Unknown role: $userRole');
+                          }
+                        } catch (e) {
+                          setState(() {
+                            _emailErrorText = 'Invalid email or password';
+                            _passwordErrorText = 'Invalid email or password';
+                          });
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 120.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        primary: Color.fromARGB(255, 4, 98, 175),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Login',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 14.0),
+                    GestureDetector(
+                      onTap: () {
+                        // Forgot password logic
+                      },
+                      child: Text(
+                        '    Forgot Password?',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // const Homepage({super.key});
-  // @override
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String labelText,
+    required IconData icon,
+    bool isPassword = false,
+    Widget? suffixIcon,
+    String? errorText,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: isPassword && !_isPasswordVisible,
+      cursorColor: Colors.black,
+      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+      decoration: InputDecoration(
+        labelText: labelText,
+        prefixIcon: Icon(icon, color: Colors.black),
+        suffixIcon: suffixIcon,
+        floatingLabelBehavior: FloatingLabelBehavior.never,
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.transparent),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.transparent),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        errorText: errorText,
+        errorStyle: TextStyle(color: Colors.red),
+      ),
+    );
+  }
 }
