@@ -1,99 +1,60 @@
-// import 'package:flutter/material.dart';
-
-// class VerifyEmail extends StatefulWidget {
-//   const VerifyEmail({super.key});
-
-//   @override
-//   State<VerifyEmail> createState() => _VerifyEmailState();
-// }
-
-// class _VerifyEmailState extends State<VerifyEmail> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return  Scaffold(
-//       appBar: AppBar(title: Text('Verify Email')) ,
-//     );
-//   }
-// }
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/Views/login.dart';
-import 'package:untitled/main.dart';
-// import 'package:un/extensions/buildcontext/loc.dart';
-// import 'package:untitled/services/auth/bloc/auth_bloc.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:mynotes/services/auth/bloc/auth_event.dart';
 
-class VerifyEmailView extends StatefulWidget {
-  const VerifyEmailView({Key? key}) : super(key: key);
+class EmailVerification extends StatelessWidget {
+  const EmailVerification({Key? key}) : super(key: key);
 
-  @override
-  _VerifyEmailViewState createState() => _VerifyEmailViewState();
-}
-
-class _VerifyEmailViewState extends State<VerifyEmailView> {
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: Text(context.loc.verify_email),
-    //   ),
-    //   body: SingleChildScrollView(
-    //     child: Column(
-    //       children: [
-    //         Padding(
-    //           padding: const EdgeInsets.all(16.0),
-    //           child: Text(
-    //             context.loc.verify_email_view_prompt,
-    //           ),
-    //         ),
-    //         TextButton(
-    //           onPressed: () {
-    //             context.read<AuthBloc>().add(
-    //                   const AuthEventSendEmailVerification(),
-    //                 );
-    //           },
-    //           child: Text(
-    //             context.loc.verify_email_send_email_verification,
-    //           ),
-    //         ),
-    //         TextButton(
-    //           // onPressed: () async {
-    //           //   context.read<AuthBloc>().add(
-    //           //         // const AuthEventLogOut(),
-    //           //       );
-    //           // },
-    //           child: Text(
-    //             context.loc.restart,
-    //           ),
-    //         )
-    //       ],
-    //     ),
-    //   ),
-    // );
     return Scaffold(
-      appBar: AppBar(title: const Text('Verify Email'),
-      leading: IconButton(
+      appBar: AppBar(
+        title: Text('Email Verification'),
+        leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushReplacement(
+            // Navigate to the login screen
+            Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => LoginView()), // Replace LoginPage with the actual name of your login page class
+              MaterialPageRoute(builder: (context) => LoginView()),
             );
-          }
+          },
         ),
       ),
-
-      body: Column(children: [
-        const Text('Please verify your email address'),
-        TextButton(
-            onPressed: () async {
-              final user = FirebaseAuth.instance.currentUser;
-              await user?.sendEmailVerification();
-            },
-            child: const Text('Send email verification'))
-      ]
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Please verify your email address to continue.',
+                style: TextStyle(
+                  fontSize: 18.0,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 20.0),
+              ElevatedButton(
+                onPressed: () {
+                  // Trigger email verification again
+                  // This will send another verification email
+                  // Make sure user is logged in and FirebaseAuth.instance.currentUser != null
+                  FirebaseAuth.instance.currentUser!.sendEmailVerification();
+                  // Show message indicating that a new verification email has been sent
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                          'Verification email sent. Please check your inbox.'),
+                    ),
+                  );
+                },
+                child: Text('send Verification Email'),
+              ),
+              SizedBox(height: 20.0),
+            ],
+          ),
+        ),
       ),
     );
   }
