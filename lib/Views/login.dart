@@ -1,10 +1,13 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:untitled/Views/HomeManager.dart';
 import 'HomeSales.dart';
 import 'HomeWarehouse.dart';
-import 'package:untitled/firebase_options.dart';
+// import 'package:untitled/firebase_options.dart';
+import 'ForgotPassword.dart';
 
 class LoginView extends StatefulWidget {
   @override
@@ -41,16 +44,16 @@ class _LoginViewState extends State<LoginView> {
         child: Column(
           children: [
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.4,
+              height: MediaQuery.of(context).size.height * 0.625,
               child: Stack(
                 children: [
                   Positioned.fill(
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.only(top: 30, bottom: 3),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: 40.0),
+                          // SizedBox(height: 40.0),
                           Text(
                             '    Hello, Dear',
                             style: TextStyle(
@@ -65,9 +68,9 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ),
                   Positioned.fill(
-                    top: MediaQuery.of(context).size.height * 0.05,
+                    top: MediaQuery.of(context).size.height * 0.1,
                     child: Image.asset(
-                      'lib/assets/login1.jpg',
+                      'lib/assets/login1.jpeg',
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),
@@ -75,6 +78,9 @@ class _LoginViewState extends State<LoginView> {
                 ],
               ),
             ),
+            // SizedBox(
+            //   height: 120,
+            // ),
             Container(
               decoration: BoxDecoration(
                 color: Colors.blue,
@@ -85,7 +91,7 @@ class _LoginViewState extends State<LoginView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 40.0),
+                    SizedBox(height: 30.0),
                     Container(
                       width: double.infinity,
                       child: _buildTextField(
@@ -111,7 +117,9 @@ class _LoginViewState extends State<LoginView> {
                             });
                           },
                           icon: Icon(
-                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            _isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                             color: Colors.black,
                           ),
                         ),
@@ -148,9 +156,9 @@ class _LoginViewState extends State<LoginView> {
                         try {
                           final UserCredential = await FirebaseAuth.instance
                               .signInWithEmailAndPassword(
-                                email: email,
-                                password: password,
-                              );
+                            email: email,
+                            password: password,
+                          );
 
                           final userDoc = await _firestore
                               .collection('users')
@@ -161,17 +169,20 @@ class _LoginViewState extends State<LoginView> {
                           if (userRole == 'manager') {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (context) => HomepageManager()),
+                              MaterialPageRoute(
+                                  builder: (context) => HomepageManager()),
                             );
                           } else if (userRole == 'wholesale distributor') {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (context) => HomePageWarehouse()),
+                              MaterialPageRoute(
+                                  builder: (context) => HomePageWarehouse()),
                             );
                           } else if (userRole == 'sales personnel') {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (context) => HomepageSales()),
+                              MaterialPageRoute(
+                                  builder: (context) => HomepageSales()),
                             );
                           } else {
                             print('Unknown role: $userRole');
@@ -184,7 +195,8 @@ class _LoginViewState extends State<LoginView> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 120.0),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 20.0, horizontal: 120.0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -208,6 +220,11 @@ class _LoginViewState extends State<LoginView> {
                     GestureDetector(
                       onTap: () {
                         // Forgot password logic
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ForgetPassword()),
+                        );
                       },
                       child: Text(
                         '    Forgot Password?',
