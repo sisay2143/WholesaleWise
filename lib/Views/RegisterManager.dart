@@ -75,20 +75,7 @@ class _RegisterViewState extends State<RegisterView> {
           ),
         ],
       ),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            // Handle initialization error
-            return Center(
-              child: Text('Error initializing Firebase: ${snapshot.error}'),
-            );
-          } else {
-            return Column(
+      body: Column(
               children: [
                 TextField(
                     controller: _email,
@@ -176,11 +163,9 @@ class _RegisterViewState extends State<RegisterView> {
                     _errorMessage ?? '',
                     style: const TextStyle(color: Colors.red),
                   ),
-              ],
+              ],)
             );
           }
-        },
-      ),
-    );
-  }
+          // );
+  // }
 }
