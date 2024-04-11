@@ -4,6 +4,7 @@ import 'package:pie_chart/pie_chart.dart';
 import '../Views/CreateUser.dart';
 import '../Views/login.dart';
 import 'account.dart'; 
+import 'notification.dart';
 
 class HomepageManager extends StatelessWidget {
   const HomepageManager({Key? key});
@@ -24,25 +25,27 @@ class HomepageManager extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Text(
-            'Home',
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          ),
+        title: Text(
+          'Home',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 25),
         ),
         backgroundColor: Colors.white,
-        leading: IconButton(
-          color: Colors.blue,
-          icon: Icon(Icons.account_circle),
-          onPressed: () {
-            // Implement your user profile logic here
-          },
-        ),
+        // leading: IconButton(
+        //   color: Colors.blue,
+        //   icon: Icon(Icons.account_circle),
+        //   onPressed: () {
+        //     // Implement your user profile logic here
+        //   },
+        // ),
         actions: [
           IconButton(
             color: Colors.blue,
             icon: Icon(Icons.notifications),
             onPressed: () {
+               Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => NotificationPage()), // Navigate to accounts screen
+        );;
               // Implement your notification logic here
             },
           ),
@@ -234,8 +237,8 @@ class IconWithBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 75,
-      height: 75,
+      width: 70,
+      height: 70,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: Colors.blue,
@@ -243,7 +246,7 @@ class IconWithBackground extends StatelessWidget {
       child: Center(
         child: Icon(
           iconData,
-          size: 50,
+          size: 30,
         ),
       ),
     );
