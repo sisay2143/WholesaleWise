@@ -3,9 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:untitled/Views/HomeManager.dart';
-import 'HomeSales.dart';
-import 'HomeWarehouse.dart';
+import 'package:untitled/Views/Manager/HomeManager.dart';
+import 'Sales_Personnel/HomeSales.dart';
+import 'Warehouse_staff/HomeWarehouse.dart';
 // import 'package:untitled/firebase_options.dart';
 import 'ForgotPassword.dart';
 
@@ -255,6 +255,7 @@ class _LoginViewState extends State<LoginView> {
     return TextField(
       controller: controller,
       obscureText: isPassword && !_isPasswordVisible,
+      keyboardType: TextInputType.emailAddress,
       cursorColor: Colors.black,
       style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
       decoration: InputDecoration(

@@ -4,9 +4,9 @@ import 'package:provider/provider.dart';
 // import 'package:your_app_name/auth_provider.dart';
 import 'AuthProvider.dart'; // Import your AuthProvider class
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
-import '../Views/HomeManager.dart';
-import '../Views/HomeSales.dart';
-import '../Views/HomeWarehouse.dart';
+import '../Views/Manager/HomeManager.dart';
+import '../Views/Sales_Personnel/HomeSales.dart';
+import '../Views/Warehouse_staff/HomeWarehouse.dart';
 import '../Views/login.dart';
 
 
