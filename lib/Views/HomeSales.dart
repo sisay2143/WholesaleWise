@@ -8,7 +8,7 @@ import 'package:untitled/Views/login.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'CommitSale.dart';
 import 'Profile.dart';
-import 'QRScanScreen.dart';
+// import 'QRScanScreen.dart';
 import 'Myslider.dart';
 
 class HomepageSales extends StatefulWidget {

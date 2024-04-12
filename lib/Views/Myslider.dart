@@ -2,7 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled/Views/HomeManager.dart';
+// import 'package:untitled/Views/HomeManager.dart';
 import 'package:untitled/Views/login.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -67,7 +67,7 @@ class _MySliderState extends State<MySlider> {
           borderRadius: BorderRadius.all(Radius.circular(10)),
          color: Color.fromRGBO(70, 140, 194, 0.68),
         ),
-        child: HeroSec("Today", "Aug 22"),
+        // child: HeroSec("Today", "Aug 22"),
       ),
       Container(
         width: MediaQuery.of(context).size.width,
@@ -76,7 +76,7 @@ class _MySliderState extends State<MySlider> {
           borderRadius: BorderRadius.all(Radius.circular(10)),
           color: Color.fromRGBO(70, 140, 194, 0.68),
         ),
-        child: HeroSec("Yesterday", "Aug 21"),
+        // child: HeroSec("Yesterday", "Aug 21"),
       ),
     ];
 
@@ -101,14 +101,14 @@ class _MySliderState extends State<MySlider> {
                   },
                 ),
               ),
-              Positioned(
-                top: 12.0,
-                right: 40.0,
-                child: CarouselStatus(
-                  itemCount: carouselItems.length,
-                  currentSlide: _currentSlide,
-                ),
-              ),
+              // Positioned(
+              //   top: 12.0,
+              //   right: 40.0,
+              //   // child: CarouselStatus(
+              //   //   itemCount: carouselItems.length,
+              //   //   currentSlide: _currentSlide,
+              //   // ),
+              // ),
             ],
           ),
         ],

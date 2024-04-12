@@ -1,7 +1,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled/Views//HomeManager.dart';
+// import 'package:untitled/Views//HomeManager.dart';
 import 'package:untitled/Views/RegisterManager.dart';
 import 'package:untitled/Views/login.dart';
 import 'package:untitled/controllers/VerifyEmail.dart';
@@ -14,7 +14,6 @@ import 'Views//HomeSales.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-<<<<<<< HEAD
   // Initialize Firebase
   Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -107,7 +106,7 @@ class HomePage extends StatelessWidget {
           if (userRole != null) {
             switch (userRole) {
               case 'manager':
-                return HomepageManager();
+                // return HomepageManager();
               case 'wholesale distributor':
                 return HomePageWarehouse();
               case 'sales personnel':
@@ -130,17 +129,4 @@ class HomePage extends StatelessWidget {
       },
     );
   }
-=======
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    title: 'Flutter Demo',
-    theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 27, 18, 41)),
-      // useMaterial3: true,
-    ),
-    home:  LoginView(),
-  ));
->>>>>>> origin/meku1
 }
