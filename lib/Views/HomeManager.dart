@@ -3,8 +3,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:pie_chart/pie_chart.dart';
 import '../Views/CreateUser.dart';
 import '../Views/login.dart';
-import 'account.dart'; 
-import 'notification.dart';
+import 'account.dart';
+// import 'notification.dart';
 
 class HomepageManager extends StatelessWidget {
   const HomepageManager({Key? key});
@@ -27,7 +27,8 @@ class HomepageManager extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Home',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold,fontSize: 25),
+          style: TextStyle(
+              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 25),
         ),
         backgroundColor: Colors.white,
         // leading: IconButton(
@@ -42,10 +43,13 @@ class HomepageManager extends StatelessWidget {
             color: Colors.blue,
             icon: Icon(Icons.notifications),
             onPressed: () {
-               Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => NotificationPage()), // Navigate to accounts screen
-        );;
+              // Navigator.pushReplacement(
+              //   context,
+              //   MaterialPageRoute(
+              //       builder: (context) =>
+              //           NotificationPage()), // Navigate to accounts screen
+              // );
+              ;
               // Implement your notification logic here
             },
           ),
@@ -176,7 +180,8 @@ class HomepageManager extends StatelessWidget {
                     onPressed: () {},
                     icon: Icon(Icons.home, size: 35), // Increase icon size
                   ),
-                  Text('Home', style: TextStyle(color: Colors.blue)), // Add text
+                  Text('Home',
+                      style: TextStyle(color: Colors.blue)), // Add text
                 ],
               ),
               SizedBox(width: 10),
@@ -188,7 +193,8 @@ class HomepageManager extends StatelessWidget {
                     onPressed: () {},
                     icon: Icon(Icons.approval, size: 35), // Increase icon size
                   ),
-                  Text('Approval', style: TextStyle(color: Colors.blue)), // Add text
+                  Text('Approval',
+                      style: TextStyle(color: Colors.blue)), // Add text
                 ],
               ),
               SizedBox(width: 10), // Adjust spacing between icons
@@ -200,7 +206,8 @@ class HomepageManager extends StatelessWidget {
                     onPressed: () {},
                     icon: Icon(Icons.analytics, size: 35), // Increase icon size
                   ),
-                  Text('Analytics', style: TextStyle(color: Colors.blue)), // Add text
+                  Text('Analytics',
+                      style: TextStyle(color: Colors.blue)), // Add text
                 ],
               ),
               SizedBox(width: 10),
@@ -216,9 +223,11 @@ class HomepageManager extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => AccountPage()),
                       );
                     },
-                    icon: Icon(Icons.manage_accounts, size: 35), // Increase icon size
+                    icon: Icon(Icons.manage_accounts,
+                        size: 35), // Increase icon size
                   ),
-                  Text('Accounts', style: TextStyle(color: Colors.blue)), // Add text
+                  Text('Accounts',
+                      style: TextStyle(color: Colors.blue)), // Add text
                 ],
               ),
             ],
