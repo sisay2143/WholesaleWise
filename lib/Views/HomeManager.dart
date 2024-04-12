@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:pie_chart/pie_chart.dart';
-import 'package:untitled/Views/Manager/Accounts.dart';
+import 'package:untitled/Views//Accounts.dart';
 // import 'CreateUser.dart';
 // import '../login.dart';
 // import 'account.dart';

@@ -2,7 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled/Views/Sales_Personnel/SalesRecords.dart';
+import 'package:untitled/Views/SalesRecords.dart';
 
 import 'package:untitled/Views/login.dart';
 import 'package:pie_chart/pie_chart.dart';
