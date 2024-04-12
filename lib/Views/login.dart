@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:untitled/Views/HomeManager.dart';
+import 'package:untitled/Views/HomeManager.dart';
 import 'HomeSales.dart';
 import 'HomeWarehouse.dart';
 import 'package:untitled/firebase_options.dart';
+import 'ForgotPassword.dart';
 
 class LoginView extends StatefulWidget {
   @override
@@ -164,11 +165,11 @@ class _LoginViewState extends State<LoginView> {
                           final userRole = userDoc['role'];
 
                           if (userRole == 'manager') {
-                            // Navigator.pushReplacement(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //       builder: (context) => HomepageManager()),
-                            // );
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomepageManager()),
+                            );
                           } else if (userRole == 'wholesale distributor') {
                             Navigator.pushReplacement(
                               context,
@@ -217,11 +218,11 @@ class _LoginViewState extends State<LoginView> {
                     GestureDetector(
                       onTap: () {
                         // Forgot password logic
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       // builder: (context) => ForgetPassword()),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ForgetPassword()),
+                        );
                       },
                       child: Text(
                         '    Forgot Password?',

@@ -46,11 +46,9 @@ dependencies:
   firebase_storage: ^11.6.0
   pie_chart: ^5.4.0
   fl_chart: ^0.65.0
-  qr_code_scanner: ^1.0.1
+  
   carousel_slider: ^4.2.1
 
-  # firebase_core: ^2.24.2
-#  firebase_core: ^2.27.0
 
 dev_dependencies:
   flutter_test:
@@ -79,7 +77,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   
   assets:
-    - lib/assets/login1.jpg
+    - lib/assets/login1.jpeg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

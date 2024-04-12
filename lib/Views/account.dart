@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'CreateUser.dart';
 import 'login.dart';
 import 'profilescreen.dart';
-// import 'HomeManager.dart';
+import 'HomeManager.dart';
 class AccountPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -12,10 +12,10 @@ class AccountPage extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-        //     Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => HomepageManager()), // Navigate to accounts screen
-        // );;
+            Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomepageManager()), // Navigate to accounts screen
+        );;
           },
         ),
         title: Center(child: Text('Accounts')),
