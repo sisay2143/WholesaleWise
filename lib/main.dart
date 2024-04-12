@@ -6,15 +6,15 @@ import 'package:untitled/Views/RegisterManager.dart';
 import 'package:untitled/Views/login.dart';
 import 'package:untitled/controllers/VerifyEmail.dart';
 import 'firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'controllers/AuthProvider.dart';
+import 'package:firebase_core/firebase_core.dart';import 'controllers/AuthProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'Views//HomeWarehouse.dart';
 import 'Views//HomeSales.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+<<<<<<< HEAD
   // Initialize Firebase
   Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -130,4 +130,17 @@ class HomePage extends StatelessWidget {
       },
     );
   }
+=======
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    title: 'Flutter Demo',
+    theme: ThemeData(
+      colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color.fromARGB(255, 27, 18, 41)),
+      // useMaterial3: true,
+    ),
+    home:  LoginView(),
+  ));
+>>>>>>> origin/meku1
 }

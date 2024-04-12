@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
@@ -8,6 +9,15 @@ import 'HomeSales.dart';
 import 'HomeWarehouse.dart';
 // import 'package:untitled/firebase_options.dart';
 import 'ForgotPassword.dart';
+=======
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:untitled/Views/HomeManager.dart';
+import 'HomeSales.dart';
+import 'HomeWarehouse.dart';
+import 'package:untitled/firebase_options.dart';
+>>>>>>> origin/meku1
 
 class LoginView extends StatefulWidget {
   @override
@@ -44,16 +54,28 @@ class _LoginViewState extends State<LoginView> {
         child: Column(
           children: [
             SizedBox(
+<<<<<<< HEAD
               height: MediaQuery.of(context).size.height * 0.625,
+=======
+              height: MediaQuery.of(context).size.height * 0.4,
+>>>>>>> origin/meku1
               child: Stack(
                 children: [
                   Positioned.fill(
                     child: Padding(
+<<<<<<< HEAD
                       padding: const EdgeInsets.only(top: 30, bottom: 3),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // SizedBox(height: 40.0),
+=======
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 10.0),
+>>>>>>> origin/meku1
                           Text(
                             '    Hello, Dear',
                             style: TextStyle(
@@ -68,9 +90,15 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ),
                   Positioned.fill(
+<<<<<<< HEAD
                     top: MediaQuery.of(context).size.height * 0.1,
                     child: Image.asset(
                       'lib/assets/login1.jpeg',
+=======
+                    top: MediaQuery.of(context).size.height * 0.05,
+                    child: Image.asset(
+                      'lib/assets/login1.jpg',
+>>>>>>> origin/meku1
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),
@@ -78,9 +106,12 @@ class _LoginViewState extends State<LoginView> {
                 ],
               ),
             ),
+<<<<<<< HEAD
             // SizedBox(
             //   height: 120,
             // ),
+=======
+>>>>>>> origin/meku1
             Container(
               decoration: BoxDecoration(
                 color: Colors.blue,
@@ -91,7 +122,11 @@ class _LoginViewState extends State<LoginView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+<<<<<<< HEAD
                     SizedBox(height: 30.0),
+=======
+                    SizedBox(height: 40.0),
+>>>>>>> origin/meku1
                     Container(
                       width: double.infinity,
                       child: _buildTextField(
@@ -117,9 +152,13 @@ class _LoginViewState extends State<LoginView> {
                             });
                           },
                           icon: Icon(
+<<<<<<< HEAD
                             _isPasswordVisible
                                 ? Icons.visibility
                                 : Icons.visibility_off,
+=======
+                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+>>>>>>> origin/meku1
                             color: Colors.black,
                           ),
                         ),
@@ -156,9 +195,15 @@ class _LoginViewState extends State<LoginView> {
                         try {
                           final UserCredential = await FirebaseAuth.instance
                               .signInWithEmailAndPassword(
+<<<<<<< HEAD
                             email: email,
                             password: password,
                           );
+=======
+                                email: email,
+                                password: password,
+                              );
+>>>>>>> origin/meku1
 
                           final userDoc = await _firestore
                               .collection('users')
@@ -169,20 +214,32 @@ class _LoginViewState extends State<LoginView> {
                           if (userRole == 'manager') {
                             Navigator.pushReplacement(
                               context,
+<<<<<<< HEAD
                               MaterialPageRoute(
                                   builder: (context) => HomepageManager()),
+=======
+                              MaterialPageRoute(builder: (context) => HomepageManager()),
+>>>>>>> origin/meku1
                             );
                           } else if (userRole == 'wholesale distributor') {
                             Navigator.pushReplacement(
                               context,
+<<<<<<< HEAD
                               MaterialPageRoute(
                                   builder: (context) => HomePageWarehouse()),
+=======
+                              MaterialPageRoute(builder: (context) => HomePageWarehouse()),
+>>>>>>> origin/meku1
                             );
                           } else if (userRole == 'sales personnel') {
                             Navigator.pushReplacement(
                               context,
+<<<<<<< HEAD
                               MaterialPageRoute(
                                   builder: (context) => HomepageSales()),
+=======
+                              MaterialPageRoute(builder: (context) => HomepageSales()),
+>>>>>>> origin/meku1
                             );
                           } else {
                             print('Unknown role: $userRole');
@@ -195,8 +252,12 @@ class _LoginViewState extends State<LoginView> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
+<<<<<<< HEAD
                         padding: EdgeInsets.symmetric(
                             vertical: 20.0, horizontal: 120.0),
+=======
+                        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 120.0),
+>>>>>>> origin/meku1
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -220,11 +281,14 @@ class _LoginViewState extends State<LoginView> {
                     GestureDetector(
                       onTap: () {
                         // Forgot password logic
+<<<<<<< HEAD
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => ForgetPassword()),
                         );
+=======
+>>>>>>> origin/meku1
                       },
                       child: Text(
                         '    Forgot Password?',
@@ -255,7 +319,10 @@ class _LoginViewState extends State<LoginView> {
     return TextField(
       controller: controller,
       obscureText: isPassword && !_isPasswordVisible,
+<<<<<<< HEAD
       keyboardType: TextInputType.emailAddress,
+=======
+>>>>>>> origin/meku1
       cursorColor: Colors.black,
       style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
       decoration: InputDecoration(

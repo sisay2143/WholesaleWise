@@ -42,12 +42,18 @@ dependencies:
   cloud_firestore: ^4.14.0
   firebase_database: ^10.4.0
   provider: ^6.1.2
+<<<<<<< HEAD
   image_picker: ^1.0.7
   firebase_storage: ^11.6.0
   carousel_slider: ^4.2.1
   pie_chart: ^5.4.0
   fl_chart: ^0.65.0
   qr_code_scanner: ^1.0.1
+=======
+  pie_chart: ^5.4.0
+  carousel_slider: ^4.2.1
+  image_picker: ^1.0.8
+>>>>>>> origin/meku1
   # firebase_core: ^2.24.2
 #  firebase_core: ^2.27.0
 
@@ -74,10 +80,15 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+<<<<<<< HEAD
 
   # To add assets to your application, add an assets section, like this:
   assets:
     - lib/assets/login1.jpeg
+=======
+  assets:
+    - lib/assets/login1.jpg
+>>>>>>> origin/meku1
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
