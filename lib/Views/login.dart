@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:untitled/Views/HomeManager.dart';
-import 'HomeSales.dart';
-import 'HomeWarehouse.dart';
-import 'package:untitled/firebase_options.dart';
+import 'Sales/HomeSales.dart';
+import 'warehouse-staff/HomeWarehouse.dart';
 import 'ForgotPassword.dart';
+import 'Manager/HomeManager.dart';
+// import 'Manager/HomeManager.dart';
 
 class LoginView extends StatefulWidget {
   @override

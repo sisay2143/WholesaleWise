@@ -7,7 +7,9 @@ import 'package:untitled/Views/login.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:pie_chart/pie_chart.dart';
-import 'CommitSale.dart';
+// import 'CommitSale.dart';
+import 'package:carousel_slider/carousel_state.dart';
+// import 'package:carousel_slider/carousel_slider.dart';
 
 class MySlider extends StatefulWidget {
   @override
@@ -101,18 +103,72 @@ class _MySliderState extends State<MySlider> {
                   },
                 ),
               ),
-              // Positioned(
-              //   top: 12.0,
-              //   right: 40.0,
-              //   // child: CarouselStatus(
-              //   //   itemCount: carouselItems.length,
-              //   //   currentSlide: _currentSlide,
-              //   // ),
-              // ),
+              Positioned(
+                top: 12.0,
+                right: 40.0,
+                child: CarouselStatus(
+                  itemCount: carouselItems.length,
+                  currentSlide: _currentSlide,
+                ),
+              ),
             ],
           ),
         ],
       ),
+    );
+  }
+}
+
+
+class CarouselStatus extends StatelessWidget {
+  final int itemCount;
+  final int currentSlide;
+
+  const CarouselStatus(
+      {Key? key, required this.itemCount, required this.currentSlide})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        for (int index = 0; index < itemCount; index++)
+          Container(
+            width: 8,
+            height: 8,
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: currentSlide == index
+                  ? const Color.fromARGB(255, 30, 69, 224)
+                  : Colors.white,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class HeroSec extends StatelessWidget {
+  final String title;
+  final String subtitle;
+
+  const HeroSec(this.title, this.subtitle);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          title,
+          style: TextStyle(color: Colors.white, fontSize: 24),
+        ),
+        SizedBox(height: 10),
+        Text(
+          subtitle,
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
+      ],
     );
   }
 }

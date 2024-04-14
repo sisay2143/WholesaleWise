@@ -1,16 +1,13 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled/Views//HomeManager.dart';
 import 'package:untitled/Views/RegisterManager.dart';
 import 'package:untitled/Views/login.dart';
-import 'package:untitled/controllers/VerifyEmail.dart';
 import 'firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';import 'controllers/AuthProvider.dart';
-import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'Views//HomeWarehouse.dart';
-import 'Views//HomeSales.dart';
+import 'Views/warehouse-staff/HomeWarehouse.dart';
+import 'Views/Manager/HomeManager.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +22,7 @@ Future<void> main() async {
         colorScheme: ColorScheme.fromSeed(
             seedColor: const Color.fromARGB(255, 27, 18, 41)),
       ),
-      home: HomePage(),
+      home: LoginView(),
     ));
   }).catchError((error) {
     print('Error initializing Firebase: $error');
@@ -110,7 +107,7 @@ class HomePage extends StatelessWidget {
               case 'wholesale distributor':
                 return HomePageWarehouse();
               case 'sales personnel':
-                return HomepageSales();
+                // return HomepageSales();
               case 'admin':
                 return RegisterView();
               default:
