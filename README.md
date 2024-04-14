@@ -1,4 +1,5 @@
-Wholesale Distribution Management System
+**Wholesale Stock and Sales Management**
+
 Overview
 This project is a Wholesale Distribution Management System developed to streamline the operations of wholesale distribution businesses. The system provides comprehensive features tailored to the specific roles and responsibilities of various actors involved in the wholesale distribution process, including managers, warehouse staff, sales personnel, and system administrators.
 
