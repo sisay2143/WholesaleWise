@@ -187,9 +187,12 @@ class _LoginViewState extends State<LoginView> {
                           }
                         } catch (e) {
                           setState(() {
-                            _emailErrorText = 'Invalid email or password';
-                            _passwordErrorText = 'Invalid email or password';
-                          });
+  if(mounted) {
+    _emailErrorText = 'Invalid email or password';
+    _passwordErrorText = 'Invalid email or password';
+  }
+});
+
                         }
                       },
                       style: ElevatedButton.styleFrom(

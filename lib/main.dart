@@ -23,7 +23,7 @@ Future<void> main() async {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 27, 18, 41)),
+            seedColor: Color.fromARGB(255, 249, 248, 250)),
       ),
       home: HomePage(),
     ));
@@ -43,12 +43,12 @@ class HomePage extends StatelessWidget {
       builder: (context, AsyncSnapshot<void> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
-            appBar: AppBar(title: Text('Home')),
+            // appBar: AppBar(title: Text('Home')),
             body: Center(child: CircularProgressIndicator()),
           );
         } else if (snapshot.hasError) {
           return Scaffold(
-            appBar: AppBar(title: Text('Home')),
+            // appBar: AppBar(title: Text('Home')),
             body: Center(child: Text('Error initializing Firebase')),
           );
         } else {
@@ -57,12 +57,12 @@ class HomePage extends StatelessWidget {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Scaffold(
-                  appBar: AppBar(title: Text('Home')),
+                  // appBar: AppBar(title: Text('Home')),
                   body: Center(child: CircularProgressIndicator()),
                 );
               } else if (snapshot.hasError) {
                 return Scaffold(
-                  appBar: AppBar(title: Text('Home')),
+                  // appBar: AppBar(title: Text('Home')),
                   body: Center(child: Text('Error fetching user')),
                 );
               } else {
@@ -93,12 +93,12 @@ class HomePage extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
-            appBar: AppBar(title: Text('Home')),
+            // appBar: AppBar(title: Text('Home')),
             body: Center(child: CircularProgressIndicator()),
           );
         } else if (snapshot.hasError) {
           return Scaffold(
-            appBar: AppBar(title: Text('Home')),
+            // appBar: AppBar(title: Text('Home')),
             body: Center(child: Text('Error fetching user data')),
           );
         } else {
@@ -115,13 +115,13 @@ class HomePage extends StatelessWidget {
                 return RegisterView();
               default:
                 return Scaffold(
-                  appBar: AppBar(title: Text('Home')),
+                  // appBar: AppBar(title: Text('Home')),
                   body: Center(child: Text('Unknown role: $userRole')),
                 );
             }
           } else {
             return Scaffold(
-              appBar: AppBar(title: Text('Home')),
+              // appBar: AppBar(title: Text('Home')),
               body: Center(child: Text('User role not found')),
             );
           }
