@@ -1,6 +1,9 @@
+// ignore_for_file: use_build_context_synchronously, prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:untitled/Views/Warehouse-staff/warehouse.dart';
 import 'Sales/HomeSales.dart';
 import 'warehouse-staff/HomeWarehouse.dart';
 import 'ForgotPassword.dart';
@@ -174,7 +177,7 @@ class _LoginViewState extends State<LoginView> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => HomePageWarehouse()),
+                                  builder: (context) => HomepageWH()),
                             );
                           } else if (userRole == 'sales personnel') {
                             Navigator.pushReplacement(
@@ -187,9 +190,12 @@ class _LoginViewState extends State<LoginView> {
                           }
                         } catch (e) {
                           setState(() {
-                            _emailErrorText = 'Invalid email or password';
-                            _passwordErrorText = 'Invalid email or password';
-                          });
+  if(mounted) {
+    _emailErrorText = 'Invalid email or password';
+    _passwordErrorText = 'Invalid email or password';
+  }
+});
+
                         }
                       },
                       style: ElevatedButton.styleFrom(

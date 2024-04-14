@@ -166,6 +166,8 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
+            
+            
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             ),
@@ -260,58 +262,58 @@ class IconWithBackground extends StatelessWidget {
   }
 }
 
-class HeroSec extends StatelessWidget {
-  final String title;
-  final String subtitle;
+// class HeroSec extends StatelessWidget {
+//   final String title;
+//   final String subtitle;
 
-  const HeroSec(this.title, this.subtitle);
+//   const HeroSec(this.title, this.subtitle);
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          title,
-          style: TextStyle(color: Colors.white, fontSize: 24),
-        ),
-        SizedBox(height: 10),
-        Text(
-          subtitle,
-          style: TextStyle(color: Colors.white, fontSize: 16),
-        ),
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       children: [
+//         Text(
+//           title,
+//           style: TextStyle(color: Colors.white, fontSize: 24),
+//         ),
+//         SizedBox(height: 10),
+//         Text(
+//           subtitle,
+//           style: TextStyle(color: Colors.white, fontSize: 16),
+//         ),
+//       ],
+//     );
+//   }
+// }
 
-class CarouselStatus extends StatelessWidget {
-  final int itemCount;
-  final int currentSlide;
+// class CarouselStatus extends StatelessWidget {
+//   final int itemCount;
+//   final int currentSlide;
 
-  const CarouselStatus(
-      {Key? key, required this.itemCount, required this.currentSlide})
-      : super(key: key);
+//   const CarouselStatus(
+//       {Key? key, required this.itemCount, required this.currentSlide})
+//       : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (int index = 0; index < itemCount; index++)
-          Container(
-            width: 8,
-            height: 8,
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: currentSlide == index
-                  ? const Color.fromARGB(255, 30, 69, 224)
-                  : Colors.white,
-            ),
-          ),
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Row(
+//       children: [
+//         for (int index = 0; index < itemCount; index++)
+//           Container(
+//             width: 8,
+//             height: 8,
+//             margin: const EdgeInsets.symmetric(horizontal: 4),
+//             decoration: BoxDecoration(
+//               shape: BoxShape.circle,
+//               color: currentSlide == index
+//                   ? const Color.fromARGB(255, 30, 69, 224)
+//                   : Colors.white,
+//             ),
+//           ),
+//       ],
+//     );
+//   }
+// }
 
 class SalesData {
   final String month;
