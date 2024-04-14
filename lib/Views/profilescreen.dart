@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'account.dart';
+import 'HomeSales.dart';
 
 class ProfileEditPage extends StatelessWidget {
   @override
@@ -16,6 +17,15 @@ class ProfileEditPage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomepageSales()), // Navigate to accounts screen
+        );;
+          },
+        ),
           title: Text('Edit Profile'),
         ),
         body: ProfileEditForm(),

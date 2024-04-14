@@ -2,6 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:charts_flutter/flutter.dart' as charts; // Added charts_flutter import
 import 'package:untitled/Views/SalesRecords.dart';
 
 import 'package:untitled/Views/login.dart';
@@ -10,6 +11,8 @@ import 'CommitSale.dart';
 import 'Profile.dart';
 // import 'QRScanScreen.dart';
 import 'Myslider.dart';
+import 'NotificationSales.dart';
+import 'ProfileSales.dart';
 
 class HomepageSales extends StatefulWidget {
   const HomepageSales({Key? key});
@@ -45,7 +48,8 @@ class _HomepageSalesState extends State<HomepageSales> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _widgetOptions.elementAt(_selectedIndex),
+      body: _selectedIndex < _widgetOptions.length ? _widgetOptions.elementAt(_selectedIndex) : Container(),
+
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -88,110 +92,157 @@ class HomeScreen extends StatelessWidget {
           style: TextStyle(color: Colors.black), // Text color
         ),
         actions: [
-          TextButton(
-            onPressed: () {
-              // Perform logout operation
-              FirebaseAuth.instance.signOut();
-              // Navigate back to login view
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => LoginView()),
-              );
-            },
-            child: Text(
-              'Logout',
-              style: TextStyle(color: Colors.black), // Text color
-            ),
-          ),
+          // TextButton(
+          //   onPressed: () {
+          //     // Perform logout operation
+          //     FirebaseAuth.instance.signOut();
+          //     // Navigate back to login view
+          //     Navigator.pushReplacement(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => LoginView()),
+          //     );
+          //   },
+          //   child: Text(
+          //     'Logout',
+          //     style: TextStyle(color: Colors.black), // Text color
+          //   ),
+          // ),
           IconButton(
             onPressed: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => Notification()),
-              // );
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationSales()),
+              );
             },
             icon: Icon(Icons.notifications, color: Colors.black), // Icon color
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding:
-                const EdgeInsets.only(top: 5, bottom: 5, left: 5, right: 5),
-            child: Column(
-              children: [
-                Stack(
-                  children: [
-                    MySlider(),
-                  ],
-                ),
-              ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.only(top: 5, bottom: 5, left: 5, right: 5),
+              child: Column(
+                children: [
+                  Stack(
+                    children: [
+                      MySlider(),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.only(bottom: 5, top: 5, right: 15, left: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 50,
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.search),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: 'Search',
-                              border: InputBorder.none,
+            Padding(
+              padding:
+                  const EdgeInsets.only(bottom: 5, top: 5, right: 15, left: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 50,
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.search),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: TextField(
+                              decoration: InputDecoration(
+                                hintText: 'Search',
+                                border: InputBorder.none,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(width: 10),
-               Container(
-      height: 50,
-      width: 50,
-      decoration: BoxDecoration(
-        color: Color.fromARGB(255, 238, 238, 238),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: IconButton(
-        icon: Icon(Icons.qr_code),
-        onPressed: () {
-          // This function will be called when the icon button is pressed
-          // You can add your custom logic here
-          print('QR code icon pressed!');
-          // _scanBarcode();
-        },
-      ),
-    ),
-  // }
-              ],
+                  SizedBox(width: 10),
+                 Container(
+        height: 50,
+        width: 50,
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 238, 238, 238),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: IconButton(
+          icon: Icon(Icons.qr_code),
+          onPressed: () {
+            // This function will be called when the icon button is pressed
+            // You can add your custom logic here
+            print('QR code icon pressed!');
+            // _scanBarcode();
+          },
+        ),
+          ),
+        // }
+                ],
+              ),
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          ),
-          SizedBox(height: 20),
-        ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            ),
+            SizedBox(height: 20),
+      
+            // Add the bar graph below
+            Card(
+              elevation: 3,
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text('Sales Overview'),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Container(
+                      height: 250,
+                      child: _buildBarChart(), // Real bar chart
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-       
+
+    );
+  }
+
+  // Function to build the bar chart
+  Widget _buildBarChart() {
+    // Example data for the bar chart
+    final List<SalesData> data = [
+      SalesData('Jan', 100),
+      SalesData('Feb', 150),
+      SalesData('Mar', 200),
+      SalesData('Apr', 180),
+    ];
+
+    // Creating series for the bar chart
+    final List<charts.Series<SalesData, String>> series = [
+      charts.Series(
+        id: 'Sales',
+        data: data,
+        domainFn: (SalesData sales, _) => sales.month,
+        measureFn: (SalesData sales, _) => sales.sales,
+      ),
+    ];
+
+    // Building the bar chart
+    return charts.BarChart(
+      series,
+      animate: true,
     );
   }
 }
-
 
 class SalesRecords extends StatelessWidget {
   @override
@@ -280,4 +331,11 @@ class CarouselStatus extends StatelessWidget {
       ],
     );
   }
+}
+
+class SalesData {
+  final String month;
+  final int sales;
+
+  SalesData(this.month, this.sales);
 }

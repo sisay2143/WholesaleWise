@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'HomeManager.dart';
 
 class NotificationPage extends StatelessWidget {
   const NotificationPage({Key? key}) : super(key: key);
@@ -7,6 +8,15 @@ class NotificationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+       leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomepageManager()), // Navigate to accounts screen
+        );;
+          },
+        ),
         title: const Text('Notifications'),
         backgroundColor: Color.fromARGB(255, 6, 116, 219) 
       ),
