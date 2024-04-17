@@ -5,6 +5,7 @@ import 'package:pie_chart/pie_chart.dart';
 import 'profilescreen.dart'; // Import the file where HomeManager is defined
 // import 'HomeManager.dart'; // Change 'HomeManager.dart' to the correct file name if necessary
 import 'package:camera/camera.dart';
+import 'Salesreportmanager.dart';
 
 Map<String, double> dataMap = {
   'Flutter': 3,
@@ -178,14 +179,34 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                IconWithBackground(Icons.list_alt),
-                IconWithBackground(Icons.trending_up),
-                IconWithBackground(Icons.attach_money),
-              ],
-            ),
+           Row(
+  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  children: [
+    GestureDetector(
+      onTap: () {
+        // Navigate to the List Alt screen
+      },
+      child: IconWithBackground(Icons.list_alt),
+    ),
+    GestureDetector(
+      onTap: () {
+         Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ReportScreen()),
+                );
+        // Navigate to the Trending Up screen
+      },
+      child: IconWithBackground(Icons.trending_up),
+    ),
+    GestureDetector(
+      onTap: () {
+        // Navigate to the Attach Money screen
+      },
+      child: IconWithBackground(Icons.attach_money),
+    ),
+  ],
+),
+
             SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
