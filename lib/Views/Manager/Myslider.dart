@@ -33,7 +33,7 @@ class _MySliderState extends State<MySlider> {
       ),
       Container(
         width: MediaQuery.of(context).size.width,
-        margin: const EdgeInsets.symmetric(horizontal: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 3),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(10)),
           color: Color.fromRGBO(70, 140, 194, 0.68),
@@ -64,7 +64,7 @@ class _MySliderState extends State<MySlider> {
       ),
       Container(
         width: MediaQuery.of(context).size.width,
-        margin: const EdgeInsets.symmetric(horizontal: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 3),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(10)),
          color: Color.fromRGBO(70, 140, 194, 0.68),
@@ -73,7 +73,7 @@ class _MySliderState extends State<MySlider> {
       ),
       Container(
         width: MediaQuery.of(context).size.width,
-        margin: const EdgeInsets.symmetric(horizontal: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 3),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(10)),
           color: Color.fromRGBO(70, 140, 194, 0.68),
