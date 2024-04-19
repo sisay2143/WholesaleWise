@@ -5,11 +5,11 @@ import 'package:charts_flutter/flutter.dart' as charts;
 
 void main() {
   runApp(MaterialApp(
-    home: ReportScreen(),
+    home: SalesAnalytics(),
   ));
 }
 
-class ReportScreen extends StatelessWidget {
+class SalesAnalytics extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

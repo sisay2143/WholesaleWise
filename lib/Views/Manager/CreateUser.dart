@@ -60,48 +60,70 @@ class _CreateUserState extends State<CreateUser> {
               decoration: InputDecoration(labelText: 'Role'),
             ),
             SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () async {
-                try {
-                  UserCredential userCredential =
-                      await _auth.createUserWithEmailAndPassword(
-                    email: _emailController.text,
-                    password: _passwordController.text,
-                  );
+           ElevatedButton(
+  onPressed: () async {
+    try {
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
 
-                  await _firestore
-                      .collection('users')
-                      .doc(userCredential.user!.uid)
-                      .set({
-                    'name': _nameController.text,
-                    'email': _emailController.text,
-                    'role': _selectedRole,
-                  });
+      await _firestore
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set({
+        'name': _nameController.text,
+        'email': _emailController.text,
+        'role': _selectedRole,
+      });
 
-                  // Clear text fields after successful registration
-                  _nameController.clear();
-                  _emailController.clear();
-                  _passwordController.clear();
+      // Clear text fields after successful registration
+      _nameController.clear();
+      _emailController.clear();
+      _passwordController.clear();
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('User registered successfully!'),
-                    ),
-                  );
-                } catch (e) {
-                  print('Error registering user: $e');
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Error registering user'),
-                    ),
-                  );
-                }
-              },
-              child: Text('Register'),
-            ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('User registered successfully!'),
+        ),
+      );
+    } catch (e) {
+      print('Error registering user: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error registering user'),
+        ),
+      );
+    }
+  },
+  style: ElevatedButton.styleFrom(
+    padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 120.0),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20),
+    ),
+    primary: Color.fromARGB(255, 4, 98, 175),
+  ),
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Text(
+        'Register',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 18.0,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ],
+  ),
+),
+
           ],
         ),
       ),
     );
   }
 }
+
+

@@ -1,28 +1,28 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 import 'package:flutter/material.dart';
+import 'package:untitled/Views/Manager/Notification.dart';
+import 'package:untitled/Views/Manager/account.dart';
+import 'package:untitled/Views/Manager/itemlist.dart';
 import 'Myslider.dart';
 import 'package:pie_chart/pie_chart.dart';
-// import 'profilescreen.dart'; // Import the file where HomeManager is defined
+import 'profilescreen.dart'; // Import the file where HomeManager is defined
 // import 'HomeManager.dart'; // Change 'HomeManager.dart' to the correct file name if necessary
 import 'package:camera/camera.dart';
 import 'Salesreport.dart';
-import 'profit.dart';
 import 'reporting.dart';
-import 'itemlist.dart';
-import 'Notification.dart';
-import 'approval.dart';
-import 'account.dart';
+import 'profit.dart';
 
 Map<String, double> dataMap = {
   'Flutter': 3,
   'React': 3,
-  'Dart': 3,
+  'Xamarin': 2,
 };
 
 List<Color> colorList = [
   Colors.blue,
-  Color.fromARGB(255, 52, 56, 126),
-  Color.fromARGB(255, 54, 123, 78),
+  Colors.green,
+  Colors.red,
 ];
 
 class HomepageManager extends StatefulWidget {
@@ -109,14 +109,14 @@ class _HomepageManagerState extends State<HomepageManager> {
                 width:
                     30, // Adjust the width and height according to your preference
                 height: 30,
-                child: Icon(Icons.person,
+                child: Icon(Icons.person_2_sharp,
                     size: 30), // Adjust the size property of the Icon widget
               ),
-              label: 'Profile',
+              label: 'Accounts',
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Colors.blue,
+          selectedItemColor:Color.fromARGB(255, 3, 94, 147),
           unselectedItemColor: Colors.grey,
           onTap: _onItemTapped,
           showSelectedLabels: true, // Ensure that selected labels are visible
@@ -135,23 +135,28 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //  elevation: 0.0, // Remove shadow from app bar
-        backgroundColor: Colors.white,
-        title: Text(
-          'Home',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 25,
-          ),
+        title: Row(
+          children: [
+            SizedBox(width: 16), // Add space to align the title to the start
+            Text(
+              'Home',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 25,
+              ),
+            ),
+          ],
         ),
+        backgroundColor: Colors.white,
         actions: [
           IconButton(
-            color: Colors.blue,
+            color: Color.fromARGB(255, 3, 94, 147),
             icon: Icon(Icons.notifications),
             onPressed: () {
               // Implement your notification logic here
-              Navigator.push(
+
+               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => NotificationManager()),
               );
@@ -175,8 +180,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(
-                  left: 20, right: 20, top: 5, bottom: 10),
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -208,7 +212,6 @@ class HomeScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       // Implement the action to open the user's camera here
-
                       openCamera(context);
                     },
                     child: Container(
@@ -227,33 +230,63 @@ class HomeScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ItemsList()),
-                    ); // Navigate to the List Alt screen
-                  },
-                  child: IconWithBackground(Icons.list_alt),
+                // IconWithBackground(Icons.list_alt),
+                Column(
+                  children: [
+                    IconWithBackground(
+                      iconData: Icons.list_alt,
+                      backgroundColor: Color.fromARGB(255, 3, 94, 147),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ItemsScreen()),
+                        );
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text('item list'),
+                  ],
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ReportScreen()),
-                    );
-                    // Navigate to the Trending Up screen
-                  },
-                  child: IconWithBackground(Icons.trending_up),
+                Column(
+                  children: [
+                    IconWithBackground(
+                      iconData: Icons.trending_up,
+                      backgroundColor: Color.fromARGB(255, 3, 94, 147),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SalesAnalytics()),
+                        );
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text('sales analytics'),
+                  ],
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ProfitScreen()),
-                    ); // Navigate to the Attach Money screen
-                  },
-                  child: IconWithBackground(Icons.attach_money),
+                Column(
+                  children: [
+                    IconWithBackground(
+                      iconData: Icons.attach_money,
+                      backgroundColor: Color.fromARGB(255, 3, 94, 147),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProfitScreen()),
+                        );
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text('profit analytics'),
+                  ],
                 ),
               ],
             ),
@@ -263,7 +296,7 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: SizedBox(
-                    height: 290, // Set the desired height
+                    height: 270, // Set the desired height
                     width: 70, // Set the desired width
                     child: Card(
                       elevation: 0, // Add elevation for shadow effect
@@ -329,25 +362,48 @@ Future<void> openCamera(BuildContext context) async {
     },
   );
 }
+// }
 
-class IconWithBackground extends StatelessWidget {
-  final IconData iconData;
-
-  IconWithBackground(this.iconData);
-
+class Approval extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 65,
-      height: 65,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Color.fromRGBO(58, 139, 200, 0.678),
-      ),
+      color: Colors.grey[200],
       child: Center(
-        child: Icon(
-          iconData,
-          size: 35,
+        child: Text('approval Records '),
+      ),
+    );
+  }
+}
+
+class IconWithBackground extends StatelessWidget {
+  final IconData iconData;
+  final Color backgroundColor;
+  final Function()? onTap;
+
+  IconWithBackground({
+    required this.iconData,
+    required this.backgroundColor,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 65,
+        height: 65,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: backgroundColor,
+        ),
+        child: Center(
+          child: Icon(
+            iconData,
+            size: 35,
+            color: Colors.white,
+          ),
         ),
       ),
     );

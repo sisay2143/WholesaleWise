@@ -16,16 +16,7 @@ class ProfileEditPage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-        //     Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => HomepageSales()
-        //   ), // Navigate to accounts screen
-        // );
-          },
-        ),
+         
           title: Text('Edit Profile'),
         ),
         body: ProfileEditForm(),

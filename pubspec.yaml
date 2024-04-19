@@ -81,6 +81,11 @@ flutter:
   
   assets:
     - lib/assets/login1.jpeg
+    - lib/assets/box.png
+    - lib/assets/list.png
+    - lib/assets/report.png
+    - lib/assets/shopping-bag.png
+    - lib/assets/shoe1.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -19,7 +19,7 @@ class NotificationManager extends StatelessWidget {
           },
         ),
         title: const Text('Notifications'),
-        backgroundColor: Color.fromARGB(255, 6, 116, 219) 
+        backgroundColor: Color.fromARGB(255, 3, 94, 147),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -49,7 +49,7 @@ class NotificationManager extends StatelessWidget {
         ),
         subtitle: Text(message),
         leading: CircleAvatar(
-          backgroundColor: Color.fromARGB(255, 6, 116, 219) ,
+          backgroundColor: Color.fromARGB(255, 3, 94, 147),
           child: Icon(
             Icons.notifications,
             color: Colors.white,

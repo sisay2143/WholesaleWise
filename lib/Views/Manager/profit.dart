@@ -15,7 +15,7 @@ class ProfitScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sales analytics'),
+        title: Text('Profit analytics'),
       ),
       body: SingleChildScrollView(
         child: Padding(
