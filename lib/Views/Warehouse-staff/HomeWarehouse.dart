@@ -2,9 +2,12 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:untitled/Views/Manager/HomeManager.dart';
 import 'package:untitled/Views/login.dart';
 import 'FCard.dart';
 import 'Myslider.dart';
+import 'package:camera/camera.dart';
+
 
 class HomePageWarehouse extends StatefulWidget {
   const HomePageWarehouse({super.key});
@@ -19,24 +22,24 @@ class _HomePageWarehouseState extends State<HomePageWarehouse> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Warehouse staff Home'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              // Perform logout operation
-              FirebaseAuth.instance.signOut();
+        // actions: [
+        //   TextButton(
+        //     onPressed: () {
+        //       // Perform logout operation
+        //       FirebaseAuth.instance.signOut();
 
-              // Navigate back to login view
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => LoginView()),
-              );
-            },
-            child: Text(
-              'Logout',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
+        //       // Navigate back to login view
+        //       Navigator.pushReplacement(
+        //         context,
+        //         MaterialPageRoute(builder: (context) => LoginView()),
+        //       );
+        //     },
+        //     child: Text(
+        //       'Logout',
+        //       style: TextStyle(color: Colors.white),
+        //     ),
+        //   ),
+        // ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -85,22 +88,22 @@ class _HomePageWarehouseState extends State<HomePageWarehouse> {
                   SizedBox(
                     width: 10,
                   ),
-                  Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 238, 238, 238),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: IconButton(
-                      icon: Icon(Icons.qr_code),
-                      onPressed: () {
-                        print('QR code icon pressed!');
-                        // _scanBarcode();
-                      },
+                  GestureDetector(
+                    onTap: () {
+                      // Implement the action to open the user's camera here
+                      openCamera(context);
+                    },
+                    child: Container(
+                      height: 50,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 238, 238, 238),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Icon(Icons.qr_code),
                     ),
                   ),
-                ],
+                ]
               ),
             ),
             DisplayCard(),
@@ -109,4 +112,33 @@ class _HomePageWarehouseState extends State<HomePageWarehouse> {
       ),
     );
   }
+}
+
+
+Future<void> openCamera(BuildContext context) async {
+  // Initialize the camera
+  final cameras = await availableCameras();
+  final firstCamera = cameras.first;
+
+  // Initialize the camera controller
+  final CameraController cameraController = CameraController(
+    firstCamera,
+    ResolutionPreset.medium,
+  );
+
+  // Initialize the camera controller
+  await cameraController.initialize();
+
+  // Show the camera preview in a dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: AspectRatio(
+          aspectRatio: cameraController.value.aspectRatio,
+          child: CameraPreview(cameraController),
+        ),
+      );
+    },
+  );
 }

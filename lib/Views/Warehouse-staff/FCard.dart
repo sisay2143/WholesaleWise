@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/Views/Warehouse-staff/AddItem.dart';
 // import "package:inventory/AddItemScreen.dart";
 // import 'package:inventory/BottomNavigationBar.dart';
 // import 'package:inventory/HomeScreen.dart';
@@ -25,17 +26,17 @@ class ImageTextCard extends StatelessWidget {
       width: MediaQuery.of(context).size.width * .44,
       child: GestureDetector(
           onTap: () {
-            // Navigator.push(context, MaterialPageRoute(builder: (context) {
-            //   if (text == "Add Items") {
-            //     return AddProductForm();
-            //   } else if (text == "Inventory Count") {
-            //     return ReportPage();
-            //   } else if (text == "Inventory") {
-            //     return ItemsScreen();
-            //   } else {
-            //     return StockOutPage();
-            //   }
-            // }));
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              if (text == "Add Items") {
+                return AddProductForm();
+              } else if (text == "Inventory Count") {
+                return AddProductForm();
+              } else if (text == "Inventory") {
+                return AddProductForm();
+              } else {
+                return AddProductForm();
+              }
+            }));
           },
           child: Card(
             margin: const EdgeInsets.all(7),
@@ -94,12 +95,12 @@ class DisplayCard extends StatelessWidget {
           Row(
             children: [
               ImageTextCard(
-                imagePath: 'assets/images/inventory.png',
+                imagePath: 'lib/assets/images/box.png',
                 text: 'Add Items',
                 isTrue: false,
               ),
               ImageTextCard(
-                imagePath: 'assets/images/stockout.png',
+                imagePath: 'lib/assets/images/shopping-bag.png',
                 text: 'Stock        Out',
                 isTrue: true,
               )
@@ -108,17 +109,17 @@ class DisplayCard extends StatelessWidget {
           Row(
             children: [
               ImageTextCard(
-                imagePath: 'assets/images/report.png',
+                imagePath: 'lib/assets/images/report.png',
                 text: 'Inventory Count',
                 isTrue: true,
               ),
               ImageTextCard(
-                imagePath: 'assets/images/inventorylist.png',
+                imagePath: 'lib/assets/images/list.png',
                 text: 'Inventory',
                 isTrue: false,
-              )
+              ),
             ],
-          )
+          ),
         ],
       ),
     );

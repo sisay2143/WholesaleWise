@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:ui';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'CreateUser.dart';
 import '../login.dart';
@@ -37,6 +38,7 @@ class AccountPage extends StatelessWidget {
               if (result == 'settings') {
                 // Navigate to settings page
               } else if (result == 'logout') {
+                FirebaseAuth.instance.signOut(); //
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => LoginView()),

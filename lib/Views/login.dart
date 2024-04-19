@@ -71,7 +71,7 @@ class _LoginViewState extends State<LoginView> {
                   Positioned.fill(
                     top: MediaQuery.of(context).size.height * 0.1,
                     child: Image.asset(
-                      'lib/assets/login1.jpeg',
+                      'lib/assets/images/login1.jpeg',
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),

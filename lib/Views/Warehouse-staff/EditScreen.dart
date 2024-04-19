@@ -35,7 +35,7 @@ class _EditScreenState extends State<EditScreen> {
         TextEditingController(text: widget.cuProduct.quantity.toString());
     _priceController =
         TextEditingController(text: widget.cuProduct.price.toString());
-    _distributorController =
+    // _distributorController =
         // TextEditingController(text: widget.cuProduct.distributor.toString());
     _categoryController =
         TextEditingController(text: widget.cuProduct.category.toString());

@@ -27,16 +27,16 @@ class _MySliderState extends State<MySlider> {
         margin: const EdgeInsets.symmetric(horizontal: 3),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(15)),
-          color: Color.fromRGBO(70, 140, 194, 0.68),
+          color: Color.fromARGB(255, 3, 94, 147),
         ),
         child: Center(child: Text('Rectangular Box 1')),
       ),
       Container(
         width: MediaQuery.of(context).size.width,
-        margin: const EdgeInsets.symmetric(horizontal: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 3),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(10)),
-          color: Color.fromRGBO(70, 140, 194, 0.68),
+          color: Color.fromARGB(255, 3, 94, 147),
         ),
         child: Column(
           children: [
@@ -64,19 +64,19 @@ class _MySliderState extends State<MySlider> {
       ),
       Container(
         width: MediaQuery.of(context).size.width,
-        margin: const EdgeInsets.symmetric(horizontal: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 3),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(10)),
-         color: Color.fromRGBO(70, 140, 194, 0.68),
+         color: Color.fromARGB(255, 3, 94, 147),
         ),
         // child: HeroSec("Today", "Aug 22"),
       ),
       Container(
         width: MediaQuery.of(context).size.width,
-        margin: const EdgeInsets.symmetric(horizontal: 10),
+        margin: const EdgeInsets.symmetric(horizontal: 3),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(10)),
-          color: Color.fromRGBO(70, 140, 194, 0.68),
+          color: Color.fromARGB(255, 3, 94, 147),
         ),
         // child: HeroSec("Yesterday", "Aug 21"),
       ),

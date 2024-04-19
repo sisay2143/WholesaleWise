@@ -3,8 +3,9 @@ class Product {
   final String pid;
   final int quantity;
   final double price;
-  final String distributor;
+  // final String distributor;
   final String category;
+  // final String category;
   final String imageUrl;
   final String expiredate;
 
@@ -12,7 +13,6 @@ class Product {
     required this.name,
     required this.quantity,
     required this.price,
-    required this.distributor,
     required this.category,
     required this.imageUrl,
     required this.pid,

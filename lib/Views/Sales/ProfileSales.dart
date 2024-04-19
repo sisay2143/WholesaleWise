@@ -57,18 +57,18 @@ class _ProfilePageState extends State<Profile> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
-void initState() {
-  super.initState();
-  _profileData = ProfileData(
-    fullname: '',
-    // lastName: '',
-    email: '',
-    imagePath: '',
-  );
-  _fetchUserData(); // Fetch user data when the profile page is initialized
-  fullnameController.text = _profileData.fullname; // Set text controller value
-}
-
+  void initState() {
+    super.initState();
+    _profileData = ProfileData(
+      fullname: '',
+      // lastName: '',
+      email: '',
+      imagePath: '',
+    );
+    _fetchUserData(); // Fetch user data when the profile page is initialized
+    fullnameController.text =
+        _profileData.fullname; // Set text controller value
+  }
 
   // Function to fetch user data from Firestore
   Future<void> _fetchUserData() async {
@@ -154,6 +154,7 @@ void initState() {
           IconButton(
             icon: Icon(Icons.logout),
             onPressed: () {
+              FirebaseAuth.instance.signOut(); 
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => LoginView()),
@@ -197,7 +198,7 @@ void initState() {
           });
         },
         style: ElevatedButton.styleFrom(
-          primary: Color.fromARGB(255, 6, 116, 219),
+          primary: Color.fromARGB(255, 3, 94, 147),
           padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
         ),
         child: Text(
@@ -207,6 +208,7 @@ void initState() {
       ),
     ];
   }
+
   Widget _buildProfileImage() {
     return GestureDetector(
       onTap: () async {
@@ -247,61 +249,61 @@ void initState() {
   }
 
   List<Widget> _buildEditState() {
-  // Set the initial value of the fullnameController to the current fullname
-  fullnameController.text = _profileData.fullname;
+    // Set the initial value of the fullnameController to the current fullname
+    fullnameController.text = _profileData.fullname;
 
-  return [
-    _buildProfileImage(), // Display profile image
-    const SizedBox(height: 16.0),
-    TextFormField(
-      controller: fullnameController,
-      decoration: InputDecoration(labelText: 'Full Name'),
-    ),
-    const SizedBox(height: 8.0),
-    // TextFormField(
-    //   // controller: lastNameController,
-    //   decoration: InputDecoration(labelText: 'Last Name'),
-    // ),
-    const SizedBox(height: 16.0),
-    ElevatedButton(
-      onPressed: () async {
-        try {
-          User? user = _auth.currentUser;
-          if (user != null) {
-            await _firestore.collection('users').doc(user.uid).update({
-              'name': '${fullnameController.text} ${fullnameController.text}',
-            });
-            setState(() {
-              _profileData.fullname = fullnameController.text;
-              // _profileData.lastName = lastNameController.text;
-            });
+    return [
+      _buildProfileImage(), // Display profile image
+      const SizedBox(height: 16.0),
+      TextFormField(
+        controller: fullnameController,
+        decoration: InputDecoration(labelText: 'Full Name'),
+      ),
+      const SizedBox(height: 8.0),
+      // TextFormField(
+      //   // controller: lastNameController,
+      //   decoration: InputDecoration(labelText: 'Last Name'),
+      // ),
+      const SizedBox(height: 16.0),
+      ElevatedButton(
+        onPressed: () async {
+          try {
+            User? user = _auth.currentUser;
+            if (user != null) {
+              await _firestore.collection('users').doc(user.uid).update({
+                'name': '${fullnameController.text} ${fullnameController.text}',
+              });
+              setState(() {
+                _profileData.fullname = fullnameController.text;
+                // _profileData.lastName = lastNameController.text;
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Profile updated successfully!'),
+                ),
+              );
+              setState(() {
+                _isEditMode = false; // Exit edit mode
+              });
+            }
+          } catch (e) {
+            print('Error updating profile: $e');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Profile updated successfully!'),
+                content: Text('Error updating profile'),
               ),
             );
-            setState(() {
-              _isEditMode = false; // Exit edit mode
-            });
           }
-        } catch (e) {
-          print('Error updating profile: $e');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error updating profile'),
-            ),
-          );
-        }
-      },
-      style: ElevatedButton.styleFrom(
-        primary: Color.fromARGB(255, 6, 116, 219),
-        padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
+        },
+        style: ElevatedButton.styleFrom(
+          primary: Color.fromARGB(255, 3, 94, 147),
+          padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
+        ),
+        child: Text(
+          'Save Profile',
+          style: TextStyle(fontSize: 18.0),
+        ),
       ),
-      child: Text(
-        'Save Profile',
-        style: TextStyle(fontSize: 18.0),
-      ),
-    ),
-  ];
-}
+    ];
+  }
 }

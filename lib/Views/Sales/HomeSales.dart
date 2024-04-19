@@ -65,7 +65,7 @@ class _HomepageSalesState extends State<HomepageSales> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Color.fromARGB(255, 3, 94, 147),
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
         showSelectedLabels: true, // Ensure that selected labels are visible
@@ -94,7 +94,7 @@ class HomeScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => NotificationSales()),
               );
             },
-            icon: Icon(Icons.notifications, color: Colors.black), // Icon color
+            icon: Icon(Icons.notifications, color: Color.fromARGB(255, 3, 94, 147),), // Icon color
           ),
         ],
       ),
