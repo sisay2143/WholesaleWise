@@ -41,7 +41,7 @@ class AccountPage extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: const Color.fromARGB(255, 243, 145, 33),
+                      color: Color.fromARGB(255, 118, 104, 167),
                     ),
                     child: ListTile(
                       leading: Icon(Icons.settings, color: Colors.white),
@@ -57,7 +57,7 @@ class AccountPage extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: Color.fromARGB(255, 209, 94, 86),
+                      color: Color.fromARGB(255, 118, 104, 167),
                     ),
                     child: ListTile(
                       leading: Icon(Icons.logout, color: Colors.white),
