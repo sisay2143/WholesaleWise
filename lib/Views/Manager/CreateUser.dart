@@ -44,7 +44,7 @@ class _CreateUserState extends State<CreateUser> {
             DropdownButtonFormField<String>(
               value: _selectedRole,
               items: <String>[
-                'wholesale distributor',
+                'warehouse staff',
                 'sales personnel',
               ].map((String value) {
                 return DropdownMenuItem<String>(

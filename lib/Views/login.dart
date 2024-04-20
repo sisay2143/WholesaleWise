@@ -226,7 +226,7 @@ class _LoginViewState extends State<LoginView> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ForgetPassword()),
+                              builder: (context) => ForgotPasswordScreen()),
                         );
                       },
                       child: Text(

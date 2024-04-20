@@ -1,134 +1,106 @@
-// import 'package:flutter/material.dart';
-
-// class ForgetPassword extends StatefulWidget {
-//   const ForgetPassword({super.key});
-
-//   @override
-//   State<ForgetPassword> createState() => _ForgetPasswordState();
-// }
-
-// class _ForgetPasswordState extends State<ForgetPassword> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return const Scaffold();
-//   }
-// }
-
-// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class ForgetPassword extends StatefulWidget {
-  const ForgetPassword({Key? key}) : super(key: key);
-
+class ForgotPasswordScreen extends StatefulWidget {
   @override
-  State<ForgetPassword> createState() => _ForgetPasswordState();
+  _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
 }
 
-class _ForgetPasswordState extends State<ForgetPassword> {
-  final _email = TextEditingController();
-  @override
-  void dispose() {
-    _email.dispose();
-    super.dispose();
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  bool _isLoading = false;
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
-//  Future PasswordReset() async{
-// try{
-//   await FirebaseAuth.instance.sendPasswordResetEmail(
-//       email:_email.text.trim());
-//   showDialog(
-//       context: context,
-//       builder:(context) {
-//         return AlertDialog(
-//           content: Text('Password reset link sent! Go check your email'),
-//         );
-//       });
-// }on FirebaseAuthException catch(e){
-//   print(e);
-//   showDialog(
-//   context: context,
-//       builder:(context) {
-//     return AlertDialog(
-//       content: Text(e.message.toString()),
-//     );
-//   });
-// }
-//  }
+  Future<void> _resetPassword() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await FirebaseAuth.instance
+          .sendPasswordResetEmail(email: _emailController.text);
+      _showSnackBar('Password reset email sent successfully');
+    } catch (error) {
+      _showSnackBar('Failed to reset password: $error');
+      print('Failed to reset password: $error');
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            SizedBox(
-              width: 30,
-            ),
-            Text(
-              'Reset Password Screen',
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-        backgroundColor: Colors.deepPurpleAccent,
+        backgroundColor: Color.fromARGB(255, 3, 94, 147),
+        title: Text('Forgot Password'),
       ),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 47,
-          ),
-          Text(
-            'Please enter your email here .',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              fontSize: 19,
-            ),
-          ),
-          SizedBox(
-            height: 47,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 30,
-              right: 30,
-            ),
-            child: TextField(
-              controller: _email,
-              enableSuggestions: false,
-              autocorrect: false,
-              keyboardType: TextInputType.emailAddress,
-              decoration:const  InputDecoration(
-                prefixIcon:Icon(
-                  Icons.email,
-                  color: Colors.blue,
-                ),
-                filled: true,
-                enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 4,
-                      color: Colors.deepPurpleAccent,
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        border: OutlineInputBorder(),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Theme.of(context).primaryColor),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value?.isEmpty ?? true || !value!.contains('@')) {
+                          return 'Invalid email';
+                        }
+                        return null;
+                      },
                     ),
-                    borderRadius: BorderRadius.all(Radius.circular(5))),
-                hintText: 'Enter your Email Here',
-                hintStyle: const TextStyle(color: Colors.deepPurpleAccent),
+                    SizedBox(height: 20.0),
+                    SizedBox(
+                      width: double
+                          .infinity, // Sets the width to match the parent width
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Color.fromARGB(255, 3, 94, 147),
+                          padding: EdgeInsets.symmetric(vertical: 15.0),
+                        ),
+                        onPressed: () {
+                          if (_formKey.currentState?.validate() ?? false) {
+                            _resetPassword();
+                          }
+                        },
+                        child: Text(
+                          'Reset Password',
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-         const  SizedBox(
-            height: 12,
-          ),
-          MaterialButton(
-            onPressed: () {},
-            child: Text(
-              '𝑹𝒆𝒔𝒆𝒕 𝑷𝒂𝒔𝒔𝒘𝒐𝒓𝒅',
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-            color: Colors.deepPurple,
-          )
-        ],
-      ),
     );
   }
 }

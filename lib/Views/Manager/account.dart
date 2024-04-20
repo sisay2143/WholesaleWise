@@ -106,7 +106,7 @@ class AccountPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ProfileEditPage()),
+                              builder: (context) => Profile()),
                         );
                       },
                       style: ElevatedButton.styleFrom(

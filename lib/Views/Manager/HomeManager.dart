@@ -5,9 +5,7 @@ import 'package:untitled/Views/Manager/Notification.dart';
 import 'package:untitled/Views/Manager/account.dart';
 import 'package:untitled/Views/Manager/itemlist.dart';
 import 'Myslider.dart';
-import 'package:pie_chart/pie_chart.dart';
-import 'profilescreen.dart'; // Import the file where HomeManager is defined
-// import 'HomeManager.dart'; // Change 'HomeManager.dart' to the correct file name if necessary
+import 'package:pie_chart/pie_chart.dart';// Import the file where HomeManager is defined
 import 'package:camera/camera.dart';
 import 'Salesreport.dart';
 import 'reporting.dart';
@@ -20,9 +18,9 @@ Map<String, double> dataMap = {
 };
 
 List<Color> colorList = [
-  Colors.blue,
+  const Color.fromARGB(255, 4, 50, 88),
   Colors.green,
-  Colors.red,
+  Color.fromARGB(255, 33, 86, 87),
 ];
 
 class HomepageManager extends StatefulWidget {
@@ -158,7 +156,7 @@ class HomeScreen extends StatelessWidget {
 
                Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => NotificationManager()),
+                MaterialPageRoute(builder: (context) => NotificationPage()),
               );
             },
           ),
@@ -240,7 +238,7 @@ class HomeScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ItemsScreen()),
+                              builder: (context) => itemList()),
                         );
                       },
                     ),

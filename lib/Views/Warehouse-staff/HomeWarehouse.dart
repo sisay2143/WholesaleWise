@@ -33,7 +33,7 @@ class _HomePageWarehouseState extends State<HomePageWarehouse> {
 
                Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => NotificationWarehouse()),
+                MaterialPageRoute(builder: (context) => NotificationPage()),
               );
             },
           ),

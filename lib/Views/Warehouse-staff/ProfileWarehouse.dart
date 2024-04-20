@@ -57,33 +57,33 @@ class _ProfilePageState extends State<Profile> {
     _fetchUserData(); // Fetch user data when the profile page is initialized
   }
 
- Future<void> _fetchUserData() async {
-  try {
-    User? user = _auth.currentUser;
-    if (user != null) {
-      DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(user.uid).get();
-      if (userDoc.exists) {
-        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>; // Access fields using data() method
-        setState(() {
-          _profileData.fullname = userData['name'];
-          _profileData.email = userData['email'];
-          _profileData.phone = userData['phone'];
-          _profileData.address = userData['address'];
-          _profileData.imagePath = userData['profileImg'];
-        });
-        // Update text controllers with fetched data
-        fullnameController.text = _profileData.fullname;
-        emailController.text = _profileData.email;
-        phoneController.text = _profileData.phone;
-        addressController.text = _profileData.address;
+  Future<void> _fetchUserData() async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc =
+            await _firestore.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          Map<String, dynamic> userData = userDoc.data()
+              as Map<String, dynamic>; // Access fields using data() method
+          setState(() {
+            _profileData.fullname = userData['name'];
+            _profileData.email = userData['email'];
+            _profileData.phone = userData['phone'];
+            _profileData.address = userData['address'];
+            _profileData.imagePath = userData['profileImg'];
+          });
+          // Update text controllers with fetched data
+          fullnameController.text = _profileData.fullname;
+          emailController.text = _profileData.email;
+          phoneController.text = _profileData.phone;
+          addressController.text = _profileData.address;
+        }
       }
+    } catch (e) {
+      print('Error fetching user data: $e');
     }
-  } catch (e) {
-    print('Error fetching user data: $e');
   }
-}
-
 
   Future<void> _getImage() async {
     final picker = ImagePicker();
@@ -244,6 +244,7 @@ class _ProfilePageState extends State<Profile> {
       TextFormField(
         controller: phoneController,
         keyboardType: TextInputType.phone,
+        maxLength: 10,
         decoration: InputDecoration(labelText: 'Phone Number'),
       ),
       const SizedBox(height: 8.0),
