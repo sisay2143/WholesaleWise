@@ -173,7 +173,7 @@ class _LoginViewState extends State<LoginView> {
                               MaterialPageRoute(
                                   builder: (context) => HomepageManager()),
                             );
-                          } else if (userRole == 'wholesale distributor') {
+                          } else if (userRole == 'warehouse staff') {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(

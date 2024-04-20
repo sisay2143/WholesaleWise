@@ -105,7 +105,7 @@ class HomePage extends StatelessWidget {
             switch (userRole) {
               case 'manager':
                 return HomepageManager();
-              case 'wholesale distributor':
+              case 'warehouse staff':
                 return HomepageWH();
               case 'sales personnel':
                 // return HomepageSales();

@@ -155,7 +155,7 @@ class AccountPage extends StatelessWidget {
              StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('users')
-                .where('role', whereIn: ['wholesale distributor', 'sales personnel'])
+                .where('role', whereIn: ['warehouse staff', 'sales personnel'])
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
