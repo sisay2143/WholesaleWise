@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/Views/Manager/HomeManager.dart';
+import 'package:untitled/Views/Warehouse-staff/Notification.dart';
 import 'package:untitled/Views/login.dart';
 import 'FCard.dart';
 import 'Myslider.dart';
@@ -21,7 +22,22 @@ class _HomePageWarehouseState extends State<HomePageWarehouse> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Warehouse staff Home'),
+        backgroundColor: Colors.white,
+        title: Text('Warehouse staff Home', style: TextStyle(color: Colors.black),),
+         actions: [
+          IconButton(
+            color: Color.fromARGB(255, 3, 94, 147),
+            icon: Icon(Icons.notifications),
+            onPressed: () {
+              // Implement your notification logic here
+
+               Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationWarehouse()),
+              );
+            },
+          ),
+        ],
         // actions: [
         //   TextButton(
         //     onPressed: () {

@@ -41,12 +41,12 @@ class ImageTextCard extends StatelessWidget {
           child: Card(
             margin: const EdgeInsets.all(7),
             color:
-                isTrue ? Colors.white : const Color.fromRGBO(107, 59, 225, 1),
+                isTrue ? Colors.white : const Color.fromARGB(255, 3, 94, 147),
             shape: RoundedRectangleBorder(
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
                 side: isTrue
                     ? const BorderSide(
-                        width: 4, color: Color.fromRGBO(107, 59, 225, 1))
+                        width: 4, color: Color.fromARGB(255, 3, 94, 147),)
                     : BorderSide.none),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -70,7 +70,7 @@ class ImageTextCard extends StatelessWidget {
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: isTrue
-                              ? Color.fromARGB(255, 45, 28, 154)
+                              ? Color.fromARGB(255, 3, 94, 147)
                               : Colors.white),
                       textAlign: TextAlign.center,
                     ),

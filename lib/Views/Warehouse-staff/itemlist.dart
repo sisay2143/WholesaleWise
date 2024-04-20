@@ -1,11 +1,7 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 // import 'CreateUser.dart';
-import '../login.dart';
 // import 'profilescreen.dart';
 // import 'HomeManager.dart';
-
-
 import 'ItemsCard.dart';
 // import 'package:go_router/go_router.dart';
 import 'package:untitled/models/products.dart';
@@ -74,7 +70,7 @@ class ItemsListState extends State<ItemsList> {
             ),
             const Text(
               "All Items",
-              textAlign: TextAlign.center, style: TextStyle(color: Colors.black),
+              textAlign: TextAlign.center, style: TextStyle(color: Colors.white),
             ),
           ],
         ),
