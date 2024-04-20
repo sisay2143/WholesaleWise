@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-// import 'CreateUser.dart';
-// import 'profilescreen.dart';
-// import 'HomeManager.dart';
 import 'ItemsCard.dart';
-// import 'package:go_router/go_router.dart';
 import 'package:untitled/models/products.dart';
 import 'package:untitled/Services/database.dart';
 
@@ -74,13 +70,7 @@ class ItemsListState extends State<ItemsList> {
             ),
           ],
         ),
-        // automaticallyImplyLeading: false, // Disable default back button
-        // leading: IconButton(
-        //   icon: Icon(Icons.arrow_back),
-        //   onPressed: () {
-        //     Navigator.of(context).pop(); // Navigate back
-        //   },
-        // ),
+       
       ),
       resizeToAvoidBottomInset: false,
       body: isLoading

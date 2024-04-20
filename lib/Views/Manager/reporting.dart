@@ -15,6 +15,7 @@ class Reporting extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 3, 94, 147),
         title: Text('Inventory report'),
       ),
       body: SingleChildScrollView(

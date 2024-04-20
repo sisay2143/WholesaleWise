@@ -19,10 +19,6 @@ Future<void> main() async {
     runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      // theme: ThemeData(
-      //   colorScheme: ColorScheme.fromSeed(
-      //       seedColor: Color.fromARGB(255, 249, 248, 250)),
-      // ),
       home: LoginView(),
     ));
   }).catchError((error) {
@@ -105,7 +101,7 @@ class HomePage extends StatelessWidget {
             switch (userRole) {
               case 'manager':
                 return HomepageManager();
-              case 'wholesale distributor':
+              case 'warehouse staff':
                 return HomepageWH();
               case 'sales personnel':
                 // return HomepageSales();

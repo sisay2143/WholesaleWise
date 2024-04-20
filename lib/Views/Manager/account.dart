@@ -11,186 +11,192 @@ class AccountPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 2,
-        title: Center(
-          child: Text(
+        appBar: AppBar(
+          elevation: 4,
+          title: Text(
             'Accounts',
             style: TextStyle(
               color: Colors.black, // Set your desired color here
             ),
           ),
-        ),
-        backgroundColor: Colors.white,
-        actions: [
-          PopupMenuButton<String>(
-            color: Color.fromARGB(255, 2, 86, 128),
-            onSelected: (String result) {
-              if (result == 'settings') {
-                // Navigate to settings page
-              } else if (result == 'logout') {
-                FirebaseAuth.instance.signOut(); //
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginView()),
-                );
-                // Implement logout functionality
-              }
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              PopupMenuItem<String>(
-                value: 'settings',
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: const Color.fromARGB(255, 243, 145, 33),
-                  ),
-                  child: ListTile(
-                    leading: Icon(Icons.settings, color: Colors.white),
-                    title: Text(
-                      'Settings',
-                      style: TextStyle(color: Colors.white),
+          backgroundColor: Colors.white,
+          actions: [
+            PopupMenuButton<String>(
+              color: Color.fromARGB(255, 2, 86, 128),
+              onSelected: (String result) {
+                if (result == 'settings') {
+                  // Navigate to settings page
+                } else if (result == 'logout') {
+                  FirebaseAuth.instance.signOut(); //
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginView()),
+                  );
+                  // Implement logout functionality
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                PopupMenuItem<String>(
+                  value: 'settings',
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: const Color.fromARGB(255, 243, 145, 33),
+                    ),
+                    child: ListTile(
+                      leading: Icon(Icons.settings, color: Colors.white),
+                      title: Text(
+                        'Settings',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'logout',
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Color.fromARGB(255, 209, 94, 86),
+                    ),
+                    child: ListTile(
+                      leading: Icon(Icons.logout, color: Colors.white),
+                      title: Text(
+                        'Log Out',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  height: 15,
+                ),
+              ],
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                color: Color.fromARGB(255, 3, 94, 147),
+                padding: EdgeInsets.all(15),
+                child: Column(
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 140,
+                        height: 190,
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 223, 211, 211),
+                          shape: BoxShape.circle,
+                        ),
+                        
+                        child: Icon(
+                          Icons.person,
+                          size: 70,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Profile()),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          primary: Color.fromARGB(255, 223, 211, 211),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 17, vertical: 15),
+                          child: Text(
+                            'Manage My Account',
+                            style: TextStyle(fontSize: 16, color: Colors.black),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CreateUser()),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          primary: Color.fromARGB(255, 223, 211, 211),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 50, vertical: 15),
+                          child: Text(
+                            'Add a User',
+                            style: TextStyle(fontSize: 16, color: Colors.black),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              PopupMenuItem<String>(
-                value: 'logout',
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.red,
-                  ),
-                  child: ListTile(
-                    leading: Icon(Icons.logout, color: Colors.white),
-                    title: Text(
-                      'Log Out',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-                height: 15,
+              SizedBox(height: 20),
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .where('role', whereIn: [
+                  'warehouse staff',
+                  'sales personnel'
+                ]).snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+                  final users = snapshot.data?.docs ?? [];
+                  return Column(
+                    children: users.map((userDoc) {
+                      final userData = userDoc.data() as Map<String, dynamic>;
+                      final String name = userData['name'] ?? 'No Name';
+                      final String email = userData['email'] ?? 'No Email';
+                      final String role = userData['role'] ?? 'No Role';
+                      final String profileImg =
+                          userData['profileImg'] ?? ''; // Add imageUrl
+                      final String phone = userData['phone'] ?? ''; // Add phone
+                      return _buildUserContainer(
+                        context,
+                        name,
+                        email,
+                        phone,
+                        profileImg,
+                        role,
+                      );
+                    }).toList(),
+                  );
+                },
               ),
             ],
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              color: Color.fromARGB(255, 3, 94, 147),
-              padding: EdgeInsets.all(15),
-              child: Column(
-                children: [
-                  Center(
-                    child: Container(
-                      width: 140,
-                      height: 190,
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 223, 211, 211),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.person,
-                        size: 70,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ProfileEditPage()),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        primary: Color.fromARGB(255, 223, 211, 211),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 17, vertical: 15),
-                        child: Text(
-                          'Manage My Account',
-                          style: TextStyle(fontSize: 16, color: Colors.black),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => CreateUser()),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        primary: Color.fromARGB(255, 223, 211, 211),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                        child: Text(
-                          'Add a User',
-                          style: TextStyle(fontSize: 16, color: Colors.black),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-             StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('users')
-                .where('role', whereIn: ['wholesale distributor', 'sales personnel'])
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              }
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
-              final users = snapshot.data?.docs ?? [];
-              return Column(
-                children: users.map((userDoc) {
-                  final userData = userDoc.data() as Map<String, dynamic>;
-                  final String name = userData['name'] ?? 'No Name';
-                  final String email = userData['email'] ?? 'No Email';
-                  final String role = userData['role'] ?? 'No Role';
-                  final String profileImg = userData['profileImg'] ?? ''; // Add imageUrl
-                  final String phone = userData['phone'] ?? ''; // Add phone
-                  return _buildUserContainer(
-                    context,
-                    name,
-                    email,
-                    phone,
-                    profileImg,
-                    role,
-                  );
-                }).toList(),
-              );
-            },
-          ),
-        ],
-      ),
-      )
-    );
+        ));
   }
 }
+
+
 
 Widget _buildUserContainer(
   BuildContext context,
@@ -201,7 +207,6 @@ Widget _buildUserContainer(
   String role,
 ) {
   return Container(
-    
     padding: EdgeInsets.all(16),
     margin: EdgeInsets.fromLTRB(20, 10, 20, 20),
     decoration: BoxDecoration(
@@ -237,10 +242,8 @@ Widget _buildUserContainer(
               ),
         SizedBox(width: 20),
         Column(
-          
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            
             Text(
               name,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -258,16 +261,15 @@ Widget _buildUserContainer(
               phone,
               style: TextStyle(fontSize: 16),
             ),
-            
           ],
         ),
       ],
     ),
   );
 }
-  void main() {
-    runApp(MaterialApp(
-      home: AccountPage(),
-    ));
-  }
 
+void main() {
+  runApp(MaterialApp(
+    home: AccountPage(),
+  ));
+}
