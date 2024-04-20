@@ -1,16 +1,27 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'CreateUser.dart';
+import '../login.dart';
+import 'profilescreen.dart';
+import 'HomeManager.dart';
+
+
+
 import 'ItemsCard.dart';
+// import 'package:go_router/go_router.dart';
 import 'package:untitled/models/products.dart';
 import 'package:untitled/Services/database.dart';
 
-class itemList extends StatefulWidget {
-  const itemList({super.key});
+
+
+class ItemsScreen extends StatefulWidget {
+  const ItemsScreen({super.key});
 
   @override
-  State<itemList> createState() => _itemListState();
+  State<ItemsScreen> createState() => _ItemsScreenState();
 }
 
-class _itemListState extends State<itemList> {
+class _ItemsScreenState extends State<ItemsScreen> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
@@ -58,7 +69,7 @@ class ItemsListState extends State<ItemsList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 3, 94, 147),
+        backgroundColor: Color.fromRGBO(107, 59, 225, 1),
         title: Row(
           children: [
             SizedBox(
@@ -66,11 +77,17 @@ class ItemsListState extends State<ItemsList> {
             ),
             const Text(
               "All Items",
-              textAlign: TextAlign.center, style: TextStyle(color: Colors.white),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
-       
+        // automaticallyImplyLeading: false, // Disable default back button
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop(); // Navigate back
+          },
+        ),
       ),
       resizeToAvoidBottomInset: false,
       body: isLoading
