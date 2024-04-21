@@ -58,6 +58,9 @@ class _AddProductFormState extends State<AddProductForm> {
           await uploadTask.whenComplete(() => null);
       final String imageUrl = await taskSnapshot.ref.getDownloadURL();
 
+      // Generate timestamp
+      final DateTime timestamp = DateTime.now();
+
       await _firestore
           .collection('users')
           .doc(user!.uid)
@@ -67,10 +70,10 @@ class _AddProductFormState extends State<AddProductForm> {
         'pid': newProduct.pid,
         'quantity': newProduct.quantity,
         'price': newProduct.price,
-        // 'distributor': newProduct.distributor,
         'category': newProduct.category,
         'expiredate': newProduct.expiredate,
-        'imageUrl': imageUrl, // Store the image URL
+        'imageUrl': imageUrl,
+        'timestamp': timestamp, // Add timestamp field
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -252,7 +255,7 @@ class _AddProductFormState extends State<AddProductForm> {
                   },
                 ),
                 SizedBox(height: 16.0),
-               
+
                 SizedBox(height: 16.0),
                 // Define _selectedCategory here
 
@@ -305,11 +308,10 @@ class _AddProductFormState extends State<AddProductForm> {
                         pid: _pidController.text,
                         quantity: int.parse(_quantityController.text),
                         price: double.parse(_priceController.text),
-                        // distributor: _distributorController.text,
-                        // category: _categoryController.text,
                         category: selectedCategory ?? 'Default Category',
                         expiredate: _expiredateController.text,
-                        imageUrl: _pickedImage.path, // Use _pickedImage path
+                        imageUrl: _pickedImage.path,
+                        timestamp: DateTime.now(), // Add timestamp
                       );
 
                       _addProductToFirestore(newProduct);
@@ -334,8 +336,8 @@ class _AddProductFormState extends State<AddProductForm> {
                   },
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(
-                         Color.fromARGB(255, 3, 94, 147),
-                        ),
+                      Color.fromARGB(255, 3, 94, 147),
+                    ),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),

@@ -341,6 +341,7 @@ class _EditScreenState extends State<EditScreen> {
                         imageUrl: _pickedImage.path,
                         expiredate: _expiredateController.text,
                         pid: _pidController.text,
+                         timestamp: DateTime.now(), 
                       );
                       await ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

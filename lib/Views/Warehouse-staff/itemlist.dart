@@ -38,7 +38,10 @@ class _itemListState extends State<ItemsList> {
 
   void _filterProducts(String query) {
     setState(() {
-      _filteredProducts = _products.where((product) => product.name.toLowerCase().contains(query.toLowerCase())).toList();
+      _filteredProducts = _products
+          .where((product) =>
+              product.name.toLowerCase().contains(query.toLowerCase()))
+          .toList();
     });
   }
 
@@ -48,17 +51,12 @@ class _itemListState extends State<ItemsList> {
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * .20,
-            ),
-            const Text(
-              "All Items",
-              textAlign: TextAlign.center,
+            Text(
+              "Item List",
+              textAlign: TextAlign.left,
               style: TextStyle(color: Colors.white),
-            ),
-            const SizedBox(
-              width: 50.0,
             ),
             IconButton(
               icon: Icon(Icons.search),
@@ -72,7 +70,6 @@ class _itemListState extends State<ItemsList> {
             ),
           ],
         ),
-       
       ),
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
@@ -138,29 +135,36 @@ class DataSearch extends SearchDelegate<String> {
     );
   }
 
- @override
-Widget buildResults(BuildContext context) {
-  // If the search query is empty, display an empty container
-  if (query.isEmpty) {
-    return Container();
-  }
-  
-  final List<Product> matchedProducts = products.where((product) => product.name.toLowerCase().contains(query.toLowerCase())).toList();
+  @override
+  Widget buildResults(BuildContext context) {
+    // If the search query is empty, display an empty container
+    if (query.isEmpty) {
+      return Container();
+    }
 
-  // If there's a matched product, return ItemCard with its original appearance
-  if (matchedProducts.isNotEmpty) {
-    return ItmeCard(matchedProducts[0]); // Assuming you only want to display the first matched product
-  } else {
-    // If no matched product found, display a message
-    return Center(
-      child: Text("No results found"),
-    );
+    final List<Product> matchedProducts = products
+        .where((product) =>
+            product.name.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    // If there's a matched product, return ItemCard with its original appearance
+    if (matchedProducts.isNotEmpty) {
+      return ItmeCard(matchedProducts[
+          0]); // Assuming you only want to display the first matched product
+    } else {
+      // If no matched product found, display a message
+      return Center(
+        child: Text("No results found"),
+      );
+    }
   }
-}
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final List<Product> suggestionList = products.where((product) => product.name.toLowerCase().contains(query.toLowerCase())).toList();
+    final List<Product> suggestionList = products
+        .where((product) =>
+            product.name.toLowerCase().contains(query.toLowerCase()))
+        .toList();
 
     return ListView.builder(
       itemCount: suggestionList.length,
@@ -178,5 +182,3 @@ Widget buildResults(BuildContext context) {
 
   static of(BuildContext context) {}
 }
-
-

@@ -3,11 +3,10 @@ class Product {
   final String pid;
   final int quantity;
   final double price;
-  // final String distributor;
   final String category;
-  // final String category;
   final String imageUrl;
   final String expiredate;
+  final DateTime timestamp; // Add timestamp field
 
   Product({
     required this.name,
@@ -17,5 +16,6 @@ class Product {
     required this.imageUrl,
     required this.pid,
     required this.expiredate,
+    required this.timestamp, // Add timestamp parameter
   });
 }

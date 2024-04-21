@@ -12,7 +12,7 @@ class _CreateUserState extends State<CreateUser> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  String _selectedRole = 'wholesale distributor'; // Default role
+  String _selectedRole = 'warehouse staff'; // Default role
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -21,6 +21,7 @@ class _CreateUserState extends State<CreateUser> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 3, 94, 147),
         title: Text('Register New User'),
       ),
       body: Padding(
