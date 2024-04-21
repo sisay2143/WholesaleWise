@@ -35,6 +35,7 @@ class FirestoreService {
             category: data['category'],
             imageUrl: data['imageUrl'],
             pid: data['pid'],
+            timestamp: DateTime.now(), 
             expiredate: data['expiredate']);
       }).toList();
       return products;
@@ -105,6 +106,8 @@ class FirestoreService {
           category: data['category'] as String,
           imageUrl: data['imageUrl'] as String,
           expiredate: data['expiredate'] as String,
+          timestamp: DateTime.now(), 
+          
         );
       } else {
         throw Exception("Product with PID $pid not found");

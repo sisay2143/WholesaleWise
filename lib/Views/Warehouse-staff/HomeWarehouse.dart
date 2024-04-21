@@ -91,6 +91,7 @@ class _HomePageWarehouseState extends State<HomePageWarehouse> {
                           SizedBox(width: 10),
                           Expanded(
                             child: TextField(
+                              
                               decoration: InputDecoration(
                                 hintText: 'Search',
                                 border: InputBorder.none,

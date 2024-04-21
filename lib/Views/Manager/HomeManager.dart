@@ -10,7 +10,7 @@ import 'package:camera/camera.dart';
 import 'Salesreport.dart';
 import 'reporting.dart';
 import 'profit.dart';
-
+import 'approval.dart';
 Map<String, double> dataMap = {
   'Flutter': 3,
   'React': 3,
@@ -238,7 +238,7 @@ class HomeScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => itemList()),
+                              builder: (context) => ItemsList()),
                         );
                       },
                     ),
