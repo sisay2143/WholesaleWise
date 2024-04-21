@@ -129,4 +129,6 @@ class FirestoreService {
   // Update product status or other necessary actions
 }
 
+  searchProducts(String query) {}
+
 }
