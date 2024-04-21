@@ -3,29 +3,6 @@ import 'ItemsCard.dart';
 import 'package:untitled/models/products.dart';
 import 'package:untitled/Services/database.dart';
 
-<<<<<<< HEAD
-
-
-class itemList extends StatefulWidget {
-  const itemList({super.key});
-
-  @override
-  State<itemList> createState() => _itemListState();
-}
-
-class _itemListState extends State<itemList> {
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: ItemsList(),
-      ),
-    );
-  }
-}
-
-=======
->>>>>>> 7397c3478fc1fed4dfa796408f1e0cbf46ef832b
 class ItemsList extends StatefulWidget {
   const ItemsList({Key? key}) : super(key: key);
 
