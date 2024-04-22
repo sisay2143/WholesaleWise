@@ -33,7 +33,7 @@ class _detailscreenState extends State<detailscreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final name = widget.request['name'];
+    final name = widget.request['productName'];
     // final price = widget.request['price'];
     final quantity = widget.request['quantity'];
     // final imageUrl = widget.request['imageUrl'];
@@ -68,10 +68,10 @@ class _detailscreenState extends State<detailscreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 20.0),
-                      // Text(
-                        // 'Name: $name',
-                        // style: TextStyle(fontWeight: FontWeight.bold),
-                      // ),
+                      Text(
+                              'Name: $name',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                       SizedBox(height: 10.0),
                       // Text('Price: $price'),
                       SizedBox(height: 10.0),

@@ -15,6 +15,8 @@ class FirestoreService {
           .collection('products')
           .doc(productId)
           .update({'quantity': newQuantity});
+      print('DONE updating product quantity:');
+
     } catch (error) {
       print('Error updating product quantity: $error');
       throw error;

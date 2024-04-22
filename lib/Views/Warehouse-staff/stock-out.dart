@@ -5,7 +5,7 @@ import 'ItemsCard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'showDialog.dart';
+
 
 class StockOutPage extends StatefulWidget {
   @override
@@ -103,13 +103,13 @@ Future<void> sendApprovalRequest() async {
           });
 
           // Listen for approval response
-          listenForApprovalResponse();
-
           // Show a success message
           _showAlertDialog(
             'Request Sent',
             'Approval request for stock-out sent to manager.',
           );
+          listenForApprovalResponse();
+          print('approved succefully');
         } else {
           throw 'Manager UID not found.';
         }
@@ -125,8 +125,23 @@ Future<void> sendApprovalRequest() async {
   }
 }
 
+  // Update product quantity after approval
+  // Update product quantity after approval
+  Future<void> updateProductQuantity() async {
+    try {
+      final int newQuantity = _selectedProduct!.quantity - int.parse(_quantityController.text);
+      await _firestoreService.updateProductQuantity(_selectedProduct!.pid, newQuantity);
+      // Show success message or perform any other necessary actions
+      print(newQuantity);
+      print('quantity updated');
+    } catch (error) {
+      print('Error updating product quantity: $error');
+      _showAlertDialog('Error', 'Failed to update product quantity.');
+    }
+  }
 
-// Listen for approval response
+
+
 // Listen for approval response
 void listenForApprovalResponse() {
   FirebaseFirestore.instance
@@ -138,70 +153,18 @@ void listenForApprovalResponse() {
       // Check if the approval is granted
       final status = doc['status'];
       if (status == 'approved') {
-        // Update product quantity
-        _updateProductQuantity();
-        // Stop listening for further changes
-        snapshot.docChanges.forEach((change) {
-          if (change.type == DocumentChangeType.added) {
-            // Stop listening when a new document is added
-            return;
-          }
-        });
+        // Update product quantity after approval
+        updateProductQuantity();
+        print('product approved');
+        // Show success message or perform any other necessary actions
       } else if (status == 'rejected') {
         // Handle rejection if needed
-        // Stop listening for further changes
-        snapshot.docChanges.forEach((change) {
-          if (change.type == DocumentChangeType.added) {
-            // Stop listening when a new document is added
-            return;
-          }
-        });
       }
     });
   });
 }
 
 
-
-
-
-  // Update product quantity after approval
-  // Update product quantity after approval
-  // Future<void> updateProductQuantity() async {
-  //   try {
-  //     final int newQuantity = _selectedProduct!.quantity - int.parse(_quantityController.text);
-  //     await _firestoreService.updateProductQuantity(_selectedProduct!.pid, newQuantity);
-  //     // Show success message or perform any other necessary actions
-  //   } catch (error) {
-  //     print('Error updating product quantity: $error');
-  //     _showAlertDialog('Error', 'Failed to update product quantity.');
-  //   }
-  // }
-
-
-  Future<void> _updateProductQuantity() async {
-  if (_selectedOption == null ||
-      _quantityController.text.isEmpty ||
-      _selectedProduct == null) {
-    return; // Ensure both option, quantity, and product are selected
-  }
-
-  final int quantity = int.parse(_quantityController.text);
-
-  if (_selectedOption == "Sold Out" || _selectedOption == "Worn Out") {
-    if (quantity > _selectedProduct!.quantity) {
-      _showAlertDialog("Error", "Quantity is greater than available stock.");
-      return;
-    }
-    if (_selectedOption == "Sold Out") {
-      await registerTransaction();
-      await sendApprovalRequest();
-    }
-  }
-
-  // Don't update the product quantity directly here
-  // Handle the approval process instead
-}
 
 
   void _showAlertDialog(String title, String message) {
@@ -327,7 +290,7 @@ void listenForApprovalResponse() {
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: _updateProductQuantity,
+                  onPressed: sendApprovalRequest,
                   child: Text('Send Approval Request'),
                   style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(

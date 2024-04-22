@@ -47,7 +47,7 @@ class ApprovalList extends StatelessWidget {
             final request = requests[index];
             final productId = request['productId'];
             final quantity = request['quantity'];
-            final name = request['name'];
+            final name = request['productName'];
             final price = 100000;       // Replace with dynamic data if available
             final imageUrl = 'lib/assets/images/shoe1.jpg'; // Replace with dynamic data if available
 
