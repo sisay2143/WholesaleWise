@@ -62,8 +62,8 @@ class _StockOutPageState extends State<StockOutPage> {
 
     await transactionsRef.add({
       'productId': _selectedProduct!.pid,
-      'quantitySold': int.parse(_quantityController.text),
-      'saleDate': FieldValue.serverTimestamp(),
+      'quantityRemoved': int.parse(_quantityController.text),
+      'removedDate': FieldValue.serverTimestamp(),
     });
 
     // Update product status or other necessary actions
@@ -84,7 +84,8 @@ Future<void> sendApprovalRequest() async {
           // Fetch additional product details
           String productName = _selectedProduct!.name;
           String productId = _selectedProduct!.pid;
-          // String expiryDate = _selectedProduct!.expiryDate ?? '';
+          String expiredate = _selectedProduct!.expiredate;
+          String imageUrl = _selectedProduct!.imageUrl;
 
           // Send an approval request to the manager with additional fields
           await FirebaseFirestore.instance
@@ -93,7 +94,8 @@ Future<void> sendApprovalRequest() async {
               .set({
             'productName': productName,
             'productId': productId,
-            // 'expiryDate': expiryDate,
+            'expiredate': expiredate,
+            'imageUrl': imageUrl,
             'quantity': int.parse(_quantityController.text),
             'requestedBy': FirebaseAuth.instance.currentUser!.uid,
             'requestedAt': FieldValue.serverTimestamp(),
