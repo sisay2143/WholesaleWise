@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// import 'package:untitled/Views/Warehouse-staff/HomeWarehouse.dart';
+import 'package:untitled/Views/Warehouse-staff/warehouse.dart';
 import 'ItemsCard.dart';
 import 'package:untitled/models/products.dart';
 import 'package:untitled/Services/database.dart';
@@ -50,26 +52,33 @@ class _itemListState extends State<ItemsList> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Item List",
-              textAlign: TextAlign.left,
-              style: TextStyle(color: Colors.white),
-            ),
-            IconButton(
-              icon: Icon(Icons.search),
-              color: Colors.white,
-              onPressed: () {
-                showSearch(
-                  context: context,
-                  delegate: DataSearch(_filteredProducts),
-                );
-              },
-            ),
-          ],
+        title: Text(
+          "Item List",
+          style: TextStyle(color: Colors.white),
         ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Colors.white,
+          onPressed: () {
+            Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomepageWH()),
+                  );
+                // Navigate to the home page using the named route '/'
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            color: Colors.white,
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: DataSearch(_filteredProducts),
+              );
+            },
+          ),
+        ],
       ),
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(

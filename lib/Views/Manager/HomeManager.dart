@@ -362,17 +362,17 @@ Future<void> openCamera(BuildContext context) async {
 }
 // }
 
-class Approval extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey[200],
-      child: Center(
-        child: Text('approval Records '),
-      ),
-    );
-  }
-}
+// class Approval extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       color: Colors.grey[200],
+//       child: Center(
+//         child: Text('approval Records '),
+//       ),
+//     );
+//   }
+// }
 
 class IconWithBackground extends StatelessWidget {
   final IconData iconData;

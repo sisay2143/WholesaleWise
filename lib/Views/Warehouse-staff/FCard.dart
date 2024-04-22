@@ -6,6 +6,7 @@ import 'package:untitled/Views/Warehouse-staff/AddItem.dart';
 // import 'package:inventory/ItemsList.dart';
 // import 'package:inventory/reporScreen.dart';
 // import 'package:inventory/stockout.dart';
+import 'stock-out.dart';
 
 class ImageTextCard extends StatelessWidget {
   final String imagePath;
@@ -34,7 +35,7 @@ class ImageTextCard extends StatelessWidget {
               } else if (text == "Inventory") {
                 return AddProductForm();
               } else {
-                return AddProductForm();
+                return StockOutPage();
               }
             }));
           },

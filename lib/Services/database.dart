@@ -83,18 +83,26 @@ class FirestoreService {
     }
   }
 
-  Future<Product> getProductByPid(String pid) async {
-    try {
-      print("searching ****************** $pid");
-      final querySnapshot = await _firestore
+ Future<Product?> getProductByPidOrName(String pidOrName) async {
+  try {
+    final querySnapshot = await _firestore
+        .collection('users')
+        .doc(user!.uid)
+        .collection('products')
+        .where('pid', isEqualTo: pidOrName)
+        .get();
+
+    // If no documents found by PID, attempt to fetch by name
+    if (querySnapshot.docs.isEmpty) {
+      final querySnapshotByName = await _firestore
           .collection('users')
           .doc(user!.uid)
           .collection('products')
-          .where('pid', isEqualTo: pid)
+          .where('name', isEqualTo: pidOrName)
           .get();
 
-      if (querySnapshot.docs.isNotEmpty) {
-        final documentSnapshot = querySnapshot.docs[0];
+      if (querySnapshotByName.docs.isNotEmpty) {
+        final documentSnapshot = querySnapshotByName.docs[0];
         Map<String, dynamic> data =
             documentSnapshot.data() as Map<String, dynamic>;
         return Product(
@@ -106,16 +114,33 @@ class FirestoreService {
           category: data['category'] as String,
           imageUrl: data['imageUrl'] as String,
           expiredate: data['expiredate'] as String,
-          timestamp: DateTime.now(), 
-          
+          timestamp: DateTime.now(),
         );
-      } else {
-        throw Exception("Product with PID $pid not found");
       }
-    } catch (e) {
-      throw Exception("Error fetching product: $e");
+    } else {
+      final documentSnapshot = querySnapshot.docs[0];
+      Map<String, dynamic> data =
+          documentSnapshot.data() as Map<String, dynamic>;
+      return Product(
+        pid: data['pid'] as String,
+        name: data['name'] as String,
+        quantity: data['quantity'] as int,
+        price: data['price'] as double,
+        // distributor: data['distributor'] as String,
+        category: data['category'] as String,
+        imageUrl: data['imageUrl'] as String,
+        expiredate: data['expiredate'] as String,
+        timestamp: DateTime.now(),
+      );
     }
+
+    // If no documents found by PID or name, return null
+    return null;
+  } catch (e) {
+    throw Exception("Error fetching product: $e");
   }
+}
+
 
   Future<void> registerTransaction(String productId, int quantitySold) async {
   final transactionsRef = _firestore.collection('users').doc(user!.uid).collection('transactions');

@@ -18,4 +18,17 @@ class Product {
     required this.expiredate,
     required this.timestamp, // Add timestamp parameter
   });
+
+  factory Product.fromMap(Map<String, dynamic> map) {
+    return Product(
+      pid: map['pid'],
+      name: map['name'],
+      quantity: map['quantity'],
+      price: map['price'],
+      category: map['category'],
+      imageUrl: map['imageUrl'],
+      expiredate: map['expiredate'].toDate(),
+      timestamp: map['timestamp'],
+    );
+  }
 }

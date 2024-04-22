@@ -1,10 +1,10 @@
 import "package:flutter/material.dart";
-import 'package:untitled/Views/Manager/productDetail.dart';
+// import 'package:untitled/Views/ware/productDetail.dart';
 // import 'package:untitled/EditScreen.dart';
 // import 'package:untitled/productDetail.dart';
 // import 'productDetail.dart';
 import 'package:untitled/models/products.dart' as pmodel;
-
+import 'productDetail.dart';
 class ItmeCard extends StatelessWidget {
   // final String imagePath;
   // final String name;
