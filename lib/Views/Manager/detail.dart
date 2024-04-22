@@ -230,6 +230,9 @@
 // }
 
 
+// ignore_for_file: prefer_const_constructors
+
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -247,32 +250,7 @@ class _detailscreenState extends State<detailscreen> {
     try {
       // Update Firestore document to mark request as approved
       await request.reference.update({'status': 'approved'});
-
-      // Get product details
-      final productId = request['productId'];
-      final quantity = request['quantity'];
-
-      // Fetch current product details from Firestore
-      final productDoc = await FirebaseFirestore.instance
-          .collection('products')
-          .doc(productId)
-          .get();
-
-      // Calculate new quantity
-      final currentQuantity = productDoc['quantity'];
-      final newQuantity = currentQuantity - quantity;
-
-      // Update product quantity in Firestore
-      await FirebaseFirestore.instance
-          .collection('products')
-          .doc(productId)
-          .update({'quantity': newQuantity});
-
-      // Perform additional actions if needed
-      // For example: Send notifications, log transaction, etc.
-      // Additional actions here...
-
-      print('Approval request for $productId approved. Product quantity updated.');
+      print('Approval request approved.');
     } catch (error) {
       print('Error approving request: $error');
       // Handle error appropriately
@@ -287,6 +265,11 @@ class _detailscreenState extends State<detailscreen> {
 
   @override
   Widget build(BuildContext context) {
+    // final name = widget.request['name'];
+    // final price = widget.request['price'];
+    final quantity = widget.request['quantity'];
+    // final imageUrl = widget.request['imageUrl'];
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Product Details'),
@@ -302,12 +285,12 @@ class _detailscreenState extends State<detailscreen> {
               children: [
                 Container(
                   margin: EdgeInsets.fromLTRB(15, 15, 20, 20),
-                  child: Image.asset(
-                    'lib/assets/images/shoe1.jpg',
-                    width: 150,
-                    height: 150,
-                    fit: BoxFit.cover,
-                  ),
+                  // child: Image.asset(
+                  //   imageUrl,
+                  //   width: 150,
+                  //   height: 150,
+                  //   fit: BoxFit.cover,
+                  // ),
                   width: 150,
                   height: 150,
                 ),
@@ -317,14 +300,14 @@ class _detailscreenState extends State<detailscreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 20.0),
-                      Text(
-                        'Name:  Phone',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                      // Text(
+                        // 'Name: $name',
+                        // style: TextStyle(fontWeight: FontWeight.bold),
+                      // ),
                       SizedBox(height: 10.0),
-                      Text('Price: 100000'),
+                      // Text('Price: $price'),
                       SizedBox(height: 10.0),
-                      Text('Quantity: 10'),
+                      Text('Quantity: $quantity'),
                       SizedBox(height: 10.0),
                       SizedBox(height: 30.0),
                     ],

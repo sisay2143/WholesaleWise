@@ -69,7 +69,6 @@ class _StockOutPageState extends State<StockOutPage> {
     // Update product status or other necessary actions
   }
 Future<void> sendApprovalRequest() async {
-  // Get the manager role from Firestore and send an approval request
   try {
     final DocumentSnapshot<Map<String, dynamic>> userDoc =
         await FirebaseFirestore.instance
@@ -82,17 +81,27 @@ Future<void> sendApprovalRequest() async {
       if (role == 'manager') {
         final String? managerUid = userDoc.id; // Use the document ID as manager UID
         if (managerUid != null) {
-          // Send an approval request to the manager
+          // Fetch additional product details
+          String productName = _selectedProduct!.name;
+          String productId = _selectedProduct!.pid;
+          // String expiryDate = _selectedProduct!.expiryDate ?? '';
+
+          // Send an approval request to the manager with additional fields
           await FirebaseFirestore.instance
               .collection('approval_requests')
               .doc()
               .set({
-            'productId': _selectedProduct!.pid,
+            'productName': productName,
+            'productId': productId,
+            // 'expiryDate': expiryDate,
             'quantity': int.parse(_quantityController.text),
             'requestedBy': FirebaseAuth.instance.currentUser!.uid,
             'requestedAt': FieldValue.serverTimestamp(),
             'managerUid': managerUid,
           });
+
+          // Listen for approval response
+          listenForApprovalResponse();
 
           // Show a success message
           _showAlertDialog(
@@ -115,29 +124,83 @@ Future<void> sendApprovalRequest() async {
 }
 
 
+// Listen for approval response
+// Listen for approval response
+void listenForApprovalResponse() {
+  FirebaseFirestore.instance
+      .collection('approval_requests')
+      .where('productId', isEqualTo: _selectedProduct!.pid)
+      .snapshots()
+      .listen((snapshot) {
+    snapshot.docs.forEach((doc) {
+      // Check if the approval is granted
+      final status = doc['status'];
+      if (status == 'approved') {
+        // Update product quantity
+        _updateProductQuantity();
+        // Stop listening for further changes
+        snapshot.docChanges.forEach((change) {
+          if (change.type == DocumentChangeType.added) {
+            // Stop listening when a new document is added
+            return;
+          }
+        });
+      } else if (status == 'rejected') {
+        // Handle rejection if needed
+        // Stop listening for further changes
+        snapshot.docChanges.forEach((change) {
+          if (change.type == DocumentChangeType.added) {
+            // Stop listening when a new document is added
+            return;
+          }
+        });
+      }
+    });
+  });
+}
+
+
+
+
+
+  // Update product quantity after approval
+  // Update product quantity after approval
+  // Future<void> updateProductQuantity() async {
+  //   try {
+  //     final int newQuantity = _selectedProduct!.quantity - int.parse(_quantityController.text);
+  //     await _firestoreService.updateProductQuantity(_selectedProduct!.pid, newQuantity);
+  //     // Show success message or perform any other necessary actions
+  //   } catch (error) {
+  //     print('Error updating product quantity: $error');
+  //     _showAlertDialog('Error', 'Failed to update product quantity.');
+  //   }
+  // }
+
+
   Future<void> _updateProductQuantity() async {
-    if (_selectedOption == null ||
-        _quantityController.text.isEmpty ||
-        _selectedProduct == null) {
-      return; // Ensure both option, quantity, and product are selected
-    }
-
-    final int quantity = int.parse(_quantityController.text);
-
-    if (_selectedOption == "Sold Out" || _selectedOption == "Worn Out") {
-      if (quantity > _selectedProduct!.quantity) {
-        _showAlertDialog("Error", "Quantity is greater than available stock.");
-        return;
-      }
-      if (_selectedOption == "Sold Out") {
-        await registerTransaction();
-        await sendApprovalRequest();
-      }
-    }
-
-    // Don't update the product quantity directly here
-    // Handle the approval process instead
+  if (_selectedOption == null ||
+      _quantityController.text.isEmpty ||
+      _selectedProduct == null) {
+    return; // Ensure both option, quantity, and product are selected
   }
+
+  final int quantity = int.parse(_quantityController.text);
+
+  if (_selectedOption == "Sold Out" || _selectedOption == "Worn Out") {
+    if (quantity > _selectedProduct!.quantity) {
+      _showAlertDialog("Error", "Quantity is greater than available stock.");
+      return;
+    }
+    if (_selectedOption == "Sold Out") {
+      await registerTransaction();
+      await sendApprovalRequest();
+    }
+  }
+
+  // Don't update the product quantity directly here
+  // Handle the approval process instead
+}
+
 
   void _showAlertDialog(String title, String message) {
     showDialog(

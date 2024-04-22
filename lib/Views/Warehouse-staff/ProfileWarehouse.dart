@@ -135,6 +135,7 @@ class _ProfilePageState extends State<Profile> {
       appBar: AppBar(
         title: Text('Profile'),
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
+         automaticallyImplyLeading: false, 
         actions: [
           TextButton(
             onPressed: () {

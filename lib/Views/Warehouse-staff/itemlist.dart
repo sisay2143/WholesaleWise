@@ -52,21 +52,22 @@ class _itemListState extends State<ItemsList> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
+         automaticallyImplyLeading: false, 
         title: Text(
           "Item List",
           style: TextStyle(color: Colors.white),
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          color: Colors.white,
-          onPressed: () {
-            Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomepageWH()),
-                  );
-                // Navigate to the home page using the named route '/'
-          },
-        ),
+        // leading: IconButton(
+        //   icon: Icon(Icons.arrow_back),
+        //   color: Colors.white,
+        //   onPressed: () {
+        //     Navigator.push(
+        //             context,
+        //             MaterialPageRoute(builder: (context) => HomepageWH()),
+        //           );
+        //         // Navigate to the home page using the named route '/'
+        //   },
+        // ),
         actions: [
           IconButton(
             icon: Icon(Icons.search),

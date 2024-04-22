@@ -68,7 +68,7 @@ class _EditScreenState extends State<EditScreen> {
     _pidController.dispose();
     _categoryController.dispose();
     _expiredateController.dispose();
-    _distributorController.dispose();
+    // _distributorController.dispose();
 
     super.dispose();
   }
@@ -229,25 +229,25 @@ class _EditScreenState extends State<EditScreen> {
                 },
               ),
               SizedBox(height: 16.0),
-              TextFormField(
-                controller: _distributorController,
-                decoration: const InputDecoration(
-                    labelText: "Distributer",
-                    labelStyle:
-                        TextStyle(color: Color.fromRGBO(107, 59, 225, 1)),
-                    focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: Color.fromRGBO(107, 59, 225, 1))),
-                    enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Color.fromRGBO(107, 59, 225, 1)))),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a distributor';
-                  }
-                  return null;
-                },
-              ),
+              // TextFormField(
+              //   controller: _distributorController,
+              //   decoration: const InputDecoration(
+              //       labelText: "Distributer",
+              //       labelStyle:
+              //           TextStyle(color: Color.fromRGBO(107, 59, 225, 1)),
+              //       focusedBorder: OutlineInputBorder(
+              //           borderSide:
+              //               BorderSide(color: Color.fromRGBO(107, 59, 225, 1))),
+              //       enabledBorder: OutlineInputBorder(
+              //           borderSide: BorderSide(
+              //               color: Color.fromRGBO(107, 59, 225, 1)))),
+              //   validator: (value) {
+              //     if (value == null || value.isEmpty) {
+              //       return 'Please enter a distributor';
+              //     }
+              //     return null;
+              //   },
+              // ),
               SizedBox(height: 16.0),
               TextFormField(
                 controller: _categoryController,
@@ -330,25 +330,25 @@ class _EditScreenState extends State<EditScreen> {
                     }
 
                     try {
-                      await _firestoreService.updateProduct(
-                          widget.cuProduct.pid, updatedProductData);
-                      Product updatedProduct = Product(
-                        name: _nameController.text,
-                        quantity: int.parse(_quantityController.text),
-                        price: double.parse(_priceController.text),
-                        // distributor: _distributorController.text,
-                        category: _categoryController.text,
-                        imageUrl: _pickedImage.path,
-                        expiredate: _expiredateController.text,
-                        pid: _pidController.text,
-                         timestamp: DateTime.now(), 
-                      );
+                      // await _firestoreService.updateProduct(
+                      //     widget.cuProduct.pid, updatedProductData);
+                      // Product updatedProduct = Product(
+                      //   name: _nameController.text,
+                      //   quantity: int.parse(_quantityController.text),
+                      //   price: double.parse(_priceController.text),
+                      //   // distributor: _distributorController.text,
+                      //   category: _categoryController.text,
+                      //   imageUrl: _pickedImage.path,
+                      //   expiredate: _expiredateController.text,
+                      //   pid: _pidController.text,
+                      //    timestamp: DateTime.now(), 
+                      // );
                       await ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('Product updated successfully'),
                         ),
                       );
-                      Navigator.pop(context, updatedProduct);
+                      // Navigator.pop(context, updatedProduct);
                     } catch (error) {
                       print('Error updating product: $error');
                       ScaffoldMessenger.of(context).showSnackBar(

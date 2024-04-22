@@ -7,6 +7,7 @@ import 'package:charts_flutter/flutter.dart'
 import 'ProfileWarehouse.dart';
 import 'HomeWarehouse.dart';
 import 'itemlist.dart';
+import 'messages.dart';
 // import 'QRScanScreen.dart';
 
 class HomepageWH extends StatefulWidget {
@@ -22,7 +23,7 @@ class _HomepageWHState extends State<HomepageWH> {
   static List<Widget> _widgetOptions = <Widget>[
     HomePageWarehouse(),
     ItemsList(),
-    unKnown(),
+    // Requests(),
     // Add Sales Records and Profile widgets here
     Profile(),
   ];
@@ -73,7 +74,7 @@ class _HomepageWHState extends State<HomepageWH> {
                   width:
                       30, // Adjust the width and height according to your preference
                   height: 30,
-                  child: Icon(Icons.check_circle,
+                  child: Icon(Icons.view_list,
                       size: 30), // Adjust the size property of the Icon widget
                 ),
                 label: 'itemList',
@@ -85,10 +86,10 @@ class _HomepageWHState extends State<HomepageWH> {
                   width:
                       30, // Adjust the width and height according to your preference
                   height: 30,
-                  child: Icon(Icons.analytics,
+                  child: Icon(Icons.approval_outlined,
                       size: 30), // Adjust the size property of the Icon widget
                 ),
-                label: 'unKnown',
+                label: 'Requests',
               ),
 
               BottomNavigationBarItem(
@@ -113,7 +114,6 @@ class _HomepageWHState extends State<HomepageWH> {
         ));
   }
 }
-
 
 class unKnown extends StatelessWidget {
   @override

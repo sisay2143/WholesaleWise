@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_declarations, sort_child_properties_last
 
 
 
@@ -96,7 +96,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 void main() {
   runApp(Approval());
 }
-
+// 
 class Approval extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -135,8 +135,8 @@ class ApprovalList extends StatelessWidget {
             final request = requests[index];
             final productId = request['productId'];
             final quantity = request['quantity'];
-            final name = 'Phone'; // Replace with dynamic data if available
-            final price = 100000; // Replace with dynamic data if available
+            final name = 'Phone';      // Replace with dynamic data if available
+            final price = 100000;       // Replace with dynamic data if available
             final imageUrl = 'lib/assets/images/shoe1.jpg'; // Replace with dynamic data if available
 
             return Card(

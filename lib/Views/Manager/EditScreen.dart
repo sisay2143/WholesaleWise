@@ -330,25 +330,25 @@ class _EditScreenState extends State<EditScreen> {
                     }
 
                     try {
-                      await _firestoreService.updateProduct(
-                          widget.cuProduct.pid, updatedProductData);
-                      Product updatedProduct = Product(
-                        name: _nameController.text,
-                        quantity: int.parse(_quantityController.text),
-                        price: double.parse(_priceController.text),
-                        // distributor: _distributorController.text,
-                        category: _categoryController.text,
-                        imageUrl: _pickedImage.path,
-                        expiredate: _expiredateController.text,
-                        pid: _pidController.text,
-                         timestamp: DateTime.now(), 
-                      );
+                      // await _firestoreService.updateProduct(
+                          // widget.cuProduct.pid, updatedProductData);
+                      // Product updatedProduct = Product(
+                      //   name: _nameController.text,
+                      //   quantity: int.parse(_quantityController.text),
+                      //   price: double.parse(_priceController.text),
+                      //   // distributor: _distributorController.text,
+                      //   category: _categoryController.text,
+                      //   imageUrl: _pickedImage.path,
+                      //   expiredate: _expiredateController.text,
+                      //   pid: _pidController.text,
+                      //    timestamp: DateTime.now(), 
+                      // );
                       await ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('Product updated successfully'),
                         ),
                       );
-                      Navigator.pop(context, updatedProduct);
+                      // Navigator.pop(context, updatedProduct);
                     } catch (error) {
                       print('Error updating product: $error');
                       ScaffoldMessenger.of(context).showSnackBar(

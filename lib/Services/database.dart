@@ -1,108 +1,62 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import "package:untitled/models/products.dart";
-import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
-// import "package:flutter/material.dart";
-// import 'package:untitled/models/usermodel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-class DatabaseService {
-  final CollectionReference products =
-      FirebaseFirestore.instance.collection("products");
-}
+import 'package:untitled/models/products.dart';
 
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? user = FirebaseAuth.instance.currentUser;
 
-  Future<void> _CheckUser() async {}
-
-  Future<List<Product>> getProducts() async {
+  Future<void> updateProductQuantity(
+      String productId, int newQuantity) async {
     try {
-      QuerySnapshot snapshot = await _firestore
+      await _firestore
           .collection('users')
           .doc(user!.uid)
           .collection('products')
-          .get();
-      List<Product> products = snapshot.docs.map((doc) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        return Product(
-            name: data['name'],
-            quantity: data['quantity'],
-            price: data['price'],
-            // distributor: data['distributor'],
-            category: data['category'],
-            imageUrl: data['imageUrl'],
-            pid: data['pid'],
-            timestamp: DateTime.now(), 
-            expiredate: data['expiredate']);
-      }).toList();
-      return products;
-    } catch (e) {
-      print('Error fetching products: $e');
-      return [];
-    }
-  }
-
-  Future<void> updateProduct(
-      String pid, Map<String, dynamic> updatedData) async {
-    try {
-      QuerySnapshot querySnapshot = await _firestore
-          .collection('users')
-          .doc(user!.uid)
-          .collection('products')
-          .where('pid', isEqualTo: pid)
-          .get();
-      if (querySnapshot.docs.isNotEmpty) {
-        await querySnapshot.docs.first.reference.update(updatedData);
-      }
+          .doc(productId)
+          .update({'quantity': newQuantity});
     } catch (error) {
-      print("not update");
+      print('Error updating product quantity: $error');
       throw error;
     }
   }
 
-  Future<void> deleteProduct(String pid) async {
+  Future<Product?> getProductByPidOrName(String pidOrName) async {
     try {
-      final productsCollection =
-          _firestore.collection('users').doc(user!.uid).collection('products');
-      final snapshot =
-          await productsCollection.where('pid', isEqualTo: pid).get();
-
-      if (snapshot.docs.isNotEmpty) {
-        final productDoc = snapshot.docs.first;
-        await productDoc.reference.delete();
-        print("Product deleted successfully");
-      } else {
-        print("Product not found");
-      }
-    } catch (e) {
-      print("Error deleting product: $e");
-      throw Exception("Error deleting product");
-    }
-  }
-
- Future<Product?> getProductByPidOrName(String pidOrName) async {
-  try {
-    final querySnapshot = await _firestore
-        .collection('users')
-        .doc(user!.uid)
-        .collection('products')
-        .where('pid', isEqualTo: pidOrName)
-        .get();
-
-    // If no documents found by PID, attempt to fetch by name
-    if (querySnapshot.docs.isEmpty) {
-      final querySnapshotByName = await _firestore
+      final querySnapshot = await _firestore
           .collection('users')
           .doc(user!.uid)
           .collection('products')
-          .where('name', isEqualTo: pidOrName)
+          .where('pid', isEqualTo: pidOrName)
           .get();
 
-      if (querySnapshotByName.docs.isNotEmpty) {
-        final documentSnapshot = querySnapshotByName.docs[0];
+      // If no documents found by PID, attempt to fetch by name
+      if (querySnapshot.docs.isEmpty) {
+        final querySnapshotByName = await _firestore
+            .collection('users')
+            .doc(user!.uid)
+            .collection('products')
+            .where('name', isEqualTo: pidOrName)
+            .get();
+
+        if (querySnapshotByName.docs.isNotEmpty) {
+          final documentSnapshot = querySnapshotByName.docs[0];
+          Map<String, dynamic> data =
+              documentSnapshot.data() as Map<String, dynamic>;
+          return Product(
+            pid: data['pid'] as String,
+            name: data['name'] as String,
+            quantity: data['quantity'] as int,
+            price: data['price'] as double,
+            // distributor: data['distributor'] as String,
+            category: data['category'] as String,
+            imageUrl: data['imageUrl'] as String,
+            expiredate: data['expiredate'] as String,
+            timestamp: DateTime.now(),
+          );
+        }
+      } else {
+        final documentSnapshot = querySnapshot.docs[0];
         Map<String, dynamic> data =
             documentSnapshot.data() as Map<String, dynamic>;
         return Product(
@@ -117,43 +71,56 @@ class FirestoreService {
           timestamp: DateTime.now(),
         );
       }
-    } else {
-      final documentSnapshot = querySnapshot.docs[0];
-      Map<String, dynamic> data =
-          documentSnapshot.data() as Map<String, dynamic>;
-      return Product(
-        pid: data['pid'] as String,
-        name: data['name'] as String,
-        quantity: data['quantity'] as int,
-        price: data['price'] as double,
-        // distributor: data['distributor'] as String,
-        category: data['category'] as String,
-        imageUrl: data['imageUrl'] as String,
-        expiredate: data['expiredate'] as String,
-        timestamp: DateTime.now(),
-      );
+
+      // If no documents found by PID or name, return null
+      return null;
+    } catch (e) {
+      print("Error fetching product: $e");
+      throw Exception("Error fetching product: $e");
     }
-
-    // If no documents found by PID or name, return null
-    return null;
-  } catch (e) {
-    throw Exception("Error fetching product: $e");
   }
-}
+  Future<List<Product>> getProducts() async {
+    try {
+      QuerySnapshot snapshot = await _firestore
+          .collection('users')
+          .doc(user!.uid)
+          .collection('products')
+          .get();
+      List<Product> products = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return Product(
+          name: data['name'],
+          quantity: data['quantity'],
+          price: data['price'],
+          // distributor: data['distributor'],
+          category: data['category'],
+          imageUrl: data['imageUrl'],
+          pid: data['pid'],
+          timestamp: DateTime.now(),
+          expiredate: data['expiredate'],
+        );
+      }).toList();
+      return products;
+    } catch (e) {
+      print('Error fetching products: $e');
+      return [];
+    }
+  }
 
 
-  Future<void> registerTransaction(String productId, int quantitySold) async {
-  final transactionsRef = _firestore.collection('users').doc(user!.uid).collection('transactions');
+  Future<void> registerTransaction(
+      String productId, int quantitySold) async {
+    final transactionsRef = _firestore
+        .collection('users')
+        .doc(user!.uid)
+        .collection('transactions');
 
-  await transactionsRef.add({
-    'productId': productId,
-    'quantitySold': quantitySold,
-    'saleDate': FieldValue.serverTimestamp(),
-  });
+    await transactionsRef.add({
+      'productId': productId,
+      'quantitySold': quantitySold,
+      'saleDate': FieldValue.serverTimestamp(),
+    });
 
-  // Update product status or other necessary actions
-}
-
-  searchProducts(String query) {}
-
+    // Update product status or other necessary actions
+  }
 }
