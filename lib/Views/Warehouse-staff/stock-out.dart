@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:untitled/Services/database.dart';
 import 'package:untitled/models/products.dart';
@@ -5,7 +7,7 @@ import 'ItemsCard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'dart:async'; 
 
 class StockOutPage extends StatefulWidget {
   @override
@@ -59,15 +61,21 @@ class _StockOutPageState extends State<StockOutPage> {
         .collection('users')
         .doc(user!.uid)
         .collection('transactions');
-
     await transactionsRef.add({
       'productId': _selectedProduct!.pid,
       'quantityRemoved': int.parse(_quantityController.text),
       'removedDate': FieldValue.serverTimestamp(),
     });
-
     // Update product status or other necessary actions
   }
+
+
+
+// Modified sendApprovalRequest function
+// Completer to wait for approval response
+Completer<void>? listenForApprovalResponseCompleter;
+
+// Modified sendApprovalRequest function
 Future<void> sendApprovalRequest() async {
   try {
     final DocumentSnapshot<Map<String, dynamic>> userDoc =
@@ -79,19 +87,19 @@ Future<void> sendApprovalRequest() async {
     if (userDoc.exists) {
       final String? role = userDoc.data()?['role'];
       if (role == 'manager') {
-        final String? managerUid = userDoc.id; // Use the document ID as manager UID
+        final String? managerUid = userDoc.id;
         if (managerUid != null) {
-          // Fetch additional product details
           String productName = _selectedProduct!.name;
           String productId = _selectedProduct!.pid;
           String expiredate = _selectedProduct!.expiredate;
           String imageUrl = _selectedProduct!.imageUrl;
 
-          // Send an approval request to the manager with additional fields
+          // Initialize the Completer
+          listenForApprovalResponseCompleter = Completer<void>();
+
           await FirebaseFirestore.instance
               .collection('approval_requests')
-              .doc()
-              .set({
+              .add({
             'productName': productName,
             'productId': productId,
             'expiredate': expiredate,
@@ -100,16 +108,16 @@ Future<void> sendApprovalRequest() async {
             'requestedBy': FirebaseAuth.instance.currentUser!.uid,
             'requestedAt': FieldValue.serverTimestamp(),
             'managerUid': managerUid,
+            'status': 'pending',
           });
 
-          // Listen for approval response
-          // Show a success message
           _showAlertDialog(
             'Request Sent',
             'Approval request for stock-out sent to manager.',
           );
-          listenForApprovalResponse();
-          print('approved succefully');
+
+          // Wait for approval response before proceeding
+          await listenForApprovalResponse;
         } else {
           throw 'Manager UID not found.';
         }
@@ -125,9 +133,36 @@ Future<void> sendApprovalRequest() async {
   }
 }
 
+// Function to listen for approval response
+void listenForApprovalResponse() {
+  FirebaseFirestore.instance
+      .collection('approval_requests')
+      .where('productId', isEqualTo: _selectedProduct!.pid)
+      .snapshots()
+      .listen((snapshot) {
+    snapshot.docs.forEach((doc) {
+      // Check if the approval is granted
+      final status = doc['status'];
+      print(status);
+      if (status == 'approved') {
+         print('almost updating');
+        // Update product quantity after approval
+        _updateProductQuantity();
+        print('product updated');
+        // Complete the Completer to signal that the approval response is received
+        listenForApprovalResponseCompleter!.complete();
+      } else if (status == 'rejected') {
+        // Handle rejection if needed
+      }
+    });
+  });
+}
+
+
+
+
   // Update product quantity after approval
-  // Update product quantity after approval
-  Future<void> updateProductQuantity() async {
+  Future<void> _updateProductQuantity() async {
     try {
       final int newQuantity = _selectedProduct!.quantity - int.parse(_quantityController.text);
       await _firestoreService.updateProductQuantity(_selectedProduct!.pid, newQuantity);
@@ -140,29 +175,30 @@ Future<void> sendApprovalRequest() async {
     }
   }
 
-
-
 // Listen for approval response
-void listenForApprovalResponse() {
-  FirebaseFirestore.instance
-      .collection('approval_requests')
-      .where('productId', isEqualTo: _selectedProduct!.pid)
-      .snapshots()
-      .listen((snapshot) {
-    snapshot.docs.forEach((doc) {
-      // Check if the approval is granted
-      final status = doc['status'];
-      if (status == 'approved') {
-        // Update product quantity after approval
-        updateProductQuantity();
-        print('product approved');
-        // Show success message or perform any other necessary actions
-      } else if (status == 'rejected') {
-        // Handle rejection if needed
-      }
-    });
-  });
-}
+// void listenForApprovalResponse() {
+//   FirebaseFirestore.instance
+//       .collection('approval_requests')
+//       .where('productId', isEqualTo: _selectedProduct!.pid)
+//       .snapshots()
+//       .listen((snapshot) {
+//     snapshot.docs.forEach((doc) {
+//       // Check if the approval is granted
+//       final status = doc['status'];
+//         print('waiting for approval ');
+
+//       if (status == 'approved') {
+//         // Update product quantity after approval
+//         _updateProductQuantity();
+//         print('product approved');
+//         // Show success message or perform any other necessary actions
+//       } else if (status == 'rejected') {
+//         // Handle rejection if needed
+//       }
+//     });
+//   });
+// }
+
 
 
 

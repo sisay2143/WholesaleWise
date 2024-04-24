@@ -6,20 +6,58 @@ class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? user = FirebaseAuth.instance.currentUser;
 
-  Future<void> updateProductQuantity(
-      String productId, int newQuantity) async {
+//  Future<void> updateProductQuantity(
+//   String productId, int newQuantity) async {
+//   try {
+//     await _firestore
+//         .collection('users')
+//         .doc(user!.uid)
+//         .collection('products')
+//         .doc('productId')
+//         .update({'quantity': newQuantity}); // Correct field name is 'quantity'
+//     print('DONE updating product quantity:');
+
+//   } catch (error) {
+//     print('Error updating product quantity: $error');
+//     throw error;
+//   }
+// }
+
+Future<void> updateProductQuantity(String pid, int newQuantity) async {
     try {
-      await _firestore
+      QuerySnapshot querySnapshot = await _firestore
           .collection('users')
           .doc(user!.uid)
           .collection('products')
-          .doc(productId)
-          .update({'quantity': newQuantity});
-      print('DONE updating product quantity:');
-
+          .where('pid', isEqualTo: pid)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        await querySnapshot.docs.first.reference..update({'quantity': newQuantity});
+      }
     } catch (error) {
-      print('Error updating product quantity: $error');
+      print("not update");
       throw error;
+    }
+  }
+
+
+Future<void> deleteProduct(String pid) async {
+    try {
+      final productsCollection =
+          _firestore.collection('users').doc(user!.uid).collection('products');
+      final snapshot =
+          await productsCollection.where('pid', isEqualTo: pid).get();
+
+      if (snapshot.docs.isNotEmpty) {
+        final productDoc = snapshot.docs.first;
+        await productDoc.reference.delete();
+        print("Product deleted successfully");
+      } else {
+        print("Product not found");
+      }
+    } catch (e) {
+      print("Error deleting product: $e");
+      throw Exception("Error deleting product");
     }
   }
 
