@@ -154,7 +154,18 @@ class AccountPage extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+              Column(
+                children: [
+                  SizedBox(height: 20),
+                  Text(
+                    '    Users',
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('users')
@@ -193,7 +204,8 @@ class AccountPage extends StatelessWidget {
               ),
             ],
           ),
-        ));
+        )
+        );
   }
 }
 

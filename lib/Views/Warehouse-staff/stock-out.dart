@@ -93,6 +93,7 @@ Future<void> sendApprovalRequest() async {
           String productId = _selectedProduct!.pid;
           String expiredate = _selectedProduct!.expiredate;
           String imageUrl = _selectedProduct!.imageUrl;
+          double price = _selectedProduct!.price;
 
           // Initialize the Completer
           listenForApprovalResponseCompleter = Completer<void>();
@@ -105,6 +106,7 @@ Future<void> sendApprovalRequest() async {
             'expiredate': expiredate,
             'imageUrl': imageUrl,
             'quantity': int.parse(_quantityController.text),
+            'price': price, // Adding the price field
             'requestedBy': FirebaseAuth.instance.currentUser!.uid,
             'requestedAt': FieldValue.serverTimestamp(),
             'managerUid': managerUid,
