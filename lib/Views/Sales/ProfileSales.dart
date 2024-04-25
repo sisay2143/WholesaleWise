@@ -55,21 +55,22 @@ class _ProfilePageState extends State<Profile> {
     _fetchUserData(); // Fetch user data when the profile page is initialized
   }
 
- Future<void> _fetchUserData() async {
+  Future<void> _fetchUserData() async {
   try {
     User? user = _auth.currentUser;
     if (user != null) {
       DocumentSnapshot userDoc =
           await _firestore.collection('users').doc(user.uid).get();
       if (userDoc.exists) {
-        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>; // Access fields using data() method
+        Map<String, dynamic> userData =
+            userDoc.data() as Map<String, dynamic>;
         print('Fetched user data: $userData');
         setState(() {
-          _profileData.fullname = userData['name'];
-          _profileData.email = userData['email'];
-          _profileData.phone = userData['phone'];
-          _profileData.address = userData['address'];
-          _profileData.imagePath = userData['profileImg'];
+          _profileData.fullname = userData['name'] ?? '';
+          _profileData.email = userData['email'] ?? '';
+          _profileData.phone = userData['phone'] ?? '';
+          _profileData.address = userData['address'] ?? '';
+          _profileData.imagePath = userData['profileImg']?.toString() ?? ''; // Cast to String or use default value if null
         });
         // Update text controllers with fetched data
         fullnameController.text = _profileData.fullname;
@@ -155,7 +156,8 @@ class _ProfilePageState extends State<Profile> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: _isEditMode ? _buildEditState() : _buildSavedState(),
+            children:
+                _isEditMode ? _buildEditState() : _buildSavedState(),
           ),
         ),
       ),
@@ -193,27 +195,29 @@ class _ProfilePageState extends State<Profile> {
   }
 
   Widget _buildProfileImage() {
-    return GestureDetector(
-      onTap: () async {
-        await _getImage();
-        if (_image != null) {
-          await _uploadImage();
-        }
-      },
-      child: CircleAvatar(
-        radius: 80,
-        backgroundColor: Colors.grey[200],
-        backgroundImage: _image != null ? FileImage(_image!) : null,
-        child: _image == null
-            ? Icon(
-                Icons.person,
-                size: 80,
-                color: Colors.grey[600],
-              )
-            : null,
-      ),
-    );
-  }
+  return GestureDetector(
+    onTap: () async {
+      await _getImage();
+      if (_image != null) {
+        await _uploadImage();
+      }
+    },
+    child: CircleAvatar(
+      radius: 80,
+      backgroundColor: Colors.grey[200],
+      backgroundImage: _image != null ? FileImage(_image!) : _profileData.imagePath.isNotEmpty ? NetworkImage(_profileData.imagePath) as ImageProvider : null, // Cast NetworkImage to ImageProvider
+      child: _image == null && _profileData.imagePath.isEmpty // Check if both _image and _profileData.imagePath are empty
+          ? Icon(
+              Icons.person,
+              size: 80,
+              color: Colors.grey[600],
+            )
+          : null,
+    ),
+  );
+}
+
+
 
   Widget _buildInfoRow(String label, String value) {
     return Row(
@@ -232,38 +236,40 @@ class _ProfilePageState extends State<Profile> {
   }
 
   List<Widget> _buildEditState() {
-    return [
-      _buildProfileImage(),
-      const SizedBox(height: 16.0),
-      TextFormField(
-        controller: fullnameController,
-        decoration: InputDecoration(labelText: 'Full Name'),
+  return [
+    _buildProfileImage(),
+    const SizedBox(height: 16.0),
+    TextFormField(
+      controller: fullnameController,
+      decoration: InputDecoration(labelText: 'Full Name'),
+    ),
+    const SizedBox(height: 8.0),
+    TextFormField(
+      controller: phoneController,
+      keyboardType: TextInputType.phone,
+      maxLength: 10, // Maximum length of the phone number
+      decoration: InputDecoration(labelText: 'Phone Number'),
+    ),
+    const SizedBox(height: 8.0),
+    TextFormField(
+      controller: addressController,
+      decoration: InputDecoration(labelText: 'Address'),
+    ),
+    const SizedBox(height: 16.0),
+    ElevatedButton(
+      onPressed: _saveChanges,
+      style: ElevatedButton.styleFrom(
+        primary: Color.fromARGB(255, 3, 94, 147),
+        padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
       ),
-      const SizedBox(height: 8.0),
-      TextFormField(
-        controller: phoneController,
-        keyboardType: TextInputType.phone,
-        decoration: InputDecoration(labelText: 'Phone Number'),
+      child: Text(
+        'Save Profile',
+        style: TextStyle(fontSize: 18.0),
       ),
-      const SizedBox(height: 8.0),
-      TextFormField(
-        controller: addressController,
-        decoration: InputDecoration(labelText: 'Address'),
-      ),
-      const SizedBox(height: 16.0),
-      ElevatedButton(
-        onPressed: _saveChanges,
-        style: ElevatedButton.styleFrom(
-          primary: Color.fromARGB(255, 3, 94, 147),
-          padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
-        ),
-        child: Text(
-          'Save Profile',
-          style: TextStyle(fontSize: 18.0),
-        ),
-      ),
-    ];
-  }
+    ),
+  ];
+}
+
 
   Future<void> _saveChanges() async {
     try {

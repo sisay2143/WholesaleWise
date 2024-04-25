@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:untitled/Views/login.dart';
-// import 'package:untitled/Views/login.dart';
-import 'package:untitled/firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterView extends StatefulWidget {
-  const RegisterView({super.key});
+  const RegisterView({Key? key});
 
   @override
   State<RegisterView> createState() => _RegisterViewState();
@@ -20,9 +17,6 @@ class _RegisterViewState extends State<RegisterView> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Color _passwordBorderColor =
       Colors.grey; // Initial border color for password input field
-
-  String? _errorMessage; // Variable to hold error message
-  bool _showErrorMessage = false;
 
   @override
   void initState() {
@@ -56,6 +50,7 @@ class _RegisterViewState extends State<RegisterView> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Create User'),
+         backgroundColor: Color.fromARGB(255, 3, 94, 147),
         actions: [
           TextButton(
             onPressed: () {
@@ -75,97 +70,95 @@ class _RegisterViewState extends State<RegisterView> {
           ),
         ],
       ),
-      body: Column(
-              children: [
-                TextField(
-                    controller: _email,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(hintText: 'Enter email here')),
-                // TextField(
-                //     controller: _password,
-                //     obscureText: true,
-                //     enableSuggestions: false,
-                //     autocorrect: false,
-                //     keyboardType: TextInputType.text,
-                //     decoration: InputDecoration(hintText: 'Enter password here')),
-                TextField(
-                  controller: _password,
-                  onSubmitted: _checkPasswordStrength,
-                  obscureText: true,
-                  enableSuggestions: false,
-                  autocorrect: false,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    hintText: 'Enter password here',
-                    // Set border color dynamically based on password strength
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(color: _passwordBorderColor),
-                    ),
-                  ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: _email,
+              decoration: InputDecoration(
+                labelText: 'Email',
+                hintText: 'Enter email here',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
-                TextButton(
-                  onPressed: () async {
-                    setState(() {
-                      _errorMessage = null; // Reset error message
-                      _showErrorMessage = false; // Reset flag
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextField(
+              controller: _password,
+              obscureText: true,
+              onChanged: _checkPasswordStrength,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                hintText: 'Enter password here',
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(color: _passwordBorderColor),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextField(
+              controller: _name,
+              decoration: InputDecoration(
+                labelText: 'Name',
+                hintText: 'Enter your name',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () async {
+                  final email = _email.text;
+                  final password = _password.text;
+                  try {
+                    final UserCredential = await FirebaseAuth.instance
+                        .createUserWithEmailAndPassword(
+                      email: email,
+                      password: password,
+                    );
+
+                    await _firestore
+                        .collection('users')
+                        .doc(UserCredential.user!.uid)
+                        .set({
+                      'name': _name.text,
+                      'email': _email.text,
+                      'role': 'manager',
                     });
-                    final email = _email.text;
-                    final password = _password.text;
-                    try {
-                      final UserCredential = await FirebaseAuth.instance
-                          .createUserWithEmailAndPassword(
-                        email: email,
-                        password: password,
-                      );
-
-                      await _firestore
-                          .collection('users')
-                          .doc(UserCredential.user!.uid)
-                          .set({
-                        'name': _name.text,
-                        'email': _email.text,
-                        'role': 'manager',
-                      });
-                      print(UserCredential);
-                    } on FirebaseAuthException catch (e) {
-                      if (e.code == 'weak-password') {
-                        _errorMessage = 'Weak password';
-                        print('weak password');
-                      } else if (e.code == 'email-already-in-use') {
-                        _errorMessage = 'Email is already in use';
-                        print('Email is already in use');
-                      } else if (e.code == 'invalid-email') {
-                        _errorMessage = 'Invalid email entered';
-                        print('invalid email entered');
-                      } else {
-                        _errorMessage = 'An error occurred: ${e.message}';
-                      }
-                      _showErrorMessage =
-                          true; // Set flag to show error message
-
-                      // });
-                      Future.delayed(const Duration(seconds: 3), () {
-                        setState(() {
-                          _showErrorMessage = false; // Hide error message
-                        });
-                      });
-                      // });
-                    }
-
                     print(UserCredential);
-                  },
-                  child: Text('Register'),
+                  } on FirebaseAuthException catch (e) {
+                    final errorMessage = e.message ?? 'An error occurred';
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(errorMessage),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Text('Register', style: TextStyle(fontSize: 18.0)),
                 ),
-                if (_errorMessage != null)
-                  Text(
-                    _errorMessage ?? '',
-                    style: const TextStyle(color: Colors.red),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    
                   ),
-              ],)
-            );
-          }
-          // );
-  // }
+                     primary: Color.fromARGB(255, 4, 98, 175),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

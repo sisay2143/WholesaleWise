@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use, prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:untitled/Views/Manager/approval.dart';
@@ -145,7 +147,7 @@ class _detailscreenState extends State<detailscreen> {
                         primary: Colors.green,
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(10.0),
+                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                         child: Text('Approve'),
                       ),
                     ),
@@ -157,7 +159,7 @@ class _detailscreenState extends State<detailscreen> {
                         primary: Colors.red,
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(10.0),
+                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                         child: Text('Reject'),
                       ),
                     ),

@@ -1,14 +1,14 @@
-// ignore_for_file: use_build_context_synchronously, prefer_const_constructors
+// ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:untitled/Views/RegisterManager.dart';
 import 'package:untitled/Views/Warehouse-staff/warehouse.dart';
 import 'Sales/HomeSales.dart';
-import 'warehouse-staff/HomeWarehouse.dart';
+// import 'warehouse-staff/HomeWarehouse.dart';
 import 'ForgotPassword.dart';
 import 'Manager/HomeManager.dart';
-// import 'Manager/HomeManager.dart';
 
 class LoginView extends StatefulWidget {
   @override
@@ -22,6 +22,7 @@ class _LoginViewState extends State<LoginView> {
   bool _isPasswordVisible = false;
   String? _emailErrorText;
   String? _passwordErrorText;
+  bool _isLoading = false; // New variable to track loading state
 
   @override
   void initState() {
@@ -54,7 +55,6 @@ class _LoginViewState extends State<LoginView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // SizedBox(height: 40.0),
                           Text(
                             '    Hello, Dear',
                             style: TextStyle(
@@ -79,9 +79,6 @@ class _LoginViewState extends State<LoginView> {
                 ],
               ),
             ),
-            // SizedBox(
-            //   height: 120,
-            // ),
             Container(
               decoration: BoxDecoration(
                 color: Colors.blue,
@@ -101,7 +98,6 @@ class _LoginViewState extends State<LoginView> {
                         icon: Icons.email,
                         errorText: _emailErrorText,
                       ),
-                      //container
                     ),
                     SizedBox(height: 16.0),
                     Container(
@@ -128,101 +124,124 @@ class _LoginViewState extends State<LoginView> {
                       ),
                     ),
                     SizedBox(height: 24.0),
-                    ElevatedButton(
-                      onPressed: () async {
-                        // Clear previous error messages
-                        setState(() {
-                          _emailErrorText = null;
-                          _passwordErrorText = null;
-                        });
-
-                        final email = _email.text.trim();
-                        final password = _password.text.trim();
-
-                        // Check for empty fields
-                        if (email.isEmpty) {
+                    Container(
+                       width: double.infinity, 
+                      child: ElevatedButton(
+                        onPressed: () async {
                           setState(() {
-                            _emailErrorText = 'Email is required';
+                            _emailErrorText = null;
+                            _passwordErrorText = null;
                           });
-                          return;
-                        }
-
-                        if (password.isEmpty) {
-                          setState(() {
-                            _passwordErrorText = 'Password is required';
-                          });
-                          return;
-                        }
-
-                        try {
-                          final UserCredential = await FirebaseAuth.instance
-                              .signInWithEmailAndPassword(
-                            email: email,
-                            password: password,
-                          );
-
-                          final userDoc = await _firestore
-                              .collection('users')
-                              .doc(UserCredential.user!.uid)
-                              .get();
-                          final userRole = userDoc['role'];
-
-                          if (userRole == 'manager') {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomepageManager()),
-                            );
-                          } else if (userRole == 'warehouse staff') {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomepageWH()),
-                            );
-                          } else if (userRole == 'sales personnel') {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomepageSales()),
-                            );
-                          } else {
-                            print('Unknown role: $userRole');
+                          final email = _email.text.trim();
+                          final password = _password.text.trim();
+                    
+                          if (email.isEmpty) {
+                            setState(() {
+                              _emailErrorText = 'Email is required';
+                            });
+                            return;
                           }
-                        } catch (e) {
-                          setState(() {
-                            if (mounted) {
-                              _emailErrorText = 'Invalid email ';
-                              _passwordErrorText = 'Invalid  password';
+                    
+                          if (password.isEmpty) {
+                            setState(() {
+                              _passwordErrorText = 'Password is required';
+                            });
+                            return;
+                          }
+                    
+                          try {
+                            setState(() {
+                              _isLoading = true;
+                            });
+                    
+                            final userCredential = await FirebaseAuth.instance
+                                .signInWithEmailAndPassword(
+                              email: email,
+                              password: password,
+                            );
+                    
+                            final userDoc = await _firestore
+                                .collection('users')
+                                .doc(userCredential.user!.uid)
+                                .get();
+                            final userRole = userDoc['role'];
+                    
+                            if (userRole == 'manager') {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomepageManager()),
+                              );
+                            } else if (userRole == 'warehouse staff') {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomepageWH()),
+                              );
+                            } 
+                             else if (userRole == 'sales personnel') {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomepageSales()),
+                              );
+                              
                             }
-                          });
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 20.0, horizontal: 120.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        primary: Color.fromARGB(255, 4, 98, 175),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Login',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            else if (userRole == 'admin') {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RegisterView()),
+                              );
+                              
+                            } else {
+                              print('Unknown role: $userRole');
+                            }
+                          } catch (e) {
+                            setState(() {
+                              if (mounted) {
+                                _emailErrorText = 'Invalid email ';
+                                _passwordErrorText = 'Invalid  password';
+                              }
+                            });
+                          } finally {
+                            setState(() {
+                              _isLoading = false;
+                            });
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 20.0,
+                              horizontal:
+                                  120), // Remove horizontal padding to extend button width
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                        ],
+                          primary: Color.fromARGB(255, 4, 98, 175),
+                        ),
+                        child: _isLoading
+                            ? SizedBox(
+                                width: 20.0,
+                                height: 20.0,
+                                child: CircularProgressIndicator(
+                                  strokeWidth:
+                                      2.0, // Adjust the strokeWidth as needed
+                                ),
+                              )
+                            : Text(
+                                'Login',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                       ),
                     ),
                     SizedBox(height: 14.0),
                     GestureDetector(
                       onTap: () {
-                        // Forgot password logic
                         Navigator.push(
                           context,
                           MaterialPageRoute(

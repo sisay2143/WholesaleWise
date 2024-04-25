@@ -27,100 +27,100 @@ Future<void> main() async {
 }
 
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key});
+// class HomePage extends StatelessWidget {
+//   const HomePage({Key? key});
 
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: Firebase.initializeApp(),
-      builder: (context, AsyncSnapshot<void> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Scaffold(
-            // appBar: AppBar(title: Text('Home')),
-            body: Center(child: CircularProgressIndicator()),
-          );
-        } else if (snapshot.hasError) {
-          return Scaffold(
-            // appBar: AppBar(title: Text('Home')),
-            body: Center(child: Text('Error initializing Firebase')),
-          );
-        } else {
-          return StreamBuilder<User?>(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Scaffold(
-                  // appBar: AppBar(title: Text('Home')),
-                  body: Center(child: CircularProgressIndicator()),
-                );
-              } else if (snapshot.hasError) {
-                return Scaffold(
-                  // appBar: AppBar(title: Text('Home')),
-                  body: Center(child: Text('Error fetching user')),
-                );
-              } else {
-                final user = snapshot.data;
-                if (user != null) {
-                  if (user.emailVerified) {
-                    // Navigate to the home page if the user is logged in and email is verified
-                    return _buildHomePage(user.uid);
-                  } else {
-                    // Show the email verification view if the user's email is not verified
-                    return _buildHomePage(user.uid);;
-                  }
-                } else {
-                  // Show the login view if the user is not logged in
-                  return LoginView();
-                }
-              }
-            },
-          );
-        }
-      },
-    );
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return FutureBuilder(
+//       future: Firebase.initializeApp(),
+//       builder: (context, AsyncSnapshot<void> snapshot) {
+//         if (snapshot.connectionState == ConnectionState.waiting) {
+//           return Scaffold(
+//             // appBar: AppBar(title: Text('Home')),
+//             body: Center(child: CircularProgressIndicator()),
+//           );
+//         } else if (snapshot.hasError) {
+//           return Scaffold(
+//             // appBar: AppBar(title: Text('Home')),
+//             body: Center(child: Text('Error initializing Firebase')),
+//           );
+//         } else {
+//           return StreamBuilder<User?>(
+//             stream: FirebaseAuth.instance.authStateChanges(),
+//             builder: (context, snapshot) {
+//               if (snapshot.connectionState == ConnectionState.waiting) {
+//                 return Scaffold(
+//                   // appBar: AppBar(title: Text('Home')),
+//                   body: Center(child: CircularProgressIndicator()),
+//                 );
+//               } else if (snapshot.hasError) {
+//                 return Scaffold(
+//                   // appBar: AppBar(title: Text('Home')),
+//                   body: Center(child: Text('Error fetching user')),
+//                 );
+//               } else {
+//                 final user = snapshot.data;
+//                 if (user != null) {
+//                   if (user.emailVerified) {
+//                     // Navigate to the home page if the user is logged in and email is verified
+//                     return _buildHomePage(user.uid);
+//                   } else {
+//                     // Show the email verification view if the user's email is not verified
+//                     return _buildHomePage(user.uid);;
+//                   }
+//                 } else {
+//                   // Show the login view if the user is not logged in
+//                   return LoginView();
+//                 }
+//               }
+//             },
+//           );
+//         }
+//       },
+//     );
+//   }
 
-  Widget _buildHomePage(String userId) {
-    return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance.collection('users').doc(userId).get(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Scaffold(
-            // appBar: AppBar(title: Text('Home')),
-            body: Center(child: CircularProgressIndicator()),
-          );
-        } else if (snapshot.hasError) {
-          return Scaffold(
-            // appBar: AppBar(title: Text('Home')),
-            body: Center(child: Text('Error fetching user data')),
-          );
-        } else {
-          final userRole = snapshot.data!.get('role') as String?;
-          if (userRole != null) {
-            switch (userRole) {
-              case 'manager':
-                return HomepageManager();
-              case 'warehouse staff':
-                return HomepageWH();
-              case 'sales personnel':
-                // return HomepageSales();
-              case 'admin':
-                return RegisterView();
-              default:
-                return Scaffold(
-                  // appBar: AppBar(title: Text('Home')),
-                  body: Center(child: Text('Unknown role: $userRole')),
-                );
-            }
-          } else {
-            return Scaffold(
-              // appBar: AppBar(title: Text('Home')),
-              body: Center(child: Text('User role not found')),
-            );
-          }
-        }
-      },
-    );
-  }
-}
+//   Widget _buildHomePage(String userId) {
+//     return FutureBuilder<DocumentSnapshot>(
+//       future: FirebaseFirestore.instance.collection('users').doc(userId).get(),
+//       builder: (context, snapshot) {
+//         if (snapshot.connectionState == ConnectionState.waiting) {
+//           return Scaffold(
+//             // appBar: AppBar(title: Text('Home')),
+//             body: Center(child: CircularProgressIndicator()),
+//           );
+//         } else if (snapshot.hasError) {
+//           return Scaffold(
+//             // appBar: AppBar(title: Text('Home')),
+//             body: Center(child: Text('Error fetching user data')),
+//           );
+//         } else {
+//           final userRole = snapshot.data!.get('role') as String?;
+//           if (userRole != null) {
+//             switch (userRole) {
+//               case 'manager':
+//                 return HomepageManager();
+//               case 'warehouse staff':
+//                 return HomepageWH();
+//               case 'sales personnel':
+//                 // return HomepageSales();
+//               case 'admin':
+//                 return RegisterView();
+//               default:
+//                 return Scaffold(
+//                   // appBar: AppBar(title: Text('Home')),
+//                   body: Center(child: Text('Unknown role: $userRole')),
+//                 );
+//             }
+//           } else {
+//             return Scaffold(
+//               // appBar: AppBar(title: Text('Home')),
+//               body: Center(child: Text('User role not found')),
+//             );
+//           }
+//         }
+//       },
+//     );
+//   }
+// }

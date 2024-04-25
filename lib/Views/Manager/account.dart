@@ -279,8 +279,8 @@ Widget _buildUserContainer(
   );
 }
 
-void main() {
-  runApp(MaterialApp(
-    home: AccountPage(),
-  ));
-}
+// void main() {
+//   runApp(MaterialApp(
+//     home: AccountPage(),
+//   ));
+// }
