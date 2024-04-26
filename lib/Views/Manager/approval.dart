@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'detail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
-  runApp(Approval());
-}
+// void main() {
+//   runApp(Approval());
+// }
 
 class Approval extends StatelessWidget {
   @override
@@ -103,7 +103,8 @@ class _ApprovalListState extends State<ApprovalList> {
                     final productId = request['productId'] as String;
                     final quantity = request['quantity'] as int;
                     final name = request['productName'] as String;
-                    final price = request['price'] as double?; // Replace with dynamic data if available
+                    final price = (request['price'] as num?)?.toDouble();
+                    // final price = request['price'] as double?; // Replace with dynamic data if available
                     final imageUrl = request['imageUrl'] as String; // Fetch imageUrl dynamically from Firestore
                     final status = request['status'] as String;
                     // final sellingPrice = request['selling price'] as String?; // Fetch selling price from Firestore

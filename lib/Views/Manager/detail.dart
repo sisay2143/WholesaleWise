@@ -16,16 +16,64 @@ class detailscreen extends StatefulWidget {
 class _detailscreenState extends State<detailscreen> {
   String _newPrice = ''; // Variable to store the new price entered by the user
 
-  Future<void> _approveRequest(DocumentSnapshot request) async {
-    try {
-      // Update Firestore document to mark request as approved
-      await request.reference.update({'status': 'approved', 'selling price': _newPrice});
-      print('Approval request approved.');
-    } catch (error) {
-      print('Error approving request: $error');
-      // Handle error appropriately
+ Future<void> _approveRequest(DocumentSnapshot request) async {
+  try {
+    // Get the document ID of the approval request
+    String requestId = request.id;
+    print('Request ID: $requestId');
+
+    // Get a reference to the approval request document
+    DocumentReference approvalRequestRef = FirebaseFirestore.instance.collection('approval_requests').doc(requestId);
+    print('Approval Request Reference: $approvalRequestRef');
+
+    // Fetch the approval request document
+    DocumentSnapshot approvalRequestSnapshot = await approvalRequestRef.get();
+    print('Approval Request Snapshot: $approvalRequestSnapshot');
+
+    // Get the requested quantity and product name from the approval request
+    int requestedQuantity = approvalRequestSnapshot['quantity'];
+    String productName = approvalRequestSnapshot['productName'];
+    print('Requested Quantity: $requestedQuantity');
+    print('Product Name: $productName');
+
+    // Get a reference to the product document
+    QuerySnapshot productQuerySnapshot = await FirebaseFirestore.instance.collection('products').where('name', isEqualTo: productName).get();
+    if (productQuerySnapshot.docs.isNotEmpty) {
+      DocumentSnapshot productSnapshot = productQuerySnapshot.docs.first;
+      print('Product Snapshot: $productSnapshot');
+      int currentQuantity = productSnapshot['quantity'];
+      print('Current Quantity: $currentQuantity');
+
+      // Ensure the current quantity is greater than or equal to the requested quantity
+      if (currentQuantity >= requestedQuantity) {
+        // Calculate the updated quantity after deducting the requested quantity
+        int updatedQuantity = currentQuantity - requestedQuantity;
+        print('Updated Quantity: $updatedQuantity');
+
+        // Update the quantity field in the product document
+        await productSnapshot.reference.update({'quantity': updatedQuantity});
+        print('Quantity Updated Successfully.');
+
+        // Update Firestore document to mark request as approved
+        await approvalRequestRef.update({
+          'status': 'approved',
+          'selling price': _newPrice
+        });
+
+        print('Approval request approved. Requested quantity deducted from the product.');
+      } else {
+        print('Error: Insufficient quantity available.');
+        // Handle error appropriately, e.g., show an error message to the user
+      }
+    } else {
+      print('Error: Product not found.');
+      // Handle error appropriately, e.g., show an error message to the user
     }
+  } catch (error) {
+    print('Error approving request: $error');
+    // Handle error appropriately
   }
+}
 
   Future<void> _rejectRequest(DocumentSnapshot request) async {
     // Implement rejection logic here
