@@ -8,6 +8,7 @@ import 'package:untitled/Views/Warehouse-staff/AddItem.dart';
 // import 'package:inventory/stockout.dart';
 import 'stock-out.dart';
 import 'reporting.dart';
+
 class ImageTextCard extends StatelessWidget {
   final String imagePath;
   final String text;

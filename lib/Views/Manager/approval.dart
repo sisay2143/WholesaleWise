@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'detail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
-  runApp(Approval());
-}
+// void main() {
+//   runApp(Approval());
+// }
 
 class Approval extends StatelessWidget {
   @override
