@@ -3,6 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:untitled/Views/Manager/approval.dart';
+import 'package:untitled/Services/database.dart';
+import 'package:untitled/models/products.dart';
+
+
+
 
 class detailscreen extends StatefulWidget {
   final DocumentSnapshot request;
@@ -15,12 +20,45 @@ class detailscreen extends StatefulWidget {
 
 class _detailscreenState extends State<detailscreen> {
   String _newPrice = ''; // Variable to store the new price entered by the user
+  final TextEditingController _pidController = TextEditingController();
+  final TextEditingController _quantityController = TextEditingController();
+  final FirestoreService _firestoreService = FirestoreService();
+  String? _selectedOption;
+  Product? _selectedProduct;
+  late Product pro;
+
+  
+  Future<void> _fetchProductByPid(String pidOrName) async {
+    try {
+      Product? product =
+          await _firestoreService.getProductByPidOrName(pidOrName);
+      if (product != null) {
+        setState(() {
+          _selectedProduct = product;
+          pro = product;
+        });
+      } else {
+        throw 'Product not found';
+      }
+    } catch (error) {
+      print('Error fetching product: $error');
+      // _showAlertDialog('Error', 'Product not found');
+    }
+  }
+  void _handleOptionChange(String? option) {
+    setState(() {
+      _selectedOption = option;
+    });
+  }
 
   Future<void> _approveRequest(DocumentSnapshot request) async {
     try {
       // Update Firestore document to mark request as approved
       await request.reference.update({'status': 'approved', 'selling price': _newPrice});
+       await _updateProductQuantity(); // Await the updateProductQuantity function
       print('Approval request approved.');
+      
+      
     } catch (error) {
       print('Error approving request: $error');
       // Handle error appropriately
@@ -30,8 +68,67 @@ class _detailscreenState extends State<detailscreen> {
   Future<void> _rejectRequest(DocumentSnapshot request) async {
     // Implement rejection logic here
     await request.reference.update({'status': 'rejected'});
+    
     print('Request Rejected');
   }
+
+  Future<void> _updateProductQuantity() async {
+  // Ensure necessary fields are selected and available
+  if (_selectedProduct == null) {
+    print('_selectedProduct is null');
+    return;
+  }
+
+  FirebaseFirestore.instance
+      .collection('approval_requests')
+      .where('productId', isEqualTo: _selectedProduct!.pid)
+      .snapshots()
+      .listen((snapshot) async {
+    print('Snapshot received');
+    for (var doc in snapshot.docs) {
+      var status = doc['status'];
+      print('Status: $status');
+      if (status == 'approved') {
+        // Retrieve the quantity from the approved request
+        final int approvedQuantity = int.parse(doc['quantity']);
+        print('Approved Quantity: $approvedQuantity');
+        int newQuantity = _selectedProduct!.quantity - approvedQuantity;
+        print('New Quantity: $newQuantity');
+        if (newQuantity <= 0) {
+          // If the new quantity is 0 or negative, delete the product
+          await _firestoreService.deleteProduct(_selectedProduct!.pid);
+        } else {
+          // Otherwise, update the product quantity
+          await _firestoreService.updateProduct(_selectedProduct!.pid, {
+            'quantity': newQuantity,
+          });
+        }
+
+        // Show a dialog to inform the user
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content: Text('Product quantity updated successfully.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
+  });
+}
+
+
+
+
 
   Future<void> _showConfirmationDialog(DocumentSnapshot request) async {
   if (_newPrice.isEmpty) {

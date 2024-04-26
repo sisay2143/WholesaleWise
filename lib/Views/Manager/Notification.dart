@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:untitled/models/products.dart';
-// import 'package:untitled/ItemsList.dart';
 import 'package:untitled/Services/database.dart';
-
-
+import 'package:intl/intl.dart';
 
 class NotificationItem {
   final String title;
@@ -19,7 +17,14 @@ class NotificationItem {
 }
 
 class NotificationPage extends StatefulWidget {
-  const NotificationPage({super.key});
+  final List<NotificationItem> notifications;
+  final Function(List<NotificationItem>) onBackButtonPressed;
+
+  const NotificationPage({
+    Key? key,
+    required this.notifications,
+    required this.onBackButtonPressed,
+  }) : super(key: key);
 
   @override
   State<NotificationPage> createState() => _NotificationPageState();
@@ -27,7 +32,6 @@ class NotificationPage extends StatefulWidget {
 
 class _NotificationPageState extends State<NotificationPage> {
   final FirestoreService _firestoreService = FirestoreService();
-
   List<NotificationItem> notifications = [];
   List<Product> _products = [];
 
@@ -42,7 +46,7 @@ class _NotificationPageState extends State<NotificationPage> {
       List<Product> products = await _firestoreService.getProducts();
       setState(() {
         _products = products;
-        notifications = generateNotificationItems(); // Call the method here
+        notifications = generateNotificationItems();
       });
     } catch (e) {
       print("Error fetching products: $e");
@@ -53,20 +57,22 @@ class _NotificationPageState extends State<NotificationPage> {
     List<NotificationItem> generatedItems = [];
 
     for (var product in _products) {
-      if (product.quantity <= 10) {
+      if (product.quantity <= 500) {
         generatedItems.add(NotificationItem(
           title: 'Running Low on ${product.name}',
           details: 'Only ${product.quantity} left',
+          isRead: false,
         ));
       }
 
-      // if (product.expirationDate != null &&
-      //     product.expirationDate.isBefore(DateTime.now())) {
-      //   generatedItems.add(NotificationItem(
-      //     title: 'Expired Product: ${product.name}',
-      //     details: 'Expired on ${product.expirationDate}',
-      //   ));
-      // }
+      if (product.expiredate.isBefore(DateTime.now())) {
+        final formattedDate = DateFormat.yMMMMd().format(product.expiredate);
+        generatedItems.add(NotificationItem(
+          title: 'Expired Product: ${product.name}',
+          details: 'Expired on $formattedDate',
+          isRead: false,
+        ));
+      }
     }
 
     return generatedItems;
@@ -84,6 +90,10 @@ class _NotificationPageState extends State<NotificationPage> {
     });
   }
 
+  int getUnreadCount() {
+    return notifications.where((item) => !item.isRead).length;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,6 +101,13 @@ class _NotificationPageState extends State<NotificationPage> {
         centerTitle: true,
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
         title: Text('Notifications'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            widget.onBackButtonPressed(notifications);
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: Column(
         children: [
@@ -153,15 +170,14 @@ class _NotificationPageState extends State<NotificationPage> {
                           border: Border.all(
                             color: Color.fromRGBO(107, 59, 225, 1),
                           ),
-                          color: notifications[index].isRead
-                              ? Colors.grey.shade300
-                              : Colors.white,
+                          color:
+                              item.isRead ? Colors.grey.shade300 : Colors.white,
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              notifications[index].title,
+                              item.title,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18.0,
@@ -169,12 +185,12 @@ class _NotificationPageState extends State<NotificationPage> {
                             ),
                             SizedBox(height: 8.0),
                             Text(
-                              notifications[index].details,
+                              item.details,
                               style: const TextStyle(
                                 fontSize: 16.0,
                               ),
                             ),
-                            if (!notifications[index].isRead)
+                            if (!item.isRead)
                               TextButton(
                                 onPressed: () => _markAsRead(index),
                                 child: const Text(
@@ -199,8 +215,9 @@ class _NotificationPageState extends State<NotificationPage> {
               children: [
                 ElevatedButton(
                   style: const ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(
-                         Color.fromARGB(255, 3, 94, 147))),
+                    backgroundColor: MaterialStatePropertyAll(
+                        Color.fromARGB(255, 3, 94, 147)),
+                  ),
                   onPressed: () {
                     setState(() {
                       notifications.clear();
@@ -208,6 +225,7 @@ class _NotificationPageState extends State<NotificationPage> {
                   },
                   child: const Text('Clear All'),
                 ),
+                // Text('Unread Count: ${getUnreadCount()}'),
               ],
             ),
           ),

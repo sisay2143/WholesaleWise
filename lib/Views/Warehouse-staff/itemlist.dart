@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 // import 'package:untitled/Views/Warehouse-staff/HomeWarehouse.dart';
-import 'package:untitled/Views/Warehouse-staff/warehouse.dart';
 import 'ItemsCard.dart';
 import 'package:untitled/models/products.dart';
 import 'package:untitled/Services/database.dart';
-
 class ItemsList extends StatefulWidget {
   const ItemsList({Key? key}) : super(key: key);
 
@@ -52,7 +50,7 @@ class _itemListState extends State<ItemsList> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
-         automaticallyImplyLeading: false, 
+        //  automaticallyImplyLeading: false, 
         title: Text(
           "Item List",
           style: TextStyle(color: Colors.white),
@@ -63,7 +61,7 @@ class _itemListState extends State<ItemsList> {
         //   onPressed: () {
         //     Navigator.push(
         //             context,
-        //             MaterialPageRoute(builder: (context) => HomepageWH()),
+        //             MaterialPageRoute(builder: (context) => HomepageManager()),
         //           );
         //         // Navigate to the home page using the named route '/'
         //   },

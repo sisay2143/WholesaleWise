@@ -23,7 +23,7 @@ class _HomepageWHState extends State<HomepageWH> {
   static List<Widget> _widgetOptions = <Widget>[
     HomePageWarehouse(),
     ItemsList(),
-    Requests(),
+    Approval(),
     // Add Sales Records and Profile widgets here
     Profile(),
   ];

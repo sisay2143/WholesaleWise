@@ -46,61 +46,60 @@ class _StockOutPageState extends State<StockOutPage> {
       _showAlertDialog('Error', 'Product not found');
     }
   }
-
   void _handleOptionChange(String? option) {
     setState(() {
       _selectedOption = option;
     });
   }
 
-  Future<void> registerTransaction() async {
-    print(" ********** transaction update");
-    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-    User? user = FirebaseAuth.instance.currentUser;
-    final transactionsRef = _firestore
-        .collection('users')
-        .doc(user!.uid)
-        .collection('transactions');
-    await transactionsRef.add({
-      'productId': _selectedProduct!.pid,
-      'quantityRemoved': int.parse(_quantityController.text),
-      'removedDate': FieldValue.serverTimestamp(),
-    });
-    // Update product status or other necessary actions
-  }
+  // Future<void> registerTransaction() async {
+  //   print(" ********** transaction update");
+  //   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  //   User? user = FirebaseAuth.instance.currentUser;
+  //   final transactionsRef = _firestore
+  //       // .collection('users')
+  //       // .doc(user!.uid)
+  //       .collection('transactions');
+  //   await transactionsRef.add({
+  //     'productId': _selectedProduct!.pid,
+  //     'quantityRemoved': int.parse(_quantityController.text),
+  //     'removedDate': FieldValue.serverTimestamp(),
+  //   });
+  //   // Update product status or other necessary actions
+  // }
 
 // Modified sendApprovalRequest function
 // Completer to wait for approval response
-  Completer<void>? listenForApprovalResponseCompleter;
+  // Completer<void>? listenForApprovalResponseCompleter;
 
 // Modified sendApprovalRequest function
-  Future<void> sendApprovalRequest() async {
-    try {
-      final DocumentSnapshot<Map<String, dynamic>> userDoc =
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc('ThMFYek1BJhk1uqYHotsAI2MqC73')
-              .get();
-
-      if (userDoc.exists) {
-        final String? role = userDoc.data()?['role'];
-        if (role == 'manager') {
-          final String? managerUid = userDoc.id;
-          if (managerUid != null) {
+ Future<void> sendApprovalRequest() async {
+  try {
+    final DocumentSnapshot<Map<String, dynamic>> userDoc =
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc('ThMFYek1BJhk1uqYHotsAI2MqC73')
+            .get();
+    if (userDoc.exists) {
+      final String? role = userDoc.data()?['role'];
+      if (role == 'manager') {
+        final String? managerUid = userDoc.id;
+        if (managerUid != null) {
+          if (_selectedProduct != null) { // Check if product is selected
             String productName = _selectedProduct!.name;
-            String productId = _selectedProduct!.pid;
-            String expiredate = _selectedProduct!.expiredate;
+            String productId = _selectedProduct!.pid; // Update to productId
+            DateTime expiredate = _selectedProduct!.expiredate;
             String imageUrl = _selectedProduct!.imageUrl;
             double price = _selectedProduct!.price;
 
             // Initialize the Completer
-            listenForApprovalResponseCompleter = Completer<void>();
+            // listenForApprovalResponseCompleter = Completer<void>();
 
             await FirebaseFirestore.instance
                 .collection('approval_requests')
                 .add({
               'productName': productName,
-              'productId': productId,
+              // 'productId': productId,
               'expiredate': expiredate,
               'imageUrl': imageUrl,
               'quantity': int.parse(_quantityController.text),
@@ -109,6 +108,7 @@ class _StockOutPageState extends State<StockOutPage> {
               'requestedAt': FieldValue.serverTimestamp(),
               'managerUid': managerUid,
               'status': 'pending',
+              'productId': productId, // Add the product ID as a foreign key
             });
 
             _showAlertDialog(
@@ -117,87 +117,38 @@ class _StockOutPageState extends State<StockOutPage> {
             );
 
             // Wait for approval response before proceeding
-            await listenForApprovalResponse;
+            // await listenForApprovalResponse;
           } else {
-            throw 'Manager UID not found.';
+            throw 'Product not selected.';
           }
         } else {
-          throw 'User is not a manager.';
+          throw 'Manager UID not found.';
         }
       } else {
-        throw 'User document does not exist.';
+        throw 'User is not a manager.';
       }
-    } catch (error) {
-      print('Error sending approval request: $error');
-      _showAlertDialog('Error', 'Failed to send approval request.');
+    } else {
+      throw 'User document does not exist.';
     }
+  } catch (error) {
+    print('Error sending approval request: $error');
+    _showAlertDialog('Error', 'Failed to send approval request.');
   }
-
-// Function to listen for approval response
-  void listenForApprovalResponse() {
-    FirebaseFirestore.instance
-        .collection('approval_requests')
-        .where('productId', isEqualTo: _selectedProduct!.pid)
-        .snapshots()
-        .listen((snapshot) {
-      snapshot.docs.forEach((doc) {
-        // Check if the approval is granted
-        final status = doc['status'];
-        print(status);
-        if (status == 'approved') {
-          print('almost updating');
-          // Update product quantity after approval
-          _updateProductQuantity();
-          print('product updated');
-          // Complete the Completer to signal that the approval response is received
-          listenForApprovalResponseCompleter!.complete();
-        } else if (status == 'rejected') {
-          // Handle rejection if needed
-        }
-      });
-    });
-  }
+}
 
   // Update product quantity after approval
-  Future<void> _updateProductQuantity() async {
-    try {
-      final int newQuantity =
-          _selectedProduct!.quantity - int.parse(_quantityController.text);
-      await _firestoreService.updateProductQuantity(
-          _selectedProduct!.pid, newQuantity);
-      // Show success message or perform any other necessary actions
-      print(newQuantity);
-      print('quantity updated');
-    } catch (error) {
-      print('Error updating product quantity: $error');
-      _showAlertDialog('Error', 'Failed to update product quantity.');
-    }
-  }
-
-// Listen for approval response
-// void listenForApprovalResponse() {
-//   FirebaseFirestore.instance
-//       .collection('approval_requests')
-//       .where('productId', isEqualTo: _selectedProduct!.pid)
-//       .snapshots()
-//       .listen((snapshot) {
-//     snapshot.docs.forEach((doc) {
-//       // Check if the approval is granted
-//       final status = doc['status'];
-//         print('waiting for approval ');
-
-//       if (status == 'approved') {
-//         // Update product quantity after approval
-//         _updateProductQuantity();
-//         print('product approved');
-//         // Show success message or perform any other necessary actions
-//       } else if (status == 'rejected') {
-//         // Handle rejection if needed
-//       }
-//     });
-//   });
+// Future<void> _updateProductQuantity() async {
+//   try {
+//     final int newQuantity = _selectedProduct!.quantity - int.parse(_quantityController.text);
+//     await _firestoreService.updateProductQuantity(_selectedProduct!.pid, newQuantity);
+//     // Show success message or perform any other necessary actions
+//     print(newQuantity);
+//     print('quantity updated');
+//   } catch (error) {
+//     print('Error updating product quantity: $error');
+//     _showAlertDialog('Error', 'Failed to update product quantity.');
+//   }
 // }
-
   void _showAlertDialog(String title, String message) {
     showDialog(
       context: context,

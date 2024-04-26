@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:untitled/models/products.dart';
-// import 'package:untitled/ItemsList.dart';
+// import 'package:untitled/itemslist.dart';
 import 'package:untitled/Services/database.dart';
-import 'itemlist.dart';
+    import 'package:intl/intl.dart';
 
 
 class NotificationItem {
@@ -53,20 +53,23 @@ class _NotificationPageState extends State<NotificationPage> {
     List<NotificationItem> generatedItems = [];
 
     for (var product in _products) {
-      if (product.quantity <= 10) {
+      if (product.quantity <= 100) {
         generatedItems.add(NotificationItem(
           title: 'Running Low on ${product.name}',
           details: 'Only ${product.quantity} left',
         ));
       }
 
-      // if (product.expirationDate != null &&
-      //     product.expirationDate.isBefore(DateTime.now())) {
-      //   generatedItems.add(NotificationItem(
-      //     title: 'Expired Product: ${product.name}',
-      //     details: 'Expired on ${product.expirationDate}',
-      //   ));
-      // }
+
+// Inside your if statement:
+if (product.expiredate.isBefore(DateTime.now())) {
+  final formattedDate = DateFormat.yMMMMd().format(product.expiredate);
+  generatedItems.add(NotificationItem(
+    title: 'Expired Product: ${product.name}',
+    details: 'Expired on $formattedDate',
+  ));
+}
+
     }
 
     return generatedItems;
@@ -200,7 +203,7 @@ class _NotificationPageState extends State<NotificationPage> {
                 ElevatedButton(
                   style: const ButtonStyle(
                       backgroundColor: MaterialStatePropertyAll(
-                         Color.fromARGB(255, 3, 94, 147))),
+                          Color.fromARGB(255, 3, 94, 147))),
                   onPressed: () {
                     setState(() {
                       notifications.clear();

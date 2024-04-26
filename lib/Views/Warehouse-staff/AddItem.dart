@@ -62,8 +62,8 @@ class _AddProductFormState extends State<AddProductForm> {
       final DateTime timestamp = DateTime.now();
 
       await _firestore
-          .collection('users')
-          .doc(user!.uid)
+          // .collection('users')
+          // .doc(user!.uid)
           .collection('products')
           .add({
         'name': newProduct.name,
@@ -303,13 +303,16 @@ class _AddProductFormState extends State<AddProductForm> {
               ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
+                      String expireDateText = _expiredateController.text;
+                      DateTime expireDate =
+                          DateFormat('yyyy-MM-dd').parse(expireDateText);
                       Product newProduct = Product(
                         name: _nameController.text,
                         pid: _pidController.text,
                         quantity: int.parse(_quantityController.text),
                         price: double.parse(_priceController.text),
                         category: selectedCategory ?? 'Default Category',
-                        expiredate: _expiredateController.text,
+                        expiredate: expireDate,
                         imageUrl: _pickedImage.path,
                         timestamp: DateTime.now(), // Add timestamp
                       );

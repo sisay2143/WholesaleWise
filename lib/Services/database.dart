@@ -23,28 +23,42 @@ class FirestoreService {
 //   }
 // }
 
-Future<void> updateProductQuantity(String pid, int newQuantity) async {
-    try {
-      QuerySnapshot querySnapshot = await _firestore
-          .collection('users')
-          .doc(user!.uid)
-          .collection('products')
-          .where('pid', isEqualTo: pid)
-          .get();
-      if (querySnapshot.docs.isNotEmpty) {
-        await querySnapshot.docs.first.reference..update({'quantity': newQuantity});
-      }
-    } catch (error) {
-      print("not update");
-      throw error;
-    }
+// Future<void> updateProductQuantity(String productId, int newQuantity) async {
+//     try {
+//       QuerySnapshot querySnapshot = await _firestore
+//           // .collection('users')
+//           // .doc(user!.uid)
+//           .collection('products')
+//           .where('productId', isEqualTo: productId)
+//           .get();
+//       if (querySnapshot.docs.isNotEmpty) {
+//         await querySnapshot.docs.first.reference..update({'quantity': newQuantity});
+//       }
+//     } catch (error) {
+//       print("not update");
+//       throw error;
+//     }
+//   }
+
+  Future<void> updateProduct(String pid, Map<String, dynamic> data) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection('products')
+        .doc(pid)
+        .update(data);
+    print('Product updated successfully.');
+  } catch (error) {
+    print('Error updating product: $error');
+    throw error;
   }
+}
+
 
 
 Future<void> deleteProduct(String pid) async {
     try {
       final productsCollection =
-          _firestore.collection('users').doc(user!.uid).collection('products');
+          _firestore.collection('products');
       final snapshot =
           await productsCollection.where('pid', isEqualTo: pid).get();
 
@@ -64,8 +78,8 @@ Future<void> deleteProduct(String pid) async {
   Future<Product?> getProductByPidOrName(String pidOrName) async {
     try {
       final querySnapshot = await _firestore
-          .collection('users')
-          .doc(user!.uid)
+          // .collection('users')
+          // .doc(user!.uid)
           .collection('products')
           .where('pid', isEqualTo: pidOrName)
           .get();
@@ -73,8 +87,8 @@ Future<void> deleteProduct(String pid) async {
       // If no documents found by PID, attempt to fetch by name
       if (querySnapshot.docs.isEmpty) {
         final querySnapshotByName = await _firestore
-            .collection('users')
-            .doc(user!.uid)
+            // .collection('users')
+            // .doc(user!.uid)
             .collection('products')
             .where('name', isEqualTo: pidOrName)
             .get();
@@ -91,7 +105,7 @@ Future<void> deleteProduct(String pid) async {
             // distributor: data['distributor'] as String,
             category: data['category'] as String,
             imageUrl: data['imageUrl'] as String,
-            expiredate: data['expiredate'] as String,
+            expiredate: DateTime.now(),
             timestamp: DateTime.now(),
           );
         }
@@ -107,7 +121,7 @@ Future<void> deleteProduct(String pid) async {
           // distributor: data['distributor'] as String,
           category: data['category'] as String,
           imageUrl: data['imageUrl'] as String,
-          expiredate: data['expiredate'] as String,
+          expiredate: DateTime.now(),
           timestamp: DateTime.now(),
         );
       }
@@ -122,8 +136,8 @@ Future<void> deleteProduct(String pid) async {
   Future<List<Product>> getProducts() async {
     try {
       QuerySnapshot snapshot = await _firestore
-          .collection('users')
-          .doc(user!.uid)
+          // .collection('users')
+          // .doc(user!.uid)
           .collection('products')
           .get();
       List<Product> products = snapshot.docs.map((doc) {
@@ -137,7 +151,9 @@ Future<void> deleteProduct(String pid) async {
           imageUrl: data['imageUrl'],
           pid: data['pid'],
           timestamp: DateTime.now(),
-          expiredate: data['expiredate'],
+          // expiredate: data['expiredate'],
+          expiredate: DateTime.parse(data['expiredate']),
+
         );
       }).toList();
       return products;
@@ -151,8 +167,8 @@ Future<void> deleteProduct(String pid) async {
   Future<void> registerTransaction(
       String productId, int quantitySold) async {
     final transactionsRef = _firestore
-        .collection('users')
-        .doc(user!.uid)
+        // .collection('users')
+        // .doc(user!.uid)
         .collection('transactions');
 
     await transactionsRef.add({

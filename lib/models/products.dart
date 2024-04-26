@@ -5,7 +5,7 @@ class Product {
   final double price;
   final String category;
   final String imageUrl;
-  final String expiredate;
+  final DateTime expiredate; // Change the type to DateTime
   final DateTime timestamp; // Add timestamp field
 
   Product({

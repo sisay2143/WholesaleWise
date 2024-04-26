@@ -56,7 +56,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(107, 59, 225, 1),
+        backgroundColor: Color.fromARGB(255, 3, 94, 147),
         title: Row(
           children: [
             SizedBox(

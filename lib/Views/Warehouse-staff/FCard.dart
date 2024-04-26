@@ -7,7 +7,7 @@ import 'package:untitled/Views/Warehouse-staff/AddItem.dart';
 // import 'package:inventory/reporScreen.dart';
 // import 'package:inventory/stockout.dart';
 import 'stock-out.dart';
-
+import 'reporting.dart';
 class ImageTextCard extends StatelessWidget {
   final String imagePath;
   final String text;
@@ -31,7 +31,7 @@ class ImageTextCard extends StatelessWidget {
               if (text == "Add Items") {
                 return AddProductForm();
               } else if (text == "Inventory Count") {
-                return AddProductForm();
+                return Reportings();
               } else if (text == "Inventory") {
                 return AddProductForm();
               } else {

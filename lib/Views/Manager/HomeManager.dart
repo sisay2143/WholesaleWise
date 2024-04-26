@@ -5,12 +5,14 @@ import 'package:untitled/Views/Manager/Notification.dart';
 import 'package:untitled/Views/Manager/account.dart';
 import 'package:untitled/Views/Manager/itemlist.dart';
 import 'Myslider.dart';
-import 'package:pie_chart/pie_chart.dart';// Import the file where HomeManager is defined
+import 'package:pie_chart/pie_chart.dart'; // Import the file where HomeManager is defined
 import 'package:camera/camera.dart';
 import 'Salesreport.dart';
 import 'reporting.dart';
 import 'profit.dart';
 import 'approval.dart';
+import 'package:badges/badges.dart';
+
 Map<String, double> dataMap = {
   'Flutter': 3,
   'React': 3,
@@ -114,7 +116,7 @@ class _HomepageManagerState extends State<HomepageManager> {
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor:Color.fromARGB(255, 3, 94, 147),
+          selectedItemColor: Color.fromARGB(255, 3, 94, 147),
           unselectedItemColor: Colors.grey,
           onTap: _onItemTapped,
           showSelectedLabels: true, // Ensure that selected labels are visible
@@ -126,39 +128,58 @@ class _HomepageManagerState extends State<HomepageManager> {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int unreadNotificationCount = 0; // Add this variable
   //  HomeSales({super.key});
+  final List<NotificationItem> notifications = [];
+  // Define the notifications list
+  void _handleNotificationPageBack(List<NotificationItem> notifications) {
+    // Handle the notifications list from the NotificationPage
+    // Update the unread notification count
+    setState(() {
+      unreadNotificationCount = notifications.where((n) => !n.isRead).length;
+    });
+
+    print('Received notifications: $notifications');
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            SizedBox(width: 16), // Add space to align the title to the start
-            Text(
-              'Home',
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 25,
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.white,
+        backgroundColor: Color.fromARGB(255, 3, 94, 147),
+        title: Text('Home Manager'),
         actions: [
-          IconButton(
-            color: Color.fromARGB(255, 3, 94, 147),
-            icon: Icon(Icons.notifications),
-            onPressed: () {
-              // Implement your notification logic here
-
-               Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NotificationPage()),
-              );
-            },
+          Stack(
+            children: [
+              IconButton(
+                icon: Icon(Icons.notifications),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NotificationPage(
+                        notifications: notifications,
+                        onBackButtonPressed: _handleNotificationPageBack,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              Positioned(
+                right: 8,
+                top: 8,
+                child: NotificationBadge(
+                  itemCount: unreadNotificationCount,
+                  textStyle: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -178,7 +199,8 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 15),
+              padding: const EdgeInsets.only(
+                  left: 20, right: 20, top: 5, bottom: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -237,8 +259,7 @@ class HomeScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => ItemsList()),
+                          MaterialPageRoute(builder: (context) => ItemsList()),
                         );
                       },
                     ),
@@ -362,17 +383,34 @@ Future<void> openCamera(BuildContext context) async {
 }
 // }
 
-// class Approval extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       color: Colors.grey[200],
-//       child: Center(
-//         child: Text('approval Records '),
-//       ),
-//     );
-//   }
-// }
+class NotificationBadge extends StatelessWidget {
+  final int itemCount;
+  final Color badgeColor;
+  final TextStyle textStyle;
+
+  const NotificationBadge({
+    Key? key,
+    required this.itemCount,
+    this.badgeColor = Colors.red,
+    this.textStyle =
+        const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: badgeColor,
+      ),
+      child: Text(
+        itemCount.toString(),
+        style: textStyle,
+      ),
+    );
+  }
+}
 
 class IconWithBackground extends StatelessWidget {
   final IconData iconData;

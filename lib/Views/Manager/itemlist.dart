@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+// import 'package:untitled/Views/Warehouse-staff/HomeWarehouse.dart';
 import 'ItemsCard.dart';
 import 'package:untitled/models/products.dart';
 import 'package:untitled/Services/database.dart';
-
+import 'HomeManager.dart';
 class ItemsList extends StatefulWidget {
   const ItemsList({Key? key}) : super(key: key);
 
@@ -23,26 +24,18 @@ class _itemListState extends State<ItemsList> {
   }
 
   Future<void> _fetchProducts() async {
-  print("fetching..");
-  try {
-    List<Product> products = await _firestoreService.getProducts();
-    print("Fetched products: $products");
-
-    // Sort products by timestamp in descending order
-    products.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-
-    
-
-
-    setState(() {
-      _products = products;
-      _filteredProducts = List.from(products);
-    });
-  } catch (e) {
-    print("Error fetching products: $e");
+    print("fetching..");
+    try {
+      List<Product> products = await _firestoreService.getProducts();
+      print("Fetched products: $products");
+      setState(() {
+        _products = products;
+        _filteredProducts = List.from(products);
+      });
+    } catch (e) {
+      print("Error fetching products: $e");
+    }
   }
-}
-
 
   void _filterProducts(String query) {
     setState(() {
@@ -58,26 +51,34 @@ class _itemListState extends State<ItemsList> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Item List",
-              textAlign: TextAlign.left,
-              style: TextStyle(color: Colors.white),
-            ),
-            IconButton(
-              icon: Icon(Icons.search),
-              color: Colors.white,
-              onPressed: () {
-                showSearch(
-                  context: context,
-                  delegate: DataSearch(_filteredProducts),
-                );
-              },
-            ),
-          ],
+        //  automaticallyImplyLeading: false, 
+        title: Text(
+          "Item List",
+          style: TextStyle(color: Colors.white),
         ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Colors.white,
+          onPressed: () {
+            Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomepageManager()),
+                  );
+                // Navigate to the home page using the named route '/'
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            color: Colors.white,
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: DataSearch(_filteredProducts),
+              );
+            },
+          ),
+        ],
       ),
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
