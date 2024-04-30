@@ -39,7 +39,7 @@ class Reportings extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20.0),
-              // _buildRunningoutProducts(),
+            
               _buildSoontoExpire(),
                const SizedBox(height: 20.0),
             _buildBarChartCard(),
@@ -142,8 +142,7 @@ Widget _buildSoontoExpire() {
   
 
 
-
-  Widget _buildRunningOutProducts() {
+   Widget _buildRunningOutProducts() {
     return Card(
       child: Padding(
         padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 5),
@@ -325,71 +324,100 @@ Widget _buildTotalStockCircularIndicator() {
 }
 
 }
-Widget _buildBarChartCard() {
-    // Building the bar chart wrapped inside a Card widget
-    return Card(
-      child: Container(
-        height: 600,
-        width: 400, // Adjust the height as needed
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Sales Overview',
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+
+
+
+
+class BarChartData {
+  final String category;
+  final int quantity;
+
+  BarChartData(this.category, this.quantity);
+}
+
+
+  Widget _buildBarChartCard() {
+    return FutureBuilder<List<BarChartData>>(
+      future: _getChartDataFromFirestore(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else {
+          return Card(
+            child: Container(
+              height: 600,
+              width: 400,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Category Distribution',
+                      style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 55),
+                  _buildBarChart(snapshot.data ?? [])
+
+                  ],
+                ),
               ),
-               SizedBox(
-                    height: 55,
-                  ),
-              _buildBarChart(),
-            ],
-          ),
-        ),
-      ),
+            ),
+          );
+        }
+      },
     );
   }
 
-  Widget _buildBarChart() {
-    // Example data for the bar chart
-    final List<SalesData> data = [
-      SalesData('Jan', 100),
-      SalesData('Feb', 150),
-      SalesData('Mar', 200),
-      SalesData('Apr', 180),
-    ];
-
-    // Building the bar chart
+  Widget _buildBarChart(List<BarChartData> data) {
     return Card(
       child: Container(
         height: 350,
         width: 550,
-        child: Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: charts.BarChart(
-              [
-                charts.Series<SalesData, String>(
-                  id: 'Sales',
-                  data: data,
-                  domainFn: (SalesData sales, _) => sales.month,
-                  measureFn: (SalesData sales, _) => sales.sales,
-                ),
-              ],
-              animate: true,
-            ),
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: charts.BarChart(
+            [
+              charts.Series<BarChartData, String>(
+                id: 'Sales',
+                data: data,
+                domainFn: (BarChartData sales, _) => sales.category,
+                measureFn: (BarChartData sales, _) => sales.quantity,
+              ),
+            ],
+            animate: true,
           ),
         ),
       ),
     );
   }
 
+  Future<List<BarChartData>> _getChartDataFromFirestore() async {
+    List<BarChartData> chartData = [];
 
-// Define SalesData class
-class SalesData {
-  final String month;
-  final int sales;
+    // Fetch data from Firestore
+    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('products').get();
 
-  SalesData(this.month, this.sales);
-}
+    // Process fetched data
+    Map<String, int> categoryQuantityMap = {};
+    snapshot.docs.forEach((doc) {
+      String category = doc['category'];
+      int quantity = doc['quantity'];
+      if (categoryQuantityMap.containsKey(category)) {
+      categoryQuantityMap[category] = (categoryQuantityMap[category] ?? 0) + quantity;
+
+      } else {
+        categoryQuantityMap[category] = quantity;
+      }
+    });
+
+    // Convert data to BarChartData objects
+    categoryQuantityMap.forEach((category, quantity) {
+      chartData.add(BarChartData(category, quantity));
+    });
+
+    return chartData;
+  }
+
