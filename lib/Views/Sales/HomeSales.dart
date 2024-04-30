@@ -3,6 +3,7 @@ import 'package:charts_flutter/flutter.dart' as charts; // Added charts_flutter 
 import 'package:untitled/Views/sales/NotificationSales.dart';
 import 'CommitSale.dart';
 import 'ProfileSales.dart';
+import 'salesrecord.dart';
 
 // import 'QRScanScreen.dart';
 import 'Myslider.dart';
@@ -226,17 +227,17 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class SalesRecords extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey[200],
-      child: Center(
-        child: Text('Sales Records Page'),
-      ),
-    );
-  }
-}
+// class SalesRecords extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       color: Colors.grey[200],
+//       child: Center(
+//         child: Text('Sales Records Page'),
+//       ),
+//     );
+//   }
+// }
 
 class IconWithBackground extends StatelessWidget {
   final IconData iconData;
