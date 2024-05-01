@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
-import 'CommitSale.dart';
-
-void main() {
-  runApp(detailss());
-}
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class detailss extends StatelessWidget {
+  final String imageUrl;
+  final String productName;
+  final String sellingPrice;
+  final String expireDate;
+  final Map<String, dynamic> additionalFields; // New field to hold additional data
+
+  detailss({
+    required this.imageUrl,
+    required this.productName,
+    required this.sellingPrice,
+    required this.expireDate,
+    required this.additionalFields, // Updated constructor to accept additional fields
+  });
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,25 +25,42 @@ class detailss extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: ProductDetailPage(),
+      home: ProductDetailPage(
+        imageUrl: imageUrl,
+        productName: productName,
+        sellingPrice: sellingPrice,
+        expireDate: expireDate,
+        additionalFields: additionalFields, // Pass additional fields to the detail screen
+      ),
     );
   }
 }
 
 class ProductDetailPage extends StatelessWidget {
+  final String imageUrl;
+  final String productName;
+  final String sellingPrice;
+  final String expireDate;
+  final Map<String, dynamic> additionalFields; // New field to hold additional data
+
+  ProductDetailPage({
+    required this.imageUrl,
+    required this.productName,
+    required this.sellingPrice,
+    required this.expireDate,
+    required this.additionalFields, // Updated constructor to accept additional fields
+  });
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
-        title: Text('          Details'),
+        title: Text('Details'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-           Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CommitSale()),
-              );
+            Navigator.pop(context);
           },
         ),
       ),
@@ -44,25 +71,13 @@ class ProductDetailPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                width: double.infinity, // Adjust the width as needed
-                height: 200, // Adjust the height as needed
+                width: double.infinity,
+                height: 200,
                 child: Card(
                   elevation: 4.0,
-                  child: Container(
-                    constraints: BoxConstraints(
-                      maxHeight: 200, // Maximum height for the image
-                    ),
-                    child: SizedBox(
-                      width: 150, // Adjust the width of the image as needed
-                      height: 150, // Adjust the height of the image as needed
-                      child: Padding(
-                        padding: EdgeInsets.all(15.0), // Adjust the padding as needed
-                        child: Image.asset(
-                          'lib/assets/images/car.png', // Replace with the actual image path
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
@@ -75,7 +90,7 @@ class ProductDetailPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Car',
+                        productName,
                         style: TextStyle(
                           fontSize: 18.0,
                           fontWeight: FontWeight.bold,
@@ -83,91 +98,37 @@ class ProductDetailPage extends StatelessWidget {
                       ),
                       SizedBox(height: 8.0),
                       Text(
-                        'Quantity Available: 5',
+                        'Selling Price: \$${sellingPrice}',
                         style: TextStyle(fontSize: 16.0),
                       ),
                       SizedBox(height: 8.0),
                       Text(
-                        'Selling Price: \$10',
+                        'Expire Date: ${expireDate}',
                         style: TextStyle(fontSize: 16.0),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 16.0),
-              Card(
-                elevation: 4.0,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Enter Quantity:',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 8.0),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          hintText: 'Enter Quantity',
-                        ),
-                      ),
                       SizedBox(height: 16.0),
-                      Text(
-                        'Sold By:',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
+                      // Additional fields fetched from Firestore
+                      if (additionalFields.isNotEmpty) // Check if additional fields are available
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Price: ${additionalFields['price']}',
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                            SizedBox(height: 8.0),
+                            Text(
+                              'Product ID: ${additionalFields['productId']}',
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                            SizedBox(height: 8.0),
+                            Text(
+                              'Quantity: ${additionalFields['quantity']}',
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                          ],
                         ),
-                      ),
-                      SizedBox(height: 8.0),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          hintText: 'Enter Sold By',
-                        ),
-                      ),
-                      SizedBox(height: 16.0),
-                      Text(
-                        'Customer Name:',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 8.0),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          hintText: 'Enter Customer Name',
-                        ),
-                      ),
                     ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 32.0),
-              ElevatedButton(
-                onPressed: () {
-                  // Action to perform on button press (e.g., commit sale)
-                  print('Commit button pressed');
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                    Color.fromARGB(255, 3, 94, 147),
-                  ), // Set color here
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Text(
-                    'Commit',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
                   ),
                 ),
               ),
