@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:untitled/Views/Sales/CommitSale.dart';
+import 'CommitSale.dart';
 
 class detailss extends StatelessWidget {
   final String imageUrl;
@@ -62,11 +62,8 @@ class ProductDetailPage extends StatelessWidget {
           icon: Icon(Icons.arrow_back),
           color: Colors.white,
           onPressed: () {
-            Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CommitSale()),
-                  );
-                // Navigate to the home page using the named route '/'
+           Navigator.push(context, MaterialPageRoute(builder: (context) => CommitSale()));
+
           },
         ),
       ),
@@ -138,6 +135,84 @@ class ProductDetailPage extends StatelessWidget {
                   ),
                 ),
               ),
+
+
+ Card(
+                elevation: 4.0,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Enter Quantity:',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 8.0),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          hintText: 'Enter Quantity',
+                        ),
+                      ),
+                      SizedBox(height: 16.0),
+                      Text(
+                        'Sold By:',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 8.0),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          hintText: 'Enter Sold By',
+                        ),
+                      ),
+                      SizedBox(height: 16.0),
+                      Text(
+                        'Customer Name:',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 8.0),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          hintText: 'Enter Customer Name',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 32.0),
+              ElevatedButton(
+                onPressed: () {
+                  // Action to perform on button press (e.g., commit sale)
+                  print('Commit button pressed');
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                    Color.fromARGB(255, 3, 94, 147),
+                  ), // Set color here
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(
+                    'Commit',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+
             ],
           ),
         ),
