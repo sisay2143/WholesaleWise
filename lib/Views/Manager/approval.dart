@@ -23,7 +23,8 @@ class ApprovalList extends StatefulWidget {
 
 class _ApprovalListState extends State<ApprovalList> {
   String selectedStatus = ''; // Initially no status selected
-  List<String> statusOptions = []; // List to hold status options fetched from Firestore
+  List<String> statusOptions =
+      []; // List to hold status options fetched from Firestore
 
   @override
   void initState() {
@@ -34,20 +35,22 @@ class _ApprovalListState extends State<ApprovalList> {
 
   // Method to fetch status options from Firestore
   Future<void> fetchStatusOptions() async {
-  final snapshot = await FirebaseFirestore.instance.collection('approval_requests').get();
-  final List<String> fetchedStatusOptions = snapshot.docs.map((doc) => doc['status'] as String).toSet().toList();
-  
-  // Reorder the status options list to have "Pending" first
-  fetchedStatusOptions.remove('pending'); // Remove "Pending" if it exists
-  fetchedStatusOptions.insert(0, 'pending'); // Insert "Pending" at the beginning
-  
-  setState(() {
-    statusOptions = fetchedStatusOptions;
-    // Set default selected status to the first option if available
-    selectedStatus = statusOptions.isNotEmpty ? statusOptions.first : '';
-  });
-}
+    final snapshot =
+        await FirebaseFirestore.instance.collection('approval_requests').get();
+    final List<String> fetchedStatusOptions =
+        snapshot.docs.map((doc) => doc['status'] as String).toSet().toList();
 
+    // Reorder the status options list to have "Pending" first
+    fetchedStatusOptions.remove('pending'); // Remove "Pending" if it exists
+    fetchedStatusOptions.insert(
+        0, 'pending'); // Insert "Pending" at the beginning
+
+    setState(() {
+      statusOptions = fetchedStatusOptions;
+      // Set default selected status to the first option if available
+      selectedStatus = statusOptions.isNotEmpty ? statusOptions.first : '';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +62,8 @@ class _ApprovalListState extends State<ApprovalList> {
       body: Column(
         children: [
           Padding(
-            padding: EdgeInsets.only(top: 10.0), // Adjust top padding for spacing
+            padding:
+                EdgeInsets.only(top: 10.0), // Adjust top padding for spacing
             child: Container(
               margin: EdgeInsets.fromLTRB(15, 0, 15, 0),
               padding: EdgeInsets.all(10),
@@ -105,11 +109,16 @@ class _ApprovalListState extends State<ApprovalList> {
                     final name = request['productName'] as String;
                     final price = (request['price'] as num?)?.toDouble();
                     // final price = request['price'] as double?; // Replace with dynamic data if available
-                    final imageUrl = request['imageUrl'] as String; // Fetch imageUrl dynamically from Firestore
+                    final imageUrl = request['imageUrl']
+                        as String; // Fetch imageUrl dynamically from Firestore
                     final status = request['status'] as String;
                     // final sellingPrice = request['selling price'] as String?; // Fetch selling price from Firestore
-                    final data = request.data() as Map<String, dynamic>?; // Cast to Map<String, dynamic>?
-final sellingPrice = data != null && data.containsKey('selling price') ? data['selling price'] as String? : null;
+                    final data = request.data() as Map<String,
+                        dynamic>?; // Cast to Map<String, dynamic>?
+                    final sellingPrice =
+                        data != null && data.containsKey('selling price')
+                            ? data['selling price'] as String?
+                            : null;
 
                     return Card(
                       elevation: 2,
@@ -121,7 +130,8 @@ final sellingPrice = data != null && data.containsKey('selling price') ? data['s
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => detailscreen(request: request),
+                                builder: (context) =>
+                                    detailscreen(request: request),
                               ),
                             );
                           }
@@ -134,7 +144,8 @@ final sellingPrice = data != null && data.containsKey('selling price') ? data['s
                             children: [
                               Container(
                                 margin: EdgeInsets.fromLTRB(15, 15, 20, 20),
-                                child: Image.network( // Use Image.network to load imageUrl from Firestore
+                                child: Image.network(
+                                  // Use Image.network to load imageUrl from Firestore
                                   imageUrl,
                                   width: 150,
                                   height: 150,
@@ -151,7 +162,8 @@ final sellingPrice = data != null && data.containsKey('selling price') ? data['s
                                     SizedBox(height: 20.0),
                                     Text(
                                       'Name: $name',
-                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     SizedBox(height: 10.0),
                                     Text('Price: $price'),
@@ -159,7 +171,8 @@ final sellingPrice = data != null && data.containsKey('selling price') ? data['s
                                     Text('Quantity: $quantity'),
                                     SizedBox(height: 10.0),
                                     // Display selling price if available and status is not pending
-                                    if (status == 'approved') Text('Selling Price: $sellingPrice'),
+                                    if (status == 'approved')
+                                      Text('Selling Price: $sellingPrice'),
                                     // SizedBox(height: 30.0),
                                     // Only display more button if status is pending
                                     if (status == 'pending')
@@ -168,12 +181,15 @@ final sellingPrice = data != null && data.containsKey('selling price') ? data['s
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => detailscreen(request: request),
+                                              builder: (context) =>
+                                                  detailscreen(
+                                                      request: request),
                                             ),
                                           );
                                         },
                                         style: ElevatedButton.styleFrom(
-                                          primary: Color.fromARGB(255, 3, 94, 147),
+                                          primary:
+                                              Color.fromARGB(255, 3, 94, 147),
                                         ),
                                         child: Padding(
                                           padding: const EdgeInsets.all(10.0),
@@ -198,27 +214,29 @@ final sellingPrice = data != null && data.containsKey('selling price') ? data['s
     );
   }
 
-Widget buildStatusOption(String status) {
-  return GestureDetector(
-    onTap: () {
-      setState(() {
-        selectedStatus = status;
-      });
-    },
-    child: Container(
-      padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-      decoration: BoxDecoration(
-        color: selectedStatus == status ? Color.fromARGB(255, 3, 94, 147) : Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        status,
-        style: TextStyle(
-          color: selectedStatus == status ? Colors.white : Colors.black,
-          fontWeight: FontWeight.bold,
+  Widget buildStatusOption(String status) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedStatus = status;
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+        decoration: BoxDecoration(
+          color: selectedStatus == status
+              ? Color.fromARGB(255, 3, 94, 147)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          status,
+          style: TextStyle(
+            color: selectedStatus == status ? Colors.white : Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'CommitSale.dart';
-
 class detailss extends StatelessWidget {
   final String imageUrl;
   final String productName;
   final String sellingPrice;
-  final String expireDate;
+  final Timestamp expireDate; // Change the type to Timestamp
   final Map<String, dynamic> additionalFields; // New field to hold additional data
 
   detailss({
@@ -30,18 +29,19 @@ class detailss extends StatelessWidget {
         imageUrl: imageUrl,
         productName: productName,
         sellingPrice: sellingPrice,
-        expireDate: expireDate,
+        expireDate: expireDate, // Pass the expireDate as a Timestamp
         additionalFields: additionalFields, // Pass additional fields to the detail screen
       ),
     );
   }
 }
 
+
 class ProductDetailPage extends StatelessWidget {
   final String imageUrl;
   final String productName;
   final String sellingPrice;
-  final String expireDate;
+  final Timestamp expireDate; // Change the type to Timestamp
   final Map<String, dynamic> additionalFields; // New field to hold additional data
 
   ProductDetailPage({
@@ -54,20 +54,26 @@ class ProductDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Convert the Timestamp to a formatted string
+    String formattedExpireDate =
+        expireDate.toDate().toString(); // Assuming you want a simple string representation
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
         title: Text('Details'),
-       leading: IconButton(
+        leading: IconButton(
           icon: Icon(Icons.arrow_back),
           color: Colors.white,
           onPressed: () {
-           Navigator.push(context, MaterialPageRoute(builder: (context) => CommitSale()));
-
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CommitSale()),
+            );
           },
         ),
       ),
-      body: SingleChildScrollView(
+       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -84,6 +90,7 @@ class ProductDetailPage extends StatelessWidget {
                   ),
                 ),
               ),
+              // Existing code...
               SizedBox(height: 16.0),
               Card(
                 elevation: 4.0,
@@ -106,24 +113,24 @@ class ProductDetailPage extends StatelessWidget {
                       ),
                       SizedBox(height: 8.0),
                       Text(
-                        'Expire Date: ${expireDate}',
+                        'Expire Date: $formattedExpireDate', // Use formattedExpireDate
                         style: TextStyle(fontSize: 16.0),
                       ),
-                      SizedBox(height: 16.0),
+                      SizedBox(height: 8.0),
                       // Additional fields fetched from Firestore
                       if (additionalFields.isNotEmpty) // Check if additional fields are available
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Price: ${additionalFields['price']}',
-                              style: TextStyle(fontSize: 16.0),
-                            ),
-                            SizedBox(height: 8.0),
-                            Text(
-                              'Product ID: ${additionalFields['productId']}',
-                              style: TextStyle(fontSize: 16.0),
-                            ),
+                            // Text(
+                            //   'Price: ${additionalFields['price']}',
+                            //   style: TextStyle(fontSize: 16.0),
+                            // ),
+                            // SizedBox(height: 8.0),
+                            // Text(
+                            //   'Product ID: ${additionalFields['productId']}',
+                            //   style: TextStyle(fontSize: 16.0),
+                            // ),
                             SizedBox(height: 8.0),
                             Text(
                               'Quantity: ${additionalFields['quantity']}',
@@ -145,7 +152,7 @@ class ProductDetailPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Enter Quantity:',
+                        'Enter Quantity You Want to Sell:',
                         style: TextStyle(
                           fontSize: 16.0,
                           fontWeight: FontWeight.bold,
@@ -168,7 +175,7 @@ class ProductDetailPage extends StatelessWidget {
                       SizedBox(height: 8.0),
                       TextFormField(
                         decoration: InputDecoration(
-                          hintText: 'Enter Sold By',
+                          hintText: 'Enter Your Name',
                         ),
                       ),
                       SizedBox(height: 16.0),
@@ -203,7 +210,7 @@ class ProductDetailPage extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Text(
-                    'Commit',
+                    'Commit Sale',
                     style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
