@@ -18,7 +18,7 @@ Future<void> main() async {
   ).then((_) {
     runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Wholesale wise',
       home: LoginView(),
     ));
   }).catchError((error) {

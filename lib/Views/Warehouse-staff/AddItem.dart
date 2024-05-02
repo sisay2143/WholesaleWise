@@ -19,7 +19,7 @@ class _AddProductFormState extends State<AddProductForm> {
   final _quantityController = TextEditingController();
   final _priceController = TextEditingController();
   final _distributorController = TextEditingController();
-  final _categoryController = TextEditingController();
+  // final _categoryController = TextEditingController();
   final _pidController = TextEditingController();
   final _expiredateController = TextEditingController();
   late File _pickedImage; // Use File for selected image
@@ -58,8 +58,11 @@ class _AddProductFormState extends State<AddProductForm> {
           await uploadTask.whenComplete(() => null);
       final String imageUrl = await taskSnapshot.ref.getDownloadURL();
 
+       final DateFormat format = DateFormat("MMMM d, y 'at' h:mm:ss a 'UTC'Z");
+    // final DateTime timestamp = format.parse(newProduct.timestamp);
+
       // Generate timestamp
-      final DateTime timestamp = DateTime.now();
+      // final DateTime timestamp = DateTime.now();
 
       await _firestore
           // .collection('users')
@@ -73,7 +76,8 @@ class _AddProductFormState extends State<AddProductForm> {
         'category': newProduct.category,
         'expiredate': newProduct.expiredate,
         'imageUrl': imageUrl,
-        'timestamp': timestamp, // Add timestamp field
+        // 'timestamp': timestamp, // Add timestamp field
+        'timestamp': FieldValue.serverTimestamp(), // Add timestamp field
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -306,6 +310,7 @@ class _AddProductFormState extends State<AddProductForm> {
                       String expireDateText = _expiredateController.text;
                       DateTime expireDate =
                           DateFormat('yyyy-MM-dd').parse(expireDateText);
+                      
                       Product newProduct = Product(
                         name: _nameController.text,
                         pid: _pidController.text,

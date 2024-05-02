@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:untitled/Views/login.dart';
+import '../../controllers/authservice.dart';
+
 
 class ProfileData {
   String fullname;
@@ -41,6 +43,14 @@ class _ProfilePageState extends State<Profile> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+   final AuthService authService = AuthService();
+
+  // Rest of the code...
+
+  void _handleLogout() {
+    authService.logout();
+  }
 
   @override
   void initState() {
@@ -138,6 +148,7 @@ class _ProfilePageState extends State<Profile> {
         actions: [
           TextButton(
             onPressed: () {
+              _handleLogout();
               FirebaseAuth.instance.signOut();
               Navigator.pushReplacement(
                 context,

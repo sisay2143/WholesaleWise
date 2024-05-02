@@ -26,6 +26,7 @@ class _detailscreenState extends State<detailscreen> {
   String? _selectedOption;
   Product? _selectedProduct;
   late Product pro;
+  String reason = ''; 
 
   
   Future<void> _fetchProductByPid(String pidOrName) async {
@@ -37,18 +38,25 @@ class _detailscreenState extends State<detailscreen> {
           _selectedProduct = product;
           pro = product;
         });
+       // Fetch the reason for stock out from Firestore
+        await FirebaseFirestore.instance
+            .collection('approval_requests')
+            .where('productId', isEqualTo: product.pid)
+            .where('status', isEqualTo: 'pending')
+            .get()
+            .then((QuerySnapshot querySnapshot) {
+          querySnapshot.docs.forEach((doc) {
+            setState(() {
+              reason = doc['reason'];
+            });
+          });
+        });
       } else {
         throw 'Product not found';
       }
     } catch (error) {
       print('Error fetching product: $error');
-      // _showAlertDialog('Error', 'Product not found');
     }
-  }
-  void _handleOptionChange(String? option) {
-    setState(() {
-      _selectedOption = option;
-    });
   }
 
  Future<void> _approveRequest(DocumentSnapshot request) async {
@@ -68,6 +76,7 @@ class _detailscreenState extends State<detailscreen> {
     // Get the requested quantity and product name from the approval request
     int requestedQuantity = approvalRequestSnapshot['quantity'];
     String productName = approvalRequestSnapshot['productName'];
+    String reason = approvalRequestSnapshot['reason'];
     print('Requested Quantity: $requestedQuantity');
     print('Product Name: $productName');
 
@@ -219,45 +228,52 @@ class _detailscreenState extends State<detailscreen> {
 
 
   @override
-  Widget build(BuildContext context) {
-    final name = widget.request['productName'];
-    final quantity = widget.request['quantity'];
-    final imageUrl = widget.request['imageUrl']; // Fetch imageUrl from Firestore
+  @override
+Widget build(BuildContext context) {
+  final name = widget.request['productName'];
+  final quantity = widget.request['quantity'];
+  final reason = widget.request['reason'];
+  final imageUrl = widget.request['imageUrl']; // Fetch imageUrl from Firestore
 
-    return Builder(
-      builder: (BuildContext context) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('Product Details'),
-            backgroundColor: Color.fromARGB(255, 3, 94, 147),
-          ),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Card(
-                  elevation: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.network(
-                          imageUrl, // Use Image.network to load imageUrl from Firestore
-                          width: double.infinity,
-                          height: 200,
-                          fit: BoxFit.cover,
-                        ),
-                        SizedBox(height: 20.0),
-                        Text(
-                          'Name: $name',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 10.0),
-                        Text('Quantity: $quantity'),
-                        SizedBox(height: 10.0),
-                        // TextFormField for setting the new price
+  // Define a variable to determine whether to show the price field
+  bool showPriceField = reason != 'Worn Out';
+
+  return Builder(
+    builder: (BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Product Details'),
+          backgroundColor: Color.fromARGB(255, 3, 94, 147),
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Card(
+                elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Image.network(
+                        imageUrl, // Use Image.network to load imageUrl from Firestore
+                        width: double.infinity,
+                        height: 200,
+                        fit: BoxFit.cover,
+                      ),
+                      SizedBox(height: 20.0),
+                      Text(
+                        'Name: $name',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 10.0),
+                      Text('Quantity: $quantity'),
+                      Text('Reason: $reason'),
+                      SizedBox(height: 10.0),
+                      // Conditionally show the TextFormField based on the reason
+                      if (showPriceField)
                         TextFormField(
                           decoration: InputDecoration(
                             labelText: 'Set Price',
@@ -270,48 +286,48 @@ class _detailscreenState extends State<detailscreen> {
                             });
                           },
                         ),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
               ),
-              SizedBox(height: 20.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        _showConfirmationDialog(widget.request); // Show confirmation dialog
-                      },
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.green,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                        child: Text('Approve'),
-                      ),
+            ),
+            SizedBox(height: 20.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      _showConfirmationDialog(widget.request); // Show confirmation dialog
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.green,
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        _rejectRequest(widget.request); // Call reject function with request
-                      },
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.red,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                        child: Text('Reject'),
-                      ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                      child: Text('Approve'),
                     ),
-                  ],
-                ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      _rejectRequest(widget.request); // Call reject function with request
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.red,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                      child: Text('Reject'),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
 }

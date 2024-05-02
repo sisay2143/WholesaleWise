@@ -28,7 +28,8 @@ class Product {
       category: map['category'],
       imageUrl: map['imageUrl'],
       expiredate: map['expiredate'].toDate(),
-      timestamp: map['timestamp'],
+      timestamp: map['timestamp'].toDate(),
+      
     );
   }
 }

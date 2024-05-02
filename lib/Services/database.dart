@@ -150,10 +150,9 @@ Future<void> deleteProduct(String pid) async {
           category: data['category'],
           imageUrl: data['imageUrl'],
           pid: data['pid'],
-          timestamp: DateTime.now(),
           // expiredate: data['expiredate'],
           expiredate: DateTime.parse(data['expiredate']),
-
+          timestamp: data['timestamp'].toDate(),
         );
       }).toList();
       return products;

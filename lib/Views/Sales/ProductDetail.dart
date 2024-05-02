@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:untitled/Views/Sales/CommitSale.dart';
 
 class detailss extends StatelessWidget {
   final String imageUrl;
@@ -57,10 +58,15 @@ class ProductDetailPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
         title: Text('Details'),
-        leading: IconButton(
+       leading: IconButton(
           icon: Icon(Icons.arrow_back),
+          color: Colors.white,
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CommitSale()),
+                  );
+                // Navigate to the home page using the named route '/'
           },
         ),
       ),

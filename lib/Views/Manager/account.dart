@@ -313,15 +313,7 @@ class AccountPage extends StatelessWidget {
               if (result == 'settings') {
                 // Navigate to settings page
               } else if (result == 'logout') {
-                void _handleLogout() {
-                  authService.logout();
-                }
-                // FirebaseAuth.instance.signOut(); //
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => LoginView()),
-                // );
-                // Implement logout functionality
+                   _handleLogout(context); 
               }
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -490,6 +482,18 @@ class AccountPage extends StatelessWidget {
       ),
     );
   }
+  void _handleLogout(BuildContext context) {
+  final authService = AuthService();
+
+  authService.logout();
+
+  // Navigate to the login screen
+  Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(builder: (context) => LoginView()),
+    (route) => false,
+  );
+}
 
   Widget _buildUserContainer(
     BuildContext context,
