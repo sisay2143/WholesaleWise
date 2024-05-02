@@ -168,11 +168,72 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             
-            
+             SizedBox(
+                      height: 10,
+                    ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // IconWithBackground(Icons.list_alt),
+                Column(
+                  children: [
+                    IconWithBackground(
+                      iconData: Icons.list_alt,
+                      backgroundColor: Color.fromARGB(255, 3, 94, 147),
+                      onTap: () {
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => ItemsList()),
+                        // );
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text('item list'),
+                  ],
+                ),
+                Column(
+                  children: [
+                    IconWithBackground(
+                      iconData: Icons.article,
+                      backgroundColor: Color.fromARGB(255, 3, 94, 147),
+                      onTap: () {
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //       builder: (context) => SalesAnalytics()),
+                        // );
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text('Requests'),
+                  ],
+                ),
+                Column(
+                  children: [
+                    IconWithBackground(
+                      iconData: Icons.analytics,
+                      backgroundColor: Color.fromARGB(255, 3, 94, 147),
+                      onTap: () {
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //       builder: (context) => ProfitScreen()),
+                        // );
+                      },
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text('Reporting'),
+                  ],
+                ),
+              ],
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
       
             // Add the bar graph below
             Card(
@@ -183,9 +244,9 @@ class HomeScreen extends StatelessWidget {
                     title: Text('Sales Overview'),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(15.0),
+                    padding: const EdgeInsets.all(10.0),
                     child: Container(
-                      height: 250,
+                      height: 200,
                       child: _buildBarChart(), // Real bar chart
                     ),
                   ),
@@ -239,29 +300,29 @@ class HomeScreen extends StatelessWidget {
 //   }
 // }
 
-class IconWithBackground extends StatelessWidget {
-  final IconData iconData;
+// class IconWithBackground extends StatelessWidget {
+//   final IconData iconData;
 
-  IconWithBackground(this.iconData);
+//   IconWithBackground(this.iconData);
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 75,
-      height: 75,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.blue,
-      ),
-      child: Center(
-        child: Icon(
-          iconData,
-          size: 50,
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       width: 75,
+//       height: 75,
+//       decoration: BoxDecoration(
+//         shape: BoxShape.circle,
+//         color: Colors.blue,
+//       ),
+//       child: Center(
+//         child: Icon(
+//           iconData,
+//           size: 50,
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 // class HeroSec extends StatelessWidget {
 //   final String title;
@@ -321,4 +382,39 @@ class SalesData {
   final int sales;
 
   SalesData(this.month, this.sales);
+}
+
+
+class IconWithBackground extends StatelessWidget {
+  final IconData iconData;
+  final Color backgroundColor;
+  final Function()? onTap;
+
+  IconWithBackground({
+    required this.iconData,
+    required this.backgroundColor,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 65,
+        height: 65,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: backgroundColor,
+        ),
+        child: Center(
+          child: Icon(
+            iconData,
+            size: 35,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
 }
