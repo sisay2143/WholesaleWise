@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:untitled/models/products.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
@@ -14,16 +13,15 @@ class AddProductForm extends StatefulWidget {
 }
 
 class _AddProductFormState extends State<AddProductForm> {
+  String? selectedCategory; // Declare selectedCategory here
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _quantityController = TextEditingController();
   final _priceController = TextEditingController();
-  final _distributorController = TextEditingController();
-  // final _categoryController = TextEditingController();
+  // final _distributorController = TextEditingController();
   final _pidController = TextEditingController();
   final _expiredateController = TextEditingController();
-  late File _pickedImage; // Use File for selected image
-
+  late File _pickedImage;
   late ImagePicker _imagePicker;
   late FirebaseFirestore _firestore;
   User? user = FirebaseAuth.instance.currentUser;
@@ -46,54 +44,41 @@ class _AddProductFormState extends State<AddProductForm> {
       });
     }
   }
+Future<void> _addProductToFirestore(Product newProduct, String selectedCategory) async {
+  try {
+    final String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    final Reference storageReference = FirebaseStorage.instance.ref().child('product_images/$fileName.jpg');
+    final UploadTask uploadTask = storageReference.putFile(_pickedImage);
 
-  Future<void> _addProductToFirestore(Product newProduct) async {
-    try {
-      final String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      final Reference storageReference =
-          FirebaseStorage.instance.ref().child('product_images/$fileName.jpg');
-      final UploadTask uploadTask = storageReference.putFile(_pickedImage);
+    final TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
+    final String imageUrl = await taskSnapshot.ref.getDownloadURL();
 
-      final TaskSnapshot taskSnapshot =
-          await uploadTask.whenComplete(() => null);
-      final String imageUrl = await taskSnapshot.ref.getDownloadURL();
+    // Add the new product to Firestore
+    await _firestore.collection('products').add({
+      'name': newProduct.name,
+      'pid': newProduct.pid,
+      'quantity': newProduct.quantity,
+      'price': newProduct.price,
+      'category': selectedCategory,
+      'expiredate': newProduct.expiredate,
+      'imageUrl': imageUrl,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
 
-       final DateFormat format = DateFormat("MMMM d, y 'at' h:mm:ss a 'UTC'Z");
-    // final DateTime timestamp = format.parse(newProduct.timestamp);
-
-      // Generate timestamp
-      // final DateTime timestamp = DateTime.now();
-
-      await _firestore
-          // .collection('users')
-          // .doc(user!.uid)
-          .collection('products')
-          .add({
-        'name': newProduct.name,
-        'pid': newProduct.pid,
-        'quantity': newProduct.quantity,
-        'price': newProduct.price,
-        'category': newProduct.category,
-        'expiredate': newProduct.expiredate,
-        'imageUrl': imageUrl,
-        // 'timestamp': timestamp, // Add timestamp field
-        'timestamp': FieldValue.serverTimestamp(), // Add timestamp field
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Product added to Firestore')),
-      );
-    } catch (e) {
-      print('Error adding product: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error adding product: $e')),
-      );
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Product added to Firestore')),
+    );
+  } catch (e) {
+    print('Error adding product: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error adding product: $e')),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
-    String? selectedCategory;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
@@ -126,7 +111,7 @@ class _AddProductFormState extends State<AddProductForm> {
                       ? Icon(Icons.camera_alt,
                           size: 60.0, color: Color.fromRGBO(107, 59, 225, 1))
                       : Image.file(
-                          _pickedImage, // Use the File object here
+                          _pickedImage,
                           fit: BoxFit.cover,
                         ),
                 ),
@@ -319,20 +304,19 @@ class _AddProductFormState extends State<AddProductForm> {
                         category: selectedCategory ?? 'Default Category',
                         expiredate: expireDate,
                         imageUrl: _pickedImage.path,
-                        timestamp: DateTime.now(), // Add timestamp
+                        timestamp: DateTime.now(),
                       );
 
-                      _addProductToFirestore(newProduct);
+                      _addProductToFirestore(newProduct, selectedCategory ?? '');
                       _nameController.clear();
                       _pidController.clear();
                       _quantityController.clear();
                       _priceController.clear();
-                      _distributorController.clear();
-                      // _categoryController.clear();
+                      // _distributorController.clear();
+                      // selectedCategory = null; // No need to set it to null
                       _expiredateController.clear();
-                      // selectedCategory.clear();
                       setState(() {
-                        _pickedImage = File(''); // Clear the picked image
+                        _pickedImage = File('');
                       });
 
                       ScaffoldMessenger.of(context).showSnackBar(
