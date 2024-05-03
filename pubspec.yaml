@@ -52,6 +52,8 @@ dependencies:
   camera: ^0.10.5+9
   flutter_slidable: ^3.1.0
   badges: ^3.1.2
+  cloud_functions: ^4.6.0
+  flutter_email_sender: ^6.0.3
 
 
 dev_dependencies:

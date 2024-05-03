@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts; // Added charts_flutter import
+import 'package:untitled/Views/Manager/reporting.dart';
+import 'package:untitled/Views/Sales/order.dart';
 import 'package:untitled/Views/sales/NotificationSales.dart';
 import 'CommitSale.dart';
 import 'ProfileSales.dart';
@@ -199,17 +201,17 @@ class HomeScreen extends StatelessWidget {
                       iconData: Icons.article,
                       backgroundColor: Color.fromARGB(255, 3, 94, 147),
                       onTap: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (context) => SalesAnalytics()),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => order()),
+                        );
                       },
                     ),
                     SizedBox(
                       height: 10,
                     ),
-                    Text('Requests'),
+                    Text('order'),
                   ],
                 ),
                 Column(
@@ -218,11 +220,11 @@ class HomeScreen extends StatelessWidget {
                       iconData: Icons.analytics,
                       backgroundColor: Color.fromARGB(255, 3, 94, 147),
                       onTap: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (context) => ProfitScreen()),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Reporting()),
+                        );
                       },
                     ),
                     SizedBox(
@@ -288,94 +290,7 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-// class SalesRecords extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       color: Colors.grey[200],
-//       child: Center(
-//         child: Text('Sales Records Page'),
-//       ),
-//     );
-//   }
-// }
 
-// class IconWithBackground extends StatelessWidget {
-//   final IconData iconData;
-
-//   IconWithBackground(this.iconData);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       width: 75,
-//       height: 75,
-//       decoration: BoxDecoration(
-//         shape: BoxShape.circle,
-//         color: Colors.blue,
-//       ),
-//       child: Center(
-//         child: Icon(
-//           iconData,
-//           size: 50,
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class HeroSec extends StatelessWidget {
-//   final String title;
-//   final String subtitle;
-
-//   const HeroSec(this.title, this.subtitle);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: [
-//         Text(
-//           title,
-//           style: TextStyle(color: Colors.white, fontSize: 24),
-//         ),
-//         SizedBox(height: 10),
-//         Text(
-//           subtitle,
-//           style: TextStyle(color: Colors.white, fontSize: 16),
-//         ),
-//       ],
-//     );
-//   }
-// }
-
-// class CarouselStatus extends StatelessWidget {
-//   final int itemCount;
-//   final int currentSlide;
-
-//   const CarouselStatus(
-//       {Key? key, required this.itemCount, required this.currentSlide})
-//       : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Row(
-//       children: [
-//         for (int index = 0; index < itemCount; index++)
-//           Container(
-//             width: 8,
-//             height: 8,
-//             margin: const EdgeInsets.symmetric(horizontal: 4),
-//             decoration: BoxDecoration(
-//               shape: BoxShape.circle,
-//               color: currentSlide == index
-//                   ? const Color.fromARGB(255, 30, 69, 224)
-//                   : Colors.white,
-//             ),
-//           ),
-//       ],
-//     );
-//   }
-// }
 
 class SalesData {
   final String month;
