@@ -53,7 +53,9 @@ class Reportings extends StatelessWidget {
 
 
 
-Widget _buildSoontoExpire() {
+
+
+ Widget _buildSoontoExpire() {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final User? user = FirebaseAuth.instance.currentUser;
 
@@ -137,10 +139,6 @@ Widget _buildSoontoExpire() {
     ),
   );
 }
-
-
-  
-
 
    Widget _buildRunningOutProducts() {
     return Card(

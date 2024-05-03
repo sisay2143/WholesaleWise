@@ -143,24 +143,28 @@ class _ProfilePageState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+
+        title: Center(child: Text('         Profile')),
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
         actions: [
-          TextButton(
-            onPressed: () {
-              _handleLogout();
-              FirebaseAuth.instance.signOut();
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => LoginView()),
-              );
-            },
-            child: Text(
-              'Logout',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
+    PopupMenuButton(
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          child: Text("Logout"),
+          value: "logout",
+        ),
+      ],
+      onSelected: (value) {
+        if (value == "logout") {
+          FirebaseAuth.instance.signOut();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginView()),
+          );
+        }
+      },
+    ),
+  ],
       ),
       body: SingleChildScrollView(
         child: Padding(
