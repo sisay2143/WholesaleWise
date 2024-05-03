@@ -26,6 +26,7 @@ class _detailscreenState extends State<detailscreen> {
   String? _selectedOption;
   Product? _selectedProduct;
   late Product pro;
+  String reason = ''; 
 
   
   Future<void> _fetchProductByPid(String pidOrName) async {
@@ -37,21 +38,27 @@ class _detailscreenState extends State<detailscreen> {
           _selectedProduct = product;
           pro = product;
         });
+       // Fetch the reason for stock out from Firestore
+        await FirebaseFirestore.instance
+            .collection('approval_requests')
+            .where('productId', isEqualTo: product.pid)
+            .where('status', isEqualTo: 'pending')
+            .get()
+            .then((QuerySnapshot querySnapshot) {
+          querySnapshot.docs.forEach((doc) {
+            setState(() {
+              reason = doc['reason'];
+            });
+          });
+        });
       } else {
         throw 'Product not found';
       }
     } catch (error) {
       print('Error fetching product: $error');
-      // _showAlertDialog('Error', 'Product not found');
     }
   }
-  void _handleOptionChange(String? option) {
-    setState(() {
-      _selectedOption = option;
-    });
-  }
-
- Future<void> _approveRequest(DocumentSnapshot request) async {
+Future<void> _approveRequest(DocumentSnapshot request) async {
   try {
     // Get the document ID of the approval request
     String requestId = request.id;
@@ -68,6 +75,7 @@ class _detailscreenState extends State<detailscreen> {
     // Get the requested quantity and product name from the approval request
     int requestedQuantity = approvalRequestSnapshot['quantity'];
     String productName = approvalRequestSnapshot['productName'];
+    String reason = approvalRequestSnapshot['reason'];
     print('Requested Quantity: $requestedQuantity');
     print('Product Name: $productName');
 
@@ -95,7 +103,32 @@ class _detailscreenState extends State<detailscreen> {
           'selling price': _newPrice
         });
 
-        print('Approval request approved. Requested quantity deducted from the product.');
+        // Check if the product already exists in the 'products for sale' collection
+        QuerySnapshot saleProductQuerySnapshot = await FirebaseFirestore.instance.collection('products for sale').where('name', isEqualTo: productName).get();
+        if (saleProductQuerySnapshot.docs.isNotEmpty) {
+          DocumentSnapshot saleProductSnapshot = saleProductQuerySnapshot.docs.first;
+          // Update existing document by adding requested quantity to current quantity
+          int existingQuantity = saleProductSnapshot['quantity'];
+          int newQuantity = existingQuantity + requestedQuantity;
+         await saleProductSnapshot.reference.update({
+            'quantity': newQuantity,
+            'selling price': _newPrice // Update selling price
+          });
+          print('Existing product updated with new quantity.');
+        } else {
+          // Add the approved product to the 'products for sale' collection
+          await FirebaseFirestore.instance.collection('products for sale').add({
+            'name': productName,
+            'quantity': requestedQuantity,
+            'imageUrl': approvalRequestSnapshot['imageUrl'],
+            'pid': approvalRequestSnapshot['productId'],
+            'category': 'Default Category',
+            'expiredate': Timestamp.fromDate(DateTime.parse('2024-05-30 00:00:00')),
+            'selling price': _newPrice, // Assuming _newPrice is the selling price entered by the user
+            'productId': approvalRequestSnapshot.id, // Assuming this is the product ID in the "approval_requests" collection
+          });
+          print('Approval request approved. Product added to "products for sale" collection.');
+        }
       } else {
         print('Error: Insufficient quantity available.');
         // Handle error appropriately, e.g., show an error message to the user
@@ -109,6 +142,8 @@ class _detailscreenState extends State<detailscreen> {
     // Handle error appropriately
   }
 }
+
+
 
   Future<void> _rejectRequest(DocumentSnapshot request) async {
     // Implement rejection logic here
@@ -219,45 +254,52 @@ class _detailscreenState extends State<detailscreen> {
 
 
   @override
-  Widget build(BuildContext context) {
-    final name = widget.request['productName'];
-    final quantity = widget.request['quantity'];
-    final imageUrl = widget.request['imageUrl']; // Fetch imageUrl from Firestore
+  @override
+Widget build(BuildContext context) {
+  final name = widget.request['productName'];
+  final quantity = widget.request['quantity'];
+  final reason = widget.request['reason'];
+  final imageUrl = widget.request['imageUrl']; // Fetch imageUrl from Firestore
 
-    return Builder(
-      builder: (BuildContext context) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('Product Details'),
-            backgroundColor: Color.fromARGB(255, 3, 94, 147),
-          ),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Card(
-                  elevation: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.network(
-                          imageUrl, // Use Image.network to load imageUrl from Firestore
-                          width: double.infinity,
-                          height: 200,
-                          fit: BoxFit.cover,
-                        ),
-                        SizedBox(height: 20.0),
-                        Text(
-                          'Name: $name',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 10.0),
-                        Text('Quantity: $quantity'),
-                        SizedBox(height: 10.0),
-                        // TextFormField for setting the new price
+  // Define a variable to determine whether to show the price field
+  bool showPriceField = reason != 'Worn Out';
+
+  return Builder(
+    builder: (BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Product Details'),
+          backgroundColor: Color.fromARGB(255, 3, 94, 147),
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Card(
+                elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Image.network(
+                        imageUrl, // Use Image.network to load imageUrl from Firestore
+                        width: double.infinity,
+                        height: 200,
+                        fit: BoxFit.cover,
+                      ),
+                      SizedBox(height: 20.0),
+                      Text(
+                        'Name: $name',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 10.0),
+                      Text('Quantity: $quantity'),
+                      Text('Reason: $reason'),
+                      SizedBox(height: 10.0),
+                      // Conditionally show the TextFormField based on the reason
+                      if (showPriceField)
                         TextFormField(
                           decoration: InputDecoration(
                             labelText: 'Set Price',
@@ -270,48 +312,48 @@ class _detailscreenState extends State<detailscreen> {
                             });
                           },
                         ),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
               ),
-              SizedBox(height: 20.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        _showConfirmationDialog(widget.request); // Show confirmation dialog
-                      },
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.green,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                        child: Text('Approve'),
-                      ),
+            ),
+            SizedBox(height: 20.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      _showConfirmationDialog(widget.request); // Show confirmation dialog
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.green,
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        _rejectRequest(widget.request); // Call reject function with request
-                      },
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.red,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                        child: Text('Reject'),
-                      ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                      child: Text('Approve'),
                     ),
-                  ],
-                ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      _rejectRequest(widget.request); // Call reject function with request
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.red,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                      child: Text('Reject'),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
 }

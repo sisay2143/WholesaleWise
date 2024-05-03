@@ -46,6 +46,7 @@ class _StockOutPageState extends State<StockOutPage> {
       _showAlertDialog('Error', 'Product not found');
     }
   }
+
   void _handleOptionChange(String? option) {
     setState(() {
       _selectedOption = option;
@@ -63,92 +64,78 @@ class _StockOutPageState extends State<StockOutPage> {
   //   await transactionsRef.add({
   //     'productId': _selectedProduct!.pid,
   //     'quantityRemoved': int.parse(_quantityController.text),
-  //     'removedDate': FieldValue.serverTimestamp(),
+  //     'removedDate': FieldValue.serverTimestamp(),m 
   //   });
   //   // Update product status or other necessary actions
   // }
 
 // Modified sendApprovalRequest function
-// Completer to wait for approval response
-  // Completer<void>? listenForApprovalResponseCompleter;
+  Future<void> sendApprovalRequest() async {
+    try {
+      final DocumentSnapshot<Map<String, dynamic>> userDoc =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc('ThMFYek1BJhk1uqYHotsAI2MqC73')
+              .get();
+      if (userDoc.exists) {
+        final String? role = userDoc.data()?['role'];
+        if (role == 'manager') {
+          final String? managerUid = userDoc.id;
+          if (managerUid != null) {
+            if (_selectedProduct != null) {
+              // Check if product is selected
+              String productName = _selectedProduct!.name;
+              String productId = _selectedProduct!.pid; // Update to productId
+              DateTime expiredate = _selectedProduct!.expiredate;
+              String imageUrl = _selectedProduct!.imageUrl;
+              double price = _selectedProduct!.price;
+              String reason = _selectedOption!; // Get the selected reason
 
-// Modified sendApprovalRequest function
- Future<void> sendApprovalRequest() async {
-  try {
-    final DocumentSnapshot<Map<String, dynamic>> userDoc =
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc('ThMFYek1BJhk1uqYHotsAI2MqC73')
-            .get();
-    if (userDoc.exists) {
-      final String? role = userDoc.data()?['role'];
-      if (role == 'manager') {
-        final String? managerUid = userDoc.id;
-        if (managerUid != null) {
-          if (_selectedProduct != null) { // Check if product is selected
-            String productName = _selectedProduct!.name;
-            String productId = _selectedProduct!.pid; // Update to productId
-            DateTime expiredate = _selectedProduct!.expiredate;
-            String imageUrl = _selectedProduct!.imageUrl;
-            double price = _selectedProduct!.price;
+              // Initialize the Completer
+              // listenForApprovalResponseCompleter = Completer<void>();
 
-            // Initialize the Completer
-            // listenForApprovalResponseCompleter = Completer<void>();
+              await FirebaseFirestore.instance
+                  .collection('approval_requests')
+                  .add({
+                'productName': productName,
+                // 'productId': productId,
+                'expiredate': expiredate,
+                'imageUrl': imageUrl,
+                'quantity': int.parse(_quantityController.text),
+                'price': price, // Adding the price field
+                'requestedBy': FirebaseAuth.instance.currentUser!.uid,
+                'requestedAt': FieldValue.serverTimestamp(),
+                'managerUid': managerUid,
+                'status': 'pending',
+                'productId': productId, // Add the product ID as a foreign key
+                'reason': reason, // Include the reason for stock out
+              });
 
-            await FirebaseFirestore.instance
-                .collection('approval_requests')
-                .add({
-              'productName': productName,
-              // 'productId': productId,
-              'expiredate': expiredate,
-              'imageUrl': imageUrl,
-              'quantity': int.parse(_quantityController.text),
-              'price': price, // Adding the price field
-              'requestedBy': FirebaseAuth.instance.currentUser!.uid,
-              'requestedAt': FieldValue.serverTimestamp(),
-              'managerUid': managerUid,
-              'status': 'pending',
-              'productId': productId, // Add the product ID as a foreign key
-            });
+              _showAlertDialog(
+                'Request Sent',
+                'Approval request for stock-out sent to manager.',
+              );
 
-            _showAlertDialog(
-              'Request Sent',
-              'Approval request for stock-out sent to manager.',
-            );
-
-            // Wait for approval response before proceeding
-            // await listenForApprovalResponse;
+              // Wait for approval response before proceeding
+              // await listenForApprovalResponse;
+            } else {
+              throw 'Product not selected.';
+            }
           } else {
-            throw 'Product not selected.';
+            throw 'Manager UID not found.';
           }
         } else {
-          throw 'Manager UID not found.';
+          throw 'User is not a manager.';
         }
       } else {
-        throw 'User is not a manager.';
+        throw 'User document does not exist.';
       }
-    } else {
-      throw 'User document does not exist.';
+    } catch (error) {
+      print('Error sending approval request: $error');
+      _showAlertDialog('Error', 'Failed to send approval request.');
     }
-  } catch (error) {
-    print('Error sending approval request: $error');
-    _showAlertDialog('Error', 'Failed to send approval request.');
   }
-}
 
-  // Update product quantity after approval
-// Future<void> _updateProductQuantity() async {
-//   try {
-//     final int newQuantity = _selectedProduct!.quantity - int.parse(_quantityController.text);
-//     await _firestoreService.updateProductQuantity(_selectedProduct!.pid, newQuantity);
-//     // Show success message or perform any other necessary actions
-//     print(newQuantity);
-//     print('quantity updated');
-//   } catch (error) {
-//     print('Error updating product quantity: $error');
-//     _showAlertDialog('Error', 'Failed to update product quantity.');
-//   }
-// }
   void _showAlertDialog(String title, String message) {
     showDialog(
       context: context,
@@ -168,6 +155,15 @@ class _StockOutPageState extends State<StockOutPage> {
       },
     );
   }
+
+
+// String? _selectedOption; // Variable to store selected reason for stock out
+
+// void _handleOptionChange(String? option) {
+//   setState(() {
+//     _selectedOption = option;
+//   });
+// }
 
   @override
   Widget build(BuildContext context) {
@@ -234,23 +230,19 @@ class _StockOutPageState extends State<StockOutPage> {
                   'Select Stock Out reason:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                ListTile(
-                  title: Text('stock Out'),
-                  leading: Radio<String>(
-                    activeColor: Color.fromARGB(255, 3, 94, 147),
-                    value: 'Sold Out',
-                    groupValue: _selectedOption,
-                    onChanged: _handleOptionChange,
-                  ),
+                RadioListTile<String>(
+                  title: Text('Stock Out'),
+                  value: 'Sold Out',
+                  groupValue: _selectedOption,
+                  onChanged: _handleOptionChange,
+                  activeColor: Color.fromARGB(255, 3, 94, 147),
                 ),
-                ListTile(
+                RadioListTile<String>(
                   title: Text('Worn Out'),
-                  leading: Radio<String>(
-                    activeColor: Color.fromARGB(255, 3, 94, 147),
-                    value: 'Worn Out',
-                    groupValue: _selectedOption,
-                    onChanged: _handleOptionChange,
-                  ),
+                  value: 'Worn Out',
+                  groupValue: _selectedOption,
+                  onChanged: _handleOptionChange,
+                  activeColor: Color.fromARGB(255, 3, 94, 147),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(

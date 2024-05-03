@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'ProductDetail.dart';
+import 'package:intl/intl.dart';
+
 
 void main() {
   runApp(CommitSale());
@@ -11,7 +13,7 @@ class CommitSale extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Rectangular Box List',
+      title: 'Commit Sale',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -28,23 +30,10 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
         title: Text('Commit Sale'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search),
-            color: Colors.white,
-            onPressed: () {
-              // showSearch(
-              //   context: context,
-              //   // delegate: DataSearch(_filteredProducts),
-              // );
-            },
-          ),
-        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('approval_requests')
-            .where('status', isEqualTo: 'approved')
+            .collection('products for sale')
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -65,20 +54,18 @@ class MyHomePage extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => detailss(
                         imageUrl: item['imageUrl'] ?? '',
-                        productName: item['productName'] ?? '',
+                        productName: item['name'] ?? '',
                         sellingPrice: item['selling price'] ?? '',
                         expireDate: item['expiredate'] ?? '',
                         // Pass additional fields to the detail screen
                         additionalFields: {
-                          'price': item['price'] ?? '',
-                          'productId': item['productId'] ?? '',
+                          // 'price': item['price'] ?? '',
+                          'productId': documents[index].id,
                           'quantity': item['quantity'] ?? '',
                         },
                       ),
                     ),
                   );
-
-                  print('Item ${index + 1} pressed');
                 },
                 child: Card(
                   margin: EdgeInsets.fromLTRB(25, 15, 25, 10),
@@ -108,7 +95,7 @@ class MyHomePage extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                item['productName'],
+                                item['name'],
                                 style: TextStyle(
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
@@ -121,7 +108,7 @@ class MyHomePage extends StatelessWidget {
                               ),
                               SizedBox(height: 8.0),
                               Text(
-                                'Expire Date: ${item['expiredate']}',
+                                'Expire Date: ${DateFormat('MMMM dd, yyyy').format(item['expiredate'].toDate())}',
                                 style: TextStyle(fontSize: 16.0),
                               ),
                             ],

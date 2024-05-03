@@ -41,33 +41,36 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: null,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        flexibleSpace: Positioned.fill(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 40, bottom: 3, left: 35),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Hello, Dear',
+                  style: TextStyle(
+                    fontSize: 29.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.start,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.625,
+              height: MediaQuery.of(context).size.height * 0.53,
               child: Stack(
                 children: [
-                  Positioned.fill(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 30, bottom: 3),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '    Hello, Dear',
-                            style: TextStyle(
-                              fontSize: 29.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                            textAlign: TextAlign.start,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                   Positioned.fill(
                     top: MediaQuery.of(context).size.height * 0.1,
                     child: Image.asset(
@@ -125,7 +128,7 @@ class _LoginViewState extends State<LoginView> {
                     ),
                     SizedBox(height: 24.0),
                     Container(
-                       width: double.infinity, 
+                      width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () async {
                           setState(() {
@@ -134,38 +137,38 @@ class _LoginViewState extends State<LoginView> {
                           });
                           final email = _email.text.trim();
                           final password = _password.text.trim();
-                    
+
                           if (email.isEmpty) {
                             setState(() {
                               _emailErrorText = 'Email is required';
                             });
                             return;
                           }
-                    
+
                           if (password.isEmpty) {
                             setState(() {
                               _passwordErrorText = 'Password is required';
                             });
                             return;
                           }
-                    
+
                           try {
                             setState(() {
                               _isLoading = true;
                             });
-                    
+
                             final userCredential = await FirebaseAuth.instance
                                 .signInWithEmailAndPassword(
                               email: email,
                               password: password,
                             );
-                    
+
                             final userDoc = await _firestore
                                 .collection('users')
                                 .doc(userCredential.user!.uid)
                                 .get();
                             final userRole = userDoc['role'];
-                    
+
                             if (userRole == 'manager') {
                               Navigator.pushReplacement(
                                 context,
@@ -178,22 +181,18 @@ class _LoginViewState extends State<LoginView> {
                                 MaterialPageRoute(
                                     builder: (context) => HomepageWH()),
                               );
-                            } 
-                             else if (userRole == 'sales personnel') {
+                            } else if (userRole == 'sales personnel') {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => HomepageSales()),
                               );
-                              
-                            }
-                            else if (userRole == 'admin') {
+                            } else if (userRole == 'admin') {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => RegisterView()),
                               );
-                              
                             } else {
                               print('Unknown role: $userRole');
                             }
