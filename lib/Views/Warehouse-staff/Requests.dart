@@ -53,7 +53,7 @@ class _ApprovalListState extends State<ApprovalList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('Approval')),
+        title: Center(child: Text('Requests')),
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
       ),
       body: Column(
@@ -162,24 +162,24 @@ final sellingPrice = data != null && data.containsKey('selling price') ? data['s
                                     if (status == 'approved') Text('Selling Price: $sellingPrice'),
                                     // SizedBox(height: 30.0),
                                     // Only display more button if status is pending
-                                    if (status == 'pending')
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          // Navigator.push(
-                                          //   context,
-                                          //   MaterialPageRoute(
-                                          //     builder: (context) => detailscreen(request: request),
-                                          //   ),
-                                          // );
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          primary: Color.fromARGB(255, 3, 94, 147),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(10.0),
-                                          child: Text('More'),
-                                        ),
-                                      ),
+                                    // if (status == 'pending')
+                                      // ElevatedButton(
+                                      //   onPressed: () {
+                                      //     // Navigator.push(
+                                      //     //   context,
+                                      //     //   MaterialPageRoute(
+                                      //     //     builder: (context) => detailscreen(request: request),
+                                      //     //   ),
+                                      //     // );
+                                      //   },
+                                      //   style: ElevatedButton.styleFrom(
+                                      //     primary: Color.fromARGB(255, 3, 94, 147),
+                                      //   ),
+                                      //   child: Padding(
+                                      //     padding: const EdgeInsets.all(10.0),
+                                      //     child: Text('More'),
+                                      //   ),
+                                      // ),
                                   ],
                                 ),
                               ),
