@@ -1,12 +1,18 @@
+// ignore_for_file: prefer_const_constructors, avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'CommitSale.dart';
+import 'package:intl/intl.dart';
+
 class detailss extends StatelessWidget {
   final String imageUrl;
   final String productName;
   final String sellingPrice;
   final Timestamp expireDate; // Change the type to Timestamp
-  final Map<String, dynamic> additionalFields; // New field to hold additional data
+  final Map<String, dynamic>
+      additionalFields; // New field to hold additional data
+  final String productId;
 
   detailss({
     required this.imageUrl,
@@ -14,6 +20,8 @@ class detailss extends StatelessWidget {
     required this.sellingPrice,
     required this.expireDate,
     required this.additionalFields, // Updated constructor to accept additional fields
+    required this.productId, // Add productId to the constructor
+
   });
 
   @override
@@ -29,34 +37,55 @@ class detailss extends StatelessWidget {
         imageUrl: imageUrl,
         productName: productName,
         sellingPrice: sellingPrice,
+        productId: productId,
         expireDate: expireDate, // Pass the expireDate as a Timestamp
-        additionalFields: additionalFields, // Pass additional fields to the detail screen
+        additionalFields:
+            additionalFields, // Pass additional fields to the detail screen
       ),
     );
   }
 }
 
-
-class ProductDetailPage extends StatelessWidget {
+class ProductDetailPage extends StatefulWidget {
   final String imageUrl;
   final String productName;
   final String sellingPrice;
   final Timestamp expireDate; // Change the type to Timestamp
-  final Map<String, dynamic> additionalFields; // New field to hold additional data
+  final Map<String, dynamic>
+      additionalFields; // New field to hold additional data
+  final String productId;
 
   ProductDetailPage({
     required this.imageUrl,
     required this.productName,
     required this.sellingPrice,
     required this.expireDate,
-    required this.additionalFields, // Updated constructor to accept additional fields
+    required this.additionalFields,
+    required this.productId, // Add productId to the constructor
   });
 
   @override
+  State<ProductDetailPage> createState() => _ProductDetailPageState();
+}
+
+class _ProductDetailPageState extends State<ProductDetailPage> {
+  final _quantityController = TextEditingController();
+  final _sellerNameController = TextEditingController();
+  final _customerNameController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controllers when the widget is disposed
+    _quantityController.dispose();
+    _sellerNameController.dispose();
+    _customerNameController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Convert the Timestamp to a formatted string
     String formattedExpireDate =
-        expireDate.toDate().toString(); // Assuming you want a simple string representation
+        DateFormat('MMMM dd, yyyy').format(widget.expireDate.toDate());
 
     return Scaffold(
       appBar: AppBar(
@@ -73,7 +102,7 @@ class ProductDetailPage extends StatelessWidget {
           },
         ),
       ),
-       body: SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -85,12 +114,11 @@ class ProductDetailPage extends StatelessWidget {
                 child: Card(
                   elevation: 4.0,
                   child: Image.network(
-                    imageUrl,
+                    widget.imageUrl,
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
-              // Existing code...
               SizedBox(height: 16.0),
               Card(
                 elevation: 4.0,
@@ -100,7 +128,7 @@ class ProductDetailPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        productName,
+                        widget.productName,
                         style: TextStyle(
                           fontSize: 18.0,
                           fontWeight: FontWeight.bold,
@@ -108,32 +136,22 @@ class ProductDetailPage extends StatelessWidget {
                       ),
                       SizedBox(height: 8.0),
                       Text(
-                        'Selling Price: \$${sellingPrice}',
+                        'Selling Price: \$${widget.sellingPrice}',
                         style: TextStyle(fontSize: 16.0),
                       ),
                       SizedBox(height: 8.0),
                       Text(
-                        'Expire Date: $formattedExpireDate', // Use formattedExpireDate
+                        'Expire Date: $formattedExpireDate',
                         style: TextStyle(fontSize: 16.0),
                       ),
                       SizedBox(height: 8.0),
-                      // Additional fields fetched from Firestore
-                      if (additionalFields.isNotEmpty) // Check if additional fields are available
+                      if (widget.additionalFields.isNotEmpty)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Text(
-                            //   'Price: ${additionalFields['price']}',
-                            //   style: TextStyle(fontSize: 16.0),
-                            // ),
-                            // SizedBox(height: 8.0),
-                            // Text(
-                            //   'Product ID: ${additionalFields['productId']}',
-                            //   style: TextStyle(fontSize: 16.0),
-                            // ),
                             SizedBox(height: 8.0),
                             Text(
-                              'Quantity: ${additionalFields['quantity']}',
+                              'Quantity: ${widget.additionalFields['quantity']}',
                               style: TextStyle(fontSize: 16.0),
                             ),
                           ],
@@ -142,9 +160,7 @@ class ProductDetailPage extends StatelessWidget {
                   ),
                 ),
               ),
-
-
- Card(
+              Card(
                 elevation: 4.0,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -160,6 +176,7 @@ class ProductDetailPage extends StatelessWidget {
                       ),
                       SizedBox(height: 8.0),
                       TextFormField(
+                        controller: _quantityController,
                         decoration: InputDecoration(
                           hintText: 'Enter Quantity',
                         ),
@@ -174,6 +191,7 @@ class ProductDetailPage extends StatelessWidget {
                       ),
                       SizedBox(height: 8.0),
                       TextFormField(
+                        controller: _sellerNameController,
                         decoration: InputDecoration(
                           hintText: 'Enter Your Name',
                         ),
@@ -188,6 +206,7 @@ class ProductDetailPage extends StatelessWidget {
                       ),
                       SizedBox(height: 8.0),
                       TextFormField(
+                        controller: _customerNameController,
                         decoration: InputDecoration(
                           hintText: 'Enter Customer Name',
                         ),
@@ -199,13 +218,12 @@ class ProductDetailPage extends StatelessWidget {
               SizedBox(height: 32.0),
               ElevatedButton(
                 onPressed: () {
-                  // Action to perform on button press (e.g., commit sale)
-                  print('Commit button pressed');
+                  _commitSale();
                 },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(
                     Color.fromARGB(255, 3, 94, 147),
-                  ), // Set color here
+                  ),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
@@ -219,11 +237,123 @@ class ProductDetailPage extends StatelessWidget {
                   ),
                 ),
               ),
-
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _commitSale() {
+    String quantity = _quantityController.text.trim();
+    String sellerName = _sellerNameController.text.trim();
+    String customerName = _customerNameController.text.trim();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Sale'),
+          content: Text('Are you sure you want to sell this product?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                _performSale(
+                    quantity, sellerName, customerName, widget.productId);
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _performSale(String quantity, String sellerName, String customerName,
+      String productId) {
+    if (quantity.isNotEmpty &&
+        sellerName.isNotEmpty &&
+        customerName.isNotEmpty) {
+      CollectionReference salesRef =
+          FirebaseFirestore.instance.collection('sales_transaction');
+
+      salesRef.add({
+        'productName': widget.productName,
+        'sellingPrice': widget.sellingPrice,
+        'quantity': int.parse(quantity),
+        'sellerName': sellerName,
+        'customerName': customerName,
+        'timestamp': Timestamp.now(),
+      }).then((value) {
+        print("Sale committed successfully");
+        _quantityController.clear();
+        _sellerNameController.clear();
+        _customerNameController.clear();
+
+        // Update product quantity after sale
+        updateProductQuantity(productId, int.parse(quantity));
+
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('You have successfully sold the product.'),
+              backgroundColor: Colors.green, // Success color
+            ),
+          );
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => CommitSale()),
+          // );
+
+          // Alternatively, you can pop the current screen
+          // Navigator.pop(context);
+ 
+      }).catchError((error) => print("Failed to commit sale: $error"));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please fill all fields.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void updateProductQuantity(String productId, int soldQuantity) {
+    // Get a reference to the product document
+    DocumentReference productRef = FirebaseFirestore.instance
+        .collection('products for sale')
+        .doc(productId);
+
+    // Atomically update the product quantity by subtracting the sold quantity
+    FirebaseFirestore.instance.runTransaction((transaction) async {
+      DocumentSnapshot productSnapshot = await transaction.get(productRef);
+      if (productSnapshot.exists) {
+        Map<String, dynamic>? productData = productSnapshot.data()
+            as Map<String, dynamic>?; // Cast to Map<String, dynamic>
+        if (productData != null) {
+          int currentQuantity = productData['quantity'] ?? 0;
+          int newQuantity = currentQuantity - soldQuantity;
+          if (newQuantity >= 0) {
+            transaction.update(productRef, {'quantity': newQuantity});
+            print('Product quantity updated successfully');
+          } else {
+            print('Error: Sold quantity exceeds available quantity');
+          }
+        } else {
+          print('Error: Product data not found');
+        }
+      } else {
+        print('Error: Product document not found');
+      }
+    }).catchError((error) {
+      print('Failed to update product quantity: $error');
+    });
   }
 }

@@ -60,9 +60,10 @@ class MyHomePage extends StatelessWidget {
                         // Pass additional fields to the detail screen
                         additionalFields: {
                           // 'price': item['price'] ?? '',
-                          'productId': documents[index].id,
+                          // 'productId': documents[index].id,
                           'quantity': item['quantity'] ?? '',
                         },
+                         productId: documents[index].id, 
                       ),
                     ),
                   );
