@@ -8,7 +8,8 @@ import 'package:untitled/Views/Warehouse-staff/AddItem.dart';
 // import 'package:inventory/stockout.dart';
 import 'stock-out.dart';
 import 'reporting.dart';
-import 'itemrequest.dart';
+// import 'itemrequest.dart';
+import 'orders_fromSales.dart';
 
 class ImageTextCard extends StatelessWidget {
   final String imagePath;
@@ -34,8 +35,8 @@ class ImageTextCard extends StatelessWidget {
                 return AddProductForm();
               } else if (text == "Inventory Count") {
                 return Reportings();
-              } else if (text == "Srequests") {
-                return SRequests();
+              } else if (text == "Sales requests") {
+                return OrderPage();
               } else {
                 return StockOutPage();
               }
@@ -118,7 +119,7 @@ class DisplayCard extends StatelessWidget {
               ),
               ImageTextCard(
                 imagePath: 'lib/assets/images/list.png',
-                text: 'Srequests',
+                text: 'Sales requests',
                 isTrue: false,
               ),
             ],

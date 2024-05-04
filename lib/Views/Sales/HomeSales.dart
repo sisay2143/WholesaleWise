@@ -6,6 +6,7 @@ import 'package:untitled/Views/sales/NotificationSales.dart';
 import 'CommitSale.dart';
 import 'ProfileSales.dart';
 import 'salesrecord.dart';
+// import 'reporting.dart';
 
 // import 'QRScanScreen.dart';
 import 'Myslider.dart';

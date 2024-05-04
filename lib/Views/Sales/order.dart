@@ -1,10 +1,5 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
-import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
-
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class order extends StatefulWidget {
   const order({Key? key}) : super(key: key);
@@ -59,7 +54,7 @@ class _orderState extends State<order> {
               controller: _quantityController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: 'quantity',
+                labelText: 'Quantity',
                 hintText: 'Enter quantity',
                 border: OutlineInputBorder(),
               ),
@@ -67,22 +62,20 @@ class _orderState extends State<order> {
             SizedBox(height: 24.0),
             ElevatedButton(
               onPressed: () {
-                _submitOrderRequest();
+                _submitOrderRequest(context);
               },
               style: ElevatedButton.styleFrom(
-               primary: Color.fromARGB(255, 3, 94, 147), // Background color
-                onPrimary: Colors.white, // Text color
-                padding: EdgeInsets.symmetric(
-                    vertical: 16.0, horizontal: 50.0), // Button padding
+                primary: Color.fromARGB(255, 3, 94, 147),
+                onPrimary: Colors.white,
+                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 50.0),
                 shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(8.0), // Button border radius
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
               ),
               child: Text(
                 'Submit',
                 style: TextStyle(
-                  fontSize: 18.0, // Text size
+                  fontSize: 18.0,
                 ),
               ),
             ),
@@ -92,98 +85,77 @@ class _orderState extends State<order> {
     );
   }
 
-  void _submitOrderRequest() {
-    String productName = _productNameController.text.trim();
-    String quantity = _quantityController.text.trim();
+  void _submitOrderRequest(BuildContext context) {
+  String productName = _productNameController.text.trim();
+  String quantity = _quantityController.text.trim();
 
-    // Here you can implement the logic to send the order request
-    // to the warehouse staff with the entered product name and quantity.
-    // You can use APIs, databases, or any other method to communicate
-    // the order request to the warehouse.
-    // For simplicity, we will just print the order details for now.
-    print('Order Request:');
-    print('Product Name: $productName');
-    print('Quantity: $quantity');
-
-    // Clear the text fields after submitting the order request
-    _productNameController.clear();
-    _quantityController.clear();
-
-    // Show a confirmation dialog or success message if needed
-    // after submitting the order request.
-
+  if (productName.isNotEmpty && quantity.isNotEmpty) {
     showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Confirmation'),
-        content: Text('Are you sure you want to submit this order request?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-            },
-            child: Text('No'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Close the dialog
-              _submitOrder(); // Call the method to submit the order
-            },
-            child: Text('Yes'),
-            
-          ),
-        ],
-      );
-    },
-  );
-  }
-
-
-
-Future<void> _submitOrder() async {
-  try {
-    // Call the cloud function to send email
-    final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-      'submitOrderEmail',
-    );
-
-    await callable.call(<String, dynamic>{
-      // Pass any necessary order details to the cloud function
-      'orderDetails': {
-        'customer': 'John Doe',
-        'address': '123 Main St',
-        'items': ['Item 1 (Quantity: 2)', 'Item 2 (Quantity: 1)'],
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: Text('Are you sure you want to submit this order request?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                _submitOrder(productName, int.parse(quantity), context); // Call the method to submit the order
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
       },
-      
-    });
+    );
+  } else {
     ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text('Order request submitted successfully.'),
-      backgroundColor: Colors.green, // Success message background color
-      
-    ),
-  );
-  } catch (e) {
-    print('Error submitting order: $e');
-  }
-}
-
-Future<void> submitOrderEmail() async {
-  final Email email = Email(
-    body: 'Order details:\n\nCustomer: John Doe\nAddress: 123 Main St\nItems:\n- Item 1 (Quantity: 2)\n- Item 2 (Quantity: 1)',
-    subject: 'New Order',
-    recipients: ['sisaybayisa21@example.com'], // Warehouse email address
-    isHTML: false,
-  );
-
-  try {
-    await FlutterEmailSender.send(email);
-    print('Email sent successfully');
-  } catch (error) {
-    print('Error sending email: $error');
+      SnackBar(
+        content: Text('Please enter product name and quantity.'),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 }
 
 
+  Future<void> _submitOrder(String productName, int quantity, BuildContext context) async {
+    try {
+      // Access Firestore instance
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Define the order data
+      Map<String, dynamic> orderData = {
+        'productName': productName,
+        'quantity': quantity,
+        'timestamp': FieldValue.serverTimestamp(), // Timestamp of the order submission
+      };
+
+      // Add the order data to Firestore
+      await firestore.collection('orders').add(orderData);
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Order request submitted successfully.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to submit order request. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      print('Error submitting order: $e');
+    }
+  }
 }
