@@ -29,15 +29,16 @@ class Reportings extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 16.0),
-               _buildRunningOutProducts(),
+               _buildRunningoutProducts(),
                 const SizedBox(height: 20.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _buildTotalCategoryCircularIndicator(),
-                  _buildTotalStockCircularIndicator(),
+                  _buildTotalItemsCircularIndicator(),
                 ],
               ),
+               _buildButtons(),
               const SizedBox(height: 20.0),
             
               _buildSoontoExpire(),
@@ -55,7 +56,43 @@ class Reportings extends StatelessWidget {
 
 
 
- Widget _buildSoontoExpire() {
+ Widget _buildButtons() {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      ElevatedButton(
+        onPressed: () {
+          // Handle button 1 press
+        },
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+          minimumSize: Size(150.0, 0.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30.0),
+          ),
+          backgroundColor: Colors.blue,
+        ),
+        child: Text('more'),
+      ),
+      SizedBox(width: 10.0), // Add spacing between the buttons
+      ElevatedButton(
+        onPressed: () {
+          // Handle button 2 press
+        },
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+          minimumSize: Size(150.0, 0.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30.0),
+          ),
+          backgroundColor: Colors.green,
+        ),
+        child: Text('more'),
+      ),
+    ],
+  );
+}
+  Widget _buildSoontoExpire() {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final User? user = FirebaseAuth.instance.currentUser;
 
@@ -74,34 +111,41 @@ class Reportings extends StatelessWidget {
               style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8.0),
-            StreamBuilder
-              <QuerySnapshot>(
-              stream: _firestore
-                  // .collection('users')
-                  // .doc(user!.uid)
-                  .collection('products')
-                  .snapshots(),
+            StreamBuilder<QuerySnapshot>(
+              stream: _firestore.collection('products').snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
-                } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Text('No products found.');
                 } else {
-                  return SizedBox(
-                    height: 140.0,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        var product = snapshot.data!.docs[index];
-                        // Parse the string 'expiredate' to DateTime
-                        DateTime expireDate = DateTime.parse(product['expiredate']);
-                        int daysLeft = expireDate.difference(currentDate).inDays;
+                  // Filter products expiring within 5 days or already expired
+                  List<DocumentSnapshot> expiringProducts = snapshot.data!.docs.where((product) {
+                    Timestamp expireDate = product['expiredate'];
+                    DateTime expireDateDateTime = expireDate.toDate();
+                    int daysLeft = expireDateDateTime.difference(currentDate).inDays;
+                    return daysLeft <= 0 || daysLeft < 5;
+                  }).toList();
+
+                  if (expiringProducts.isEmpty) {
+                    return Column(
+                      children: [
+                        Text('No products are expiring soon.'),
                         
-                        // Fetch products expiring within 5 days
-                        if (daysLeft < 5) {
+                      ],
+                    );
+                  } else {
+                    return SizedBox(
+                      height: 160.0,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: expiringProducts.length,
+                        itemBuilder: (context, index) {
+                          var product = expiringProducts[index];
+                          Timestamp expireDate = product['expiredate'];
+                          DateTime expireDateDateTime = expireDate.toDate();
+                          int daysLeft = expireDateDateTime.difference(currentDate).inDays;
+
                           return Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Column(
@@ -113,23 +157,25 @@ class Reportings extends StatelessWidget {
                                   alignment: Alignment.center,
                                   child: ClipRRect(
                                     child: Image.network(
-                                      product['imageUrl'], // Assuming the image URL is stored in a field called 'image'
+                                      product['imageUrl'], // Assuming the image URL is stored in a field called 'imageUrl'
                                       fit: BoxFit.fill,
                                     ),
                                   ),
                                 ),
                                 const SizedBox(height: 4.0),
-                                Text('$daysLeft : Days Left'),
+                                if (daysLeft <= 0)
+                                  Text('Expired')
+                                else
+                                  Text('$daysLeft : Days Left'),
+                                const SizedBox(height: 4.0),
+                                Text('Product: ${product['name']}'), // Assuming the product text is stored in a field called 'text'
                               ],
                             ),
                           );
-                        } else {
-                          // If product is not expiring within 5 days, return an empty container
-                          return Container();
-                        }
-                      },
-                    ),
-                  );
+                        },
+                      ),
+                    );
+                  }
                 }
               },
             ),
@@ -139,32 +185,37 @@ class Reportings extends StatelessWidget {
     ),
   );
 }
-
-   Widget _buildRunningOutProducts() {
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Running Out Products',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8.0),
-            SizedBox(
-              height: 140.0,
-              child: StreamBuilder<QuerySnapshot>(
-                stream: _firestore
-                    // .collection('users')
-                    // .doc(user!.uid)
-                    .collection('products')
-                    .where('quantity', isLessThan: 10)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final runningOutProducts = snapshot.data!.docs;
-                    return ListView.builder(
+   Widget _buildRunningoutProducts() {
+  return Card(
+    child: Padding(
+      padding: EdgeInsets.all(10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Running Out Products',
+            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8.0),
+          StreamBuilder<QuerySnapshot>(
+            stream: _firestore
+                // .collection('users')
+                // .doc(user!.uid)
+                .collection('products')
+                .where('quantity', isLessThan: 10)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final runningOutProducts = snapshot.data!.docs;
+                if (runningOutProducts.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(15, 10, 100, 20),
+                    child: Text('No products are running out.'),
+                  );
+                } else {
+                  return SizedBox(
+                    height: 120.0,
+                    child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: runningOutProducts.length,
                       itemBuilder: (context, index) {
@@ -187,27 +238,28 @@ class Reportings extends StatelessWidget {
                                 ),
                               ),
                               SizedBox(height: 4.0),
+                              Text('Pname: ${product['name']}'),
+                              SizedBox(height: 4.0),
                               Text('Quantity: ${productData['quantity']}'),
                             ],
                           ),
                         );
                       },
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    return CircularProgressIndicator();
-                  }   
-                  
-                },
-              ),
-            ),
-          ],
-        ),
+                    ),
+                  );
+                }
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return CircularProgressIndicator();
+              }
+            },
+          ),
+        ],
       ),
-    );
-  }
-
+    ),
+  );
+}
 Widget _buildTotalCategoryCircularIndicator() {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? user = FirebaseAuth.instance.currentUser;
@@ -269,7 +321,7 @@ Widget _buildTotalCategoryCircularIndicator() {
   );
 }
 
-Widget _buildTotalStockCircularIndicator() {
+Widget _buildTotalItemsCircularIndicator() {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? user = FirebaseAuth.instance.currentUser;
   return Center(
@@ -418,4 +470,6 @@ class BarChartData {
 
     return chartData;
   }
+
+
 

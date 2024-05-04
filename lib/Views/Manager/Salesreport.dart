@@ -262,23 +262,19 @@ class SalesAnalytics extends StatelessWidget {
 
     // Building the bar chart
     return Card(
-      child: Container(
-        height: 250,
-        width: 400,
-        child: Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: charts.BarChart(
-              [
-                charts.Series<SalesData, String>(
-                  id: 'Sales',
-                  data: data,
-                  domainFn: (SalesData sales, _) => sales.month,
-                  measureFn: (SalesData sales, _) => sales.sales,
-                ),
-              ],
-              animate: true,
-            ),
+      child: Expanded(
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: charts.BarChart(
+            [
+              charts.Series<SalesData, String>(
+                id: 'Sales',
+                data: data,
+                domainFn: (SalesData sales, _) => sales.month,
+                measureFn: (SalesData sales, _) => sales.sales,
+              ),
+            ],
+            animate: true,
           ),
         ),
       ),
