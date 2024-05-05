@@ -1,11 +1,10 @@
-import 'package:firebase_storage/firebase_storage.dart';
+
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:untitled/models/products.dart';
-import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:untitled/models/products.dart';
+import '../../Backend/productService.dart';
 
 class AddProductForm extends StatefulWidget {
   @override
@@ -13,25 +12,23 @@ class AddProductForm extends StatefulWidget {
 }
 
 class _AddProductFormState extends State<AddProductForm> {
-  String? selectedCategory; // Declare selectedCategory here
+  String? selectedCategory; // Move selectedCategory here
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _quantityController = TextEditingController();
   final _priceController = TextEditingController();
-  // final _distributorController = TextEditingController();
   final _pidController = TextEditingController();
   final _expiredateController = TextEditingController();
   late File _pickedImage;
   late ImagePicker _imagePicker;
-  late FirebaseFirestore _firestore;
-  User? user = FirebaseAuth.instance.currentUser;
+  late ProductService _productService; // Add ProductService reference
 
   @override
   void initState() {
     super.initState();
     _imagePicker = ImagePicker();
     _pickedImage = File('');
-    _firestore = FirebaseFirestore.instance;
+    _productService = ProductService(); // Initialize ProductService
   }
 
   Future<void> _pickImage() async {
@@ -44,38 +41,6 @@ class _AddProductFormState extends State<AddProductForm> {
       });
     }
   }
-Future<void> _addProductToFirestore(Product newProduct, String selectedCategory) async {
-  try {
-    final String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    final Reference storageReference = FirebaseStorage.instance.ref().child('product_images/$fileName.jpg');
-    final UploadTask uploadTask = storageReference.putFile(_pickedImage);
-
-    final TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
-    final String imageUrl = await taskSnapshot.ref.getDownloadURL();
-
-    // Add the new product to Firestore
-    await _firestore.collection('products').add({
-      'name': newProduct.name,
-      'pid': newProduct.pid,
-      'quantity': newProduct.quantity,
-      'price': newProduct.price,
-      'category': selectedCategory,
-      'expiredate': newProduct.expiredate,
-      'imageUrl': imageUrl,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Product added to Firestore')),
-    );
-  } catch (e) {
-    print('Error adding product: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error adding product: $e')),
-    );
-  }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -118,8 +83,10 @@ Future<void> _addProductToFirestore(Product newProduct, String selectedCategory)
               ),
               const SizedBox(height: 30.0),
               SingleChildScrollView(
-                  child: Column(children: [
-                TextFormField(
+                child: Column(
+                  children: [
+                    // Form fields...
+                    TextFormField(
                   controller: _nameController,
                   cursorColor: Color.fromRGBO(107, 59, 225, 1),
                   decoration: const InputDecoration(
@@ -287,61 +254,74 @@ Future<void> _addProductToFirestore(Product newProduct, String selectedCategory)
                     return null;
                   },
                 ),
-              ])),
+              ]
+              )
+              ),
+                  // ],
+                // ),
+              // ),
               SizedBox(height: 16.0),
               ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      String expireDateText = _expiredateController.text;
-                      DateTime expireDate =
-                          DateFormat('yyyy-MM-dd').parse(expireDateText);
-                      
-                      Product newProduct = Product(
-                        name: _nameController.text,
-                        pid: _pidController.text,
-                        quantity: int.parse(_quantityController.text),
-                        price: double.parse(_priceController.text),
-                        category: selectedCategory ?? 'Default Category',
-                        expiredate: expireDate,
-                        imageUrl: _pickedImage.path,
-                        timestamp: DateTime.now(),
-                      );
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    String expireDateText = _expiredateController.text;
+                    DateTime expireDate =
+                        DateFormat('yyyy-MM-dd').parse(expireDateText);
 
-                      _addProductToFirestore(newProduct, selectedCategory ?? '');
+                    Product newProduct = Product(
+                      name: _nameController.text,
+                      pid: _pidController.text,
+                      quantity: int.parse(_quantityController.text),
+                      price: double.parse(_priceController.text),
+                      category: selectedCategory ?? 'Default Category',
+                      expiredate: expireDate,
+                      imageUrl: _pickedImage.path,
+                      timestamp: DateTime.now(),
+                    );
+
+                    try {
+                      await _productService.addProductToFirestore(context, newProduct, selectedCategory ?? '', _pickedImage);
+
                       _nameController.clear();
                       _pidController.clear();
                       _quantityController.clear();
                       _priceController.clear();
-                      // _distributorController.clear();
-                      // selectedCategory = null; // No need to set it to null
                       _expiredateController.clear();
                       setState(() {
                         _pickedImage = File('');
                       });
-
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('Product added successfully'),
                         ),
                       );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Failed to add product: $e'),
+                        ),
+                      );
                     }
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                      Color.fromARGB(255, 3, 94, 147),
-                    ),
+                  }
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                    Color.fromARGB(255, 3, 94, 147),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text(
-                      'Add',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  )),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(
+                    'Add',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+              ),
             ],
           ),
-        ),
-      ),
-    );
+        )
+      ));
+      // ),
+    // );
   }
 }

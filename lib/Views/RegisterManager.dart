@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key});
+  
 
   @override
   State<RegisterView> createState() => _RegisterViewState();
@@ -17,6 +18,7 @@ class _RegisterViewState extends State<RegisterView> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Color _passwordBorderColor =
       Colors.grey; // Initial border color for password input field
+      
 
   @override
   void initState() {
@@ -56,7 +58,6 @@ class _RegisterViewState extends State<RegisterView> {
             onPressed: () {
               // Perform logout operation
               FirebaseAuth.instance.signOut();
-
               // Navigate back to login view
               Navigator.pushReplacement(
                 context,
@@ -131,6 +132,7 @@ class _RegisterViewState extends State<RegisterView> {
                       'name': _name.text,
                       'email': _email.text,
                       'role': 'manager',
+                      
                     });
                     print(UserCredential);
                   } on FirebaseAuthException catch (e) {
