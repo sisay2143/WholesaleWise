@@ -1,12 +1,21 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts; // Added charts_flutter import
-import 'package:untitled/Views/Manager/reporting.dart';
+// import 'package:untitled/Views/Manager/reporting.dart';
 import 'package:untitled/Views/Sales/order.dart';
 import 'package:untitled/Views/sales/NotificationSales.dart';
 import 'CommitSale.dart';
 import 'ProfileSales.dart';
 import 'salesrecord.dart';
-// import 'reporting.dart';
+import 'reporting.dart';
+// import 'package:untitled/Views/Manager/HomeManager.dart';
+import 'package:untitled/Views/Manager/ItemsCard.dart';
+// import 'FCard.dart';
+import 'Myslider.dart';
+import 'package:camera/camera.dart';
+import 'package:untitled/models/products.dart';
+import 'package:untitled/Services/database.dart';
 
 // import 'QRScanScreen.dart';
 import 'Myslider.dart';
@@ -79,7 +88,46 @@ class _HomepageSalesState extends State<HomepageSales> {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  
+ final FirestoreService _firestoreService = FirestoreService();
+
+  List<Product> _products = [];
+  List<Product> _filteredProducts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProducts();
+  }
+
+  Future<void> _fetchProducts() async {
+    print("fetching..");
+    try {
+      List<Product> products = await _firestoreService.getProductsforSale();
+      print("Fetched products: $products");
+      setState(() {
+        _products = products;
+        _filteredProducts = List.from(_products);
+      });
+    } catch (e) {
+      print("Error fetching products: $e");
+    }
+  }
+
+  void _filterProducts(String query) {
+    setState(() {
+      _filteredProducts = _products
+          .where((product) =>
+              product.name.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,29 +173,38 @@ class HomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Container(
-                      height: 50,
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.search),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'Search',
-                                border: InputBorder.none,
-                              ),
+                  child: Container(
+                    height: 50,
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.search),
+                          color: Colors.white,
+                          onPressed: () {
+                            showSearch(
+                              context: context,
+                              delegate: DataSearch(_filteredProducts),
+                            );
+                          },
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: 'Search',
+                              border: InputBorder.none,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
+                ),
                   SizedBox(width: 10),
                  Container(
         height: 50,
@@ -224,7 +281,7 @@ class HomeScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => Reporting()),
+                              builder: (context) => SalesAnalytics()),
                         );
                       },
                     ),
@@ -289,6 +346,82 @@ class HomeScreen extends StatelessWidget {
       animate: true,
     );
   }
+}
+
+
+class DataSearch extends SearchDelegate<String> {
+  final List<Product> products;
+
+  DataSearch(this.products);
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, '');
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    // If the search query is empty, display an empty container
+    if (query.isEmpty) {
+      return Container();
+    }
+
+    final List<Product> matchedProducts = products
+        .where((product) =>
+            product.name.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    // If there's a matched product, return ItemCard with its original appearance
+    if (matchedProducts.isNotEmpty) {
+      return ItmeCard(matchedProducts[
+          0]); // Assuming you only want to display the first matched product
+    } else {
+      // If no matched product found, display a message
+      return Center(
+        child: Text("No results found"),
+      );
+    }
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final List<Product> suggestionList = products
+        .where((product) =>
+            product.name.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    return ListView.builder(
+      itemCount: suggestionList.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(suggestionList[index].name),
+          onTap: () {
+            query = suggestionList[index].name;
+            showResults(context);
+          },
+        );
+      },
+    );
+  }
+
+  static of(BuildContext context) {}
 }
 
 

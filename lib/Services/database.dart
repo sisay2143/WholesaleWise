@@ -163,7 +163,36 @@ Future<void> deleteProduct(String pid) async {
     return [];
   }
 }
-
+ Future<List<Product>> getProductsforSale() async {
+  try {
+    QuerySnapshot snapshot = await _firestore
+        // .collection('users')
+        // .doc(user!.uid)
+        .collection('products for sale')
+        .get();
+    List<Product> products = snapshot.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      return Product(
+        name: data['name'],
+        quantity: data['quantity'],
+        price: data['price'],
+        // distributor: data['distributor'],
+        category: data['category'],
+        imageUrl: data['imageUrl'],
+        pid: data['pid'],
+        // Convert 'expiredate' to DateTime
+        expiredate: (data['expiredate'] is Timestamp)
+            ? (data['expiredate'] as Timestamp).toDate()
+            : DateTime.parse(data['expiredate']),
+        timestamp: data['timestamp'].toDate(),
+      );
+    }).toList();
+    return products;
+  } catch (e) {
+    print('Error fetching products: $e');
+    return [];
+  }
+}
 
   Future<void> registerTransaction(
       String productId, int quantitySold) async {
