@@ -427,7 +427,7 @@ class BarChartData {
         height: 350,
         width: 550,
         child: Padding(
-          padding: const EdgeInsets.all(5.0),
+          padding: const EdgeInsets.all(1.0),
           child: charts.BarChart(
             [
               charts.Series<BarChartData, String>(
