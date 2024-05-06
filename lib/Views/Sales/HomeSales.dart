@@ -16,6 +16,7 @@ import 'Myslider.dart';
 import 'package:camera/camera.dart';
 import 'package:untitled/models/products.dart';
 import 'package:untitled/Services/database.dart';
+import 'bargraph.dart';
 
 // import 'QRScanScreen.dart';
 import 'Myslider.dart';
@@ -288,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(
                       height: 10,
                     ),
-                    Text('Reporting'),
+                    Text('Reports'),
                   ],
                 ),
               ],
@@ -303,12 +304,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ListTile(
                     title: Text('Sales Overview'),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Container(
-                      height: 200,
-                      child: _buildBarChart(), // Real bar chart
-                    ),
+                  Container(
+                    height: 220,
+                    child: buildBarChartCards(), // Real bar chart
                   ),
                 ],
               ),
@@ -321,31 +319,31 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Function to build the bar chart
-  Widget _buildBarChart() {
-    // Example data for the bar chart
-    final List<SalesData> data = [
-      SalesData('Jan', 100),
-      SalesData('Feb', 150),
-      SalesData('Mar', 200),
-      SalesData('Apr', 180),
-    ];
+  // Widget _buildBarChart() {
+  //   // Example data for the bar chart
+  //   final List<SalesData> data = [
+  //     SalesData('Jan', 100),
+  //     SalesData('Feb', 150),
+  //     SalesData('Mar', 200),
+  //     SalesData('Apr', 180),
+  //   ];
 
-    // Creating series for the bar chart
-    final List<charts.Series<SalesData, String>> series = [
-      charts.Series(
-        id: 'Sales',
-        data: data,
-        domainFn: (SalesData sales, _) => sales.month,
-        measureFn: (SalesData sales, _) => sales.sales,
-      ),
-    ];
+  //   // Creating series for the bar chart
+  //   final List<charts.Series<SalesData, String>> series = [
+  //     charts.Series(
+  //       id: 'Sales',
+  //       data: data,
+  //       domainFn: (SalesData sales, _) => sales.month,
+  //       measureFn: (SalesData sales, _) => sales.sales,
+  //     ),
+  //   ];
 
-    // Building the bar chart
-    return charts.BarChart(
-      series,
-      animate: true,
-    );
-  }
+  //   // Building the bar chart
+  //   return charts.BarChart(
+  //     series,
+  //     animate: true,
+  //   );
+  // }
 }
 
 
