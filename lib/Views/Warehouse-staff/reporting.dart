@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'totalcategories.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -27,7 +28,7 @@ class Reportings extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 16.0),
-              _buildRunningOutProducts(),
+              _buildRunningoutProducts(),
               const SizedBox(height: 20.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -47,15 +48,17 @@ class Reportings extends StatelessWidget {
     );
   }
 
-  Widget _buildSoontoExpire() {
-    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-    // final User? user = FirebaseAuth.instance.currentUser;
+ Widget _buildSoontoExpire() {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final User? user = FirebaseAuth.instance.currentUser;
 
-    DateTime currentDate = DateTime.now();
+  DateTime currentDate = DateTime.now();
 
-    return Card(
+  return Card(
+    child: Container(
+      width: 400.0, // Adjust the width to your preference
       child: Padding(
-        padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 5),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -71,100 +74,108 @@ class Reportings extends StatelessWidget {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
-                } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Text('No products found.');
                 } else {
-                  return SizedBox(
-                    height: 160.0,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        var product = snapshot.data!.docs[index];
-                        // Parse the Firestore timestamp to DateTime
-                        Timestamp expireDateTimestamp =
-                            product['expiredate'] as Timestamp;
-                        DateTime expireDate = expireDateTimestamp
-                            .toDate(); // Convert timestamp to DateTime
-                        int daysLeft =
-                            expireDate.difference(currentDate).inDays;
+                  // Filter products expiring within 5 days or already expired
+                  List<DocumentSnapshot> expiringProducts = snapshot.data!.docs.where((product) {
+                    Timestamp expireDate = product['expiredate'];
+                    DateTime expireDateDateTime = expireDate.toDate();
+                    int daysLeft = expireDateDateTime.difference(currentDate).inDays;
+                    return daysLeft <= 0 || daysLeft < 30;
+                  }).toList();
 
-                        // Fetch products expiring within 30 days
-                        if (daysLeft < 30) {
+                  if (expiringProducts.isEmpty) {
+                    return Column(
+                      children: [
+                        Text('No products are expiring soon.'),
+                        
+                      ],
+                    );
+                  } else {
+                    return SizedBox(
+                      height: 160.0,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: expiringProducts.length,
+                        itemBuilder: (context, index) {
+                          var product = expiringProducts[index];
+                          Timestamp expireDate = product['expiredate'];
+                          DateTime expireDateDateTime = expireDate.toDate();
+                          int daysLeft = expireDateDateTime.difference(currentDate).inDays;
+
                           return Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
-                                  width: 120.0,
+                                  width: 100.0,
                                   height: 100.0,
                                   alignment: Alignment.center,
                                   child: ClipRRect(
                                     child: Image.network(
-                                      product[
-                                          'imageUrl'], // Assuming the image URL is stored in a field called 'imageUrl'
+                                      product['imageUrl'], // Assuming the image URL is stored in a field called 'imageUrl'
                                       fit: BoxFit.fill,
                                     ),
                                   ),
                                 ),
                                 const SizedBox(height: 4.0),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 5.0),
-                                  child: Text(
+                                if (daysLeft <= 0)
+                                  Text('Expired')
+                                else
+                                  Text('$daysLeft : Days Left'),
+                                const SizedBox(height: 4.0),
+                               Text(
                                     '${product['name']}',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Text(
-                                  '$daysLeft Days Left',
-                                ),
-// Display product name along with days left
+                                  ), // Assuming the product text is stored in a field called 'text'
                               ],
                             ),
                           );
-                        } else {
-                          // If product is not expiring within 30 days, return an empty container
-                          return Container();
-                        }
-                      },
-                    ),
-                  );
+                        },
+                      ),
+                    );
+                  }
                 }
               },
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildRunningOutProducts() {
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Running Out Products',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8.0),
-            SizedBox(
-              height: 160.0,
-              child: StreamBuilder<QuerySnapshot>(
-                stream: _firestore
-                    // .collection('users')
-                    // .doc(user!.uid)
-                    .collection('products')
-                    .where('quantity', isLessThan: 500)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final runningOutProducts = snapshot.data!.docs;
-                    return ListView.builder(
+    ),
+  );
+}
+   Widget _buildRunningoutProducts() {
+  return Card(
+    child: Padding(
+      padding: EdgeInsets.all(10.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Running Out Products',
+            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8.0),
+          StreamBuilder<QuerySnapshot>(
+            stream: _firestore
+                // .collection('users')
+                // .doc(user!.uid)
+                .collection('products')
+                .where('quantity', isLessThan: 500)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final runningOutProducts = snapshot.data!.docs;
+                if (runningOutProducts.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(15, 10, 100, 20),
+                    child: Text('No products are running out.'),
+                  );
+                } else {
+                  return SizedBox(
+                    height: 160.0,
+                    child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: runningOutProducts.length,
                       itemBuilder: (context, index) {
@@ -187,84 +198,42 @@ class Reportings extends StatelessWidget {
                                 ),
                               ),
                               SizedBox(height: 4.0),
-                              Padding(
-                                padding: EdgeInsets.only(left: 2.0),
-                                child: Text(
-                                  '${product['name']}',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
+                             Text(
+                                    '${product['name']}',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                              SizedBox(height: 4.0),
                               Text('Quantity: ${productData['quantity']}'),
                             ],
                           ),
                         );
                       },
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    return CircularProgressIndicator();
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
+                    ),
+                  );
+                }
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return CircularProgressIndicator();
+              }
+            },
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
  Widget _buildTotalCategoryCircularIndicator(BuildContext context) {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? user = FirebaseAuth.instance.currentUser;
   return GestureDetector(
     onTap: () {
-      // Navigate or trigger some action when the circular indicator is pressed
-      // For example, you can display a list of total categories
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return 
-         AlertDialog(
-  title: Text('Total Categories'),
-  content: Container(
-    width: 300, // Adjust the width as needed
-    height: 400, // Adjust the height as needed
-    child: StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('products').snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final items = snapshot.data!.docs;
-          final categoryCounts = <String, int>{};
-
-          for (final item in items) {
-            final categoryName = item['category'] as String;
-            categoryCounts[categoryName] =
-                (categoryCounts[categoryName] ?? 0) + 1;
-          }
-
-          return ListView.builder(
-            itemCount: categoryCounts.length,
-            itemBuilder: (context, index) {
-              final category = categoryCounts.keys.elementAt(index);
-              final count = categoryCounts[category];
-              return ListTile(
-                title: Text('$category - $count'),
-              );
-            },
-          );
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          return Center(child: CircularProgressIndicator());
-        }
-      },
-    ),
-  ),
-);
-
-        },
+      // Navigate to a new screen to display the list of total categories
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => TotalCategoriesScreen()),
       );
     },
     child: Center(
@@ -277,11 +246,7 @@ class Reportings extends StatelessWidget {
         ),
         child: Center(
           child: StreamBuilder<QuerySnapshot>(
-            stream: _firestore
-                // .collection('users')
-                // .doc(user!.uid)
-                .collection('products')
-                .snapshots(),
+            stream: _firestore.collection('products').snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 final items = snapshot.data!.docs;
@@ -327,44 +292,15 @@ class Reportings extends StatelessWidget {
 }
 
 
-
  Widget _buildTotalStockCircularIndicator(BuildContext context) {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? user = FirebaseAuth.instance.currentUser;
   return GestureDetector(
     onTap: () {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('All Items'),
-            content: Container(
-              width: 300, // Adjust the width as needed
-              height: 400, // Adjust the height as needed
-              child: StreamBuilder<QuerySnapshot>(
-                stream: _firestore.collection('products').snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        var product = snapshot.data!.docs[index];
-                        return ListTile(
-                          title: Text(product['name']),
-                          subtitle: Text('Quantity: ${product['quantity']}'),
-                        );
-                      },
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                },
-              ),
-            ),
-          );
-        },
+      // Navigate to a new screen to display all items
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AllItemsScreen()),
       );
     },
     child: Center(
@@ -449,32 +385,6 @@ Widget _buildBarChartCard() {
                 ],
               ),
             ),
-<<<<<<< HEAD
-          );
-        }
-      },
-    );
-  }
-
-  Widget _buildBarChart(List<BarChartData> data) {
-    return Card(
-      child: Container(
-        height: 350,
-        width: 550,
-        child: Padding(
-          padding: const EdgeInsets.all(1.0),
-          child: charts.BarChart(
-            [
-              charts.Series<BarChartData, String>(
-                id: 'Sales',
-                data: data,
-                domainFn: (BarChartData sales, _) => sales.category,
-                measureFn: (BarChartData sales, _) => sales.quantity,
-              ),
-            ],
-            animate: true,
-=======
->>>>>>> faa81094395ff180d06097a82e20895741b0c842
           ),
         );
       }
