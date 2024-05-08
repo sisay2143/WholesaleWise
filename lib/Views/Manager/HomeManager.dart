@@ -127,24 +127,26 @@ class _HomepageManagerState extends State<HomepageManager> {
     );
   }
 }
-
 class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int unreadNotificationCount = 0; // Add this variable
-  //  HomeSales({super.key});
+  int unreadNotificationCount = 0;
   final List<NotificationItem> notifications = [];
-  // Define the notifications list
+
+  @override
+  void initState() {
+    super.initState();
+    // Calculate the count of unread notifications
+    unreadNotificationCount = notifications.where((n) => !n.isRead).length;
+  }
+
   void _handleNotificationPageBack(List<NotificationItem> notifications) {
-    // Handle the notifications list from the NotificationPage
-    // Update the unread notification count
     setState(() {
       unreadNotificationCount = notifications.where((n) => !n.isRead).length;
     });
-
     print('Received notifications: $notifications');
   }
 
@@ -166,25 +168,36 @@ class _HomeScreenState extends State<HomeScreen> {
                       builder: (context) => NotificationPage(
                         notifications: notifications,
                         onBackButtonPressed: _handleNotificationPageBack,
+                        onNotificationUpdated: (count) {
+                          setState(() {
+                            unreadNotificationCount = count;
+                          });
+                        },
                       ),
                     ),
                   );
                 },
               ),
-              Positioned(
-                right: 8,
-                top: 8,
-                child: NotificationBadge(
-                  itemCount: unreadNotificationCount,
-                  textStyle: TextStyle(color: Colors.white),
+              if (unreadNotificationCount > 0)
+                Positioned(
+                  top: 4,
+                  right: 4,
+                  child: CircleAvatar(
+                    radius: 8,
+                    backgroundColor: Colors.red,
+                    child: Text(
+                      unreadNotificationCount.toString(),
+                      style: TextStyle(color: Colors.white, fontSize: 10),
+                    ),
+                  ),
                 ),
-              ),
             ],
           ),
         ],
       ),
       body: SingleChildScrollView(
-        child: Column(
+        // Your existing body widget code...
+         child: Column(
           children: [
             Padding(
               padding: const EdgeInsets.all(12.0),
@@ -353,6 +366,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
 
 Future<void> openCamera(BuildContext context) async {
   // Initialize the camera
