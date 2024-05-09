@@ -38,7 +38,7 @@ class _HomepageManagerState extends State<HomepageManager> {
   static List<Widget> _widgetOptions = <Widget>[
     HomeScreen(), // Assuming HomeManager is defined in HomeManager.dart
     Approval(),
-    Reporting(),
+    Reportings(),
     AccountPage(),
   ];
 

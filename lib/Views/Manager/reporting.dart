@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:untitled/Views/Warehouse-staff/totalcategories.dart';
 
 // void main() {
 //   runApp(MaterialApp(
@@ -34,8 +35,11 @@ class Reporting extends StatelessWidget {
                 children: [
                   _buildTotalCategoryCircularIndicator(context),
                   _buildTotalStockCircularIndicator(context),
+                  _buildTotalCategoryCircularIndicator(context),
+                  _buildTotalStockCircularIndicator(context),
                 ],
               ),
+              const SizedBox(height: 20.0),
               const SizedBox(height: 20.0),
               _buildSoontoExpire(),
               const SizedBox(height: 20.0),
@@ -292,9 +296,40 @@ class Reporting extends StatelessWidget {
                   categoryCounts[categoryName] =
                       (categoryCounts[categoryName] ?? 0) + 1;
                 }
+                for (final item in items) {
+                  final categoryName = item['category'] as String;
+                  categoryCounts[categoryName] =
+                      (categoryCounts[categoryName] ?? 0) + 1;
+                }
 
                 final totalCategories = categoryCounts.length;
+                final totalCategories = categoryCounts.length;
 
+                return Column(
+                  children: [
+                    SizedBox(
+                      height: 45,
+                    ),
+                    Text(
+                      totalCategories.toString(),
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      "Total Categories",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return CircularProgressIndicator();
+              }
+            },
+          ),
                 return Column(
                   children: [
                     SizedBox(
@@ -407,6 +442,31 @@ class Reporting extends StatelessWidget {
               }
             },
           ),
+                return Column(
+                  children: [
+                    SizedBox(
+                      height: 45,
+                    ),
+                    Text(
+                      totalItems.toString(),
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      "Total Items",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return CircularProgressIndicator();
+              }
+            },
+          ),
         ),
       ),
     ),
@@ -421,6 +481,30 @@ class BarChartData {
   BarChartData(this.category, this.quantity);
 }
 
+Widget _buildBarChartCard() {
+  return FutureBuilder<List<BarChartData>>(
+    future: _getChartDataFromFirestore(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return Center(child: CircularProgressIndicator());
+      } else if (snapshot.hasError) {
+        return Center(child: Text('Error: ${snapshot.error}'));
+      } else {
+        return Card(
+          child: Container(
+            height: 600,
+            width: 400,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Category Distribution',
+                    style:
+                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 55),
 Widget _buildBarChartCard() {
   return FutureBuilder<List<BarChartData>>(
     future: _getChartDataFromFirestore(),
@@ -506,3 +590,52 @@ Future<List<BarChartData>> _getChartDataFromFirestore() async {
 
   return chartData;
 }
+
+
+// Widget _buildLineGraph() {
+//     return charts.LineChart(
+//       _createSampleData(),
+//       animate: true,
+//       behaviors: [
+//         charts.ChartTitle(
+//           'X Axis Title',
+//           behaviorPosition: charts.BehaviorPosition.bottom,
+//           titleOutsideJustification:
+//               charts.OutsideJustification.middleDrawArea,
+//         ),
+//         charts.ChartTitle(
+//           'Y Axis Title',
+//           behaviorPosition: charts.BehaviorPosition.start,
+//           titleOutsideJustification:
+//               charts.OutsideJustification.middleDrawArea,
+//         ),
+//       ],
+//     );
+//   }
+
+//   List<charts.Series<LinearSales, int>> _createSampleData() {
+//     final data = [
+//       LinearSales(0, 5),
+//       LinearSales(1, 25),
+//       LinearSales(2, 100),
+//       LinearSales(3, 75),
+//     ];
+
+//     return [
+//       charts.Series<LinearSales, int>(
+//         id: 'Sales',
+//         colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+//         domainFn: (LinearSales sales, _) => sales.year,
+//         measureFn: (LinearSales sales, _) => sales.sales,
+//         data: data,
+//       )
+//     ];
+//   }
+
+
+// class LinearSales {
+//   final int year;
+//   final int sales;
+
+//   LinearSales(this.year, this.sales);
+// }
