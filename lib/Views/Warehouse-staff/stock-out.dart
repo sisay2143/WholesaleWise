@@ -90,6 +90,8 @@ class _StockOutPageState extends State<StockOutPage> {
               String imageUrl = _selectedProduct!.imageUrl;
               double price = _selectedProduct!.price;
               String reason = _selectedOption!; // Get the selected reason
+              String category = _selectedProduct!.category;
+              
 
               // Initialize the Completer
               // listenForApprovalResponseCompleter = Completer<void>();
@@ -109,6 +111,7 @@ class _StockOutPageState extends State<StockOutPage> {
                 'status': 'pending',
                 'productId': productId, // Add the product ID as a foreign key
                 'reason': reason, // Include the reason for stock out
+                'category': category, // Add the category field
               });
 
               _showAlertDialog(

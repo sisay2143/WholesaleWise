@@ -355,7 +355,7 @@ Widget _buildPlaceholderTableCard() {
         ),
         child: Center(
           child: StreamBuilder<QuerySnapshot>(
-            stream: _firestore.collection('products').snapshots(),
+            stream: _firestore.collection('sales_transaction').snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 final items = snapshot.data!.docs;
@@ -366,7 +366,6 @@ Widget _buildPlaceholderTableCard() {
                   categoryCounts[categoryName] =
                       (categoryCounts[categoryName] ?? 0) + 1;
                 }
-
                 final totalCategories = categoryCounts.length;
 
                 return Column(
@@ -414,7 +413,7 @@ Widget _buildTotalItemsCircularIndicator() {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         StreamBuilder<QuerySnapshot>(
-          stream: _firestore.collection('items').snapshots(),
+          stream: _firestore.collection('sales_transaction').snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -441,7 +440,7 @@ Widget _buildTotalItemsCircularIndicator() {
         ),
         SizedBox(height: 8.0),
         Text(
-          'Total Items Saled',
+          'Total products sold',
           style: TextStyle(
             fontSize: 10.0,
             fontWeight: FontWeight.bold,
