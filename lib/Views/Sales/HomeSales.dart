@@ -17,6 +17,7 @@ import 'package:camera/camera.dart';
 import 'package:untitled/models/products.dart';
 import 'package:untitled/Services/database.dart';
 import 'bargraph.dart';
+import 'package:camera/camera.dart';
 
 // import 'QRScanScreen.dart';
 import 'Myslider.dart';
@@ -208,22 +209,40 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                   SizedBox(width: 10),
                  Container(
-        height: 50,
-        width: 50,
-        decoration: BoxDecoration(
-          color: Color.fromARGB(255, 238, 238, 238),
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: IconButton(
-          icon: Icon(Icons.qr_code),
-          onPressed: () {
-            // This function will be called when the icon button is pressed
-            // You can add your custom logic here
-            print('QR code icon pressed!');
-            // _scanBarcode();
-          },
-        ),
+        // height: 50,
+        // width: 50,
+        // decoration: BoxDecoration(
+        //   color: Color.fromARGB(255, 238, 238, 238),
+        //   borderRadius: BorderRadius.circular(30),
+        // ),
+        // child: IconButton(
+        //   icon: Icon(Icons.qr_code),
+        //   onPressed: () {
+        //     // This function will be called when the icon button is pressed
+        //     // You can add your custom logic here
+        //     print('QR code icon pressed!');
+        //     // _scanBarcode();
+        //   },
+        // ),
           ),
+          // SizedBox(
+          //         width: 10,
+          //       ),
+                GestureDetector(
+                  onTap: () {
+                    // Implement the action to open the user's camera here
+                    openCamera(context);
+                  },
+                  child: Container(
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 238, 238, 238),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Icon(Icons.qr_code),
+                  ),
+                ),
         // }
                 ],
               ),
@@ -345,6 +364,34 @@ class _HomeScreenState extends State<HomeScreen> {
   //   );
   // }
 }
+Future<void> openCamera(BuildContext context) async {
+  // Initialize the camera
+  final cameras = await availableCameras();
+  final firstCamera = cameras.first;
+
+  // Initialize the camera controller
+  final CameraController cameraController = CameraController(
+    firstCamera,
+    ResolutionPreset.medium,
+  );
+
+  // Initialize the camera controller
+  await cameraController.initialize();
+
+  // Show the camera preview in a dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: AspectRatio(
+          aspectRatio: cameraController.value.aspectRatio,
+          child: CameraPreview(cameraController),
+        ),
+      );
+    },
+  );
+}
+
 
 
 class DataSearch extends SearchDelegate<String> {

@@ -4,9 +4,9 @@ import 'ProductDetail.dart';
 import 'package:intl/intl.dart';
 
 
-void main() {
-  runApp(CommitSale());
-}
+// void main() {
+//   runApp(CommitSale());
+// }
 
 class CommitSale extends StatelessWidget {
   @override
@@ -56,6 +56,7 @@ class MyHomePage extends StatelessWidget {
                         imageUrl: item['imageUrl'] ?? '',
                         productName: item['name'] ?? '',
                         sellingPrice: item['selling price'] ?? '',
+                        category: item['category'] ?? '',
                         expireDate: item['expiredate'] ?? '',
                         // Pass additional fields to the detail screen
                         additionalFields: {

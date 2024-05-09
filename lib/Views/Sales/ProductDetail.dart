@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 class detailss extends StatelessWidget {
   final String imageUrl;
+  final String category;
   final String productName;
   final String sellingPrice;
   final Timestamp expireDate; // Change the type to Timestamp
@@ -16,6 +17,7 @@ class detailss extends StatelessWidget {
 
   detailss({
     required this.imageUrl,
+    required this.category,
     required this.productName,
     required this.sellingPrice,
     required this.expireDate,
@@ -35,6 +37,7 @@ class detailss extends StatelessWidget {
       ),
       home: ProductDetailPage(
         imageUrl: imageUrl,
+        category: category,
         productName: productName,
         sellingPrice: sellingPrice,
         productId: productId,
@@ -48,6 +51,7 @@ class detailss extends StatelessWidget {
 
 class ProductDetailPage extends StatefulWidget {
   final String imageUrl;
+  final String category;
   final String productName;
   final String sellingPrice;
   final Timestamp expireDate; // Change the type to Timestamp
@@ -57,6 +61,7 @@ class ProductDetailPage extends StatefulWidget {
 
   ProductDetailPage({
     required this.imageUrl,
+    required this.category,
     required this.productName,
     required this.sellingPrice,
     required this.expireDate,
@@ -276,54 +281,72 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     );
   }
 
-  void _performSale(String quantity, String sellerName, String customerName,
-      String productId) {
-    if (quantity.isNotEmpty &&
-        sellerName.isNotEmpty &&
-        customerName.isNotEmpty) {
-      CollectionReference salesRef =
-          FirebaseFirestore.instance.collection('sales_transaction');
+  void _performSale(String quantity, String sellerName, String customerName, String productId) {
+  if (quantity.isNotEmpty && sellerName.isNotEmpty && customerName.isNotEmpty) {
+    CollectionReference salesRef = FirebaseFirestore.instance.collection('sales_transaction');
 
-      salesRef.add({
-        'productName': widget.productName,
-        'sellingPrice': widget.sellingPrice,
-        'quantity': int.parse(quantity),
-        'sellerName': sellerName,
-        'customerName': customerName,
-        'timestamp': Timestamp.now(),
-      }).then((value) {
-        print("Sale committed successfully");
-        _quantityController.clear();
-        _sellerNameController.clear();
-        _customerNameController.clear();
+    // Check if the product already exists in the database
+    salesRef.where('productId', isEqualTo: productId).get().then((querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        // Product exists, update the quantity
+        DocumentReference productRef = querySnapshot.docs.first.reference;
+        int existingQuantity = querySnapshot.docs.first.get('quantity');
+        int newQuantity = existingQuantity + int.parse(quantity);
+        productRef.update({'quantity': newQuantity}).then((_) {
+          print("Quantity updated successfully");
+          _quantityController.clear();
+          _sellerNameController.clear();
+          _customerNameController.clear();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('You have successfully updated the quantity.'),
+              backgroundColor: Colors.green, // Success color
+            ),
+          );
+        }).catchError((error) => print("Failed to update quantity: $error"));
+      } else {
+        // Product does not exist, add a new document
+        salesRef.add({
+          'productName': widget.productName,
+          'imageUrl': widget.imageUrl,
+          'category': widget.category,
+          'sellingPrice': widget.sellingPrice,
+          'quantity': int.parse(quantity),
+          'sellerName': sellerName,
+          'customerName': customerName,
+          'productId': productId, // Add product ID for future reference
+          'timestamp': Timestamp.now(),
+        }).then((value) {
+          print("Sale committed successfully");
+          _quantityController.clear();
+          _sellerNameController.clear();
+          _customerNameController.clear();
 
-        // Update product quantity after sale
+          // Update product quantity after sale
         updateProductQuantity(productId, int.parse(quantity));
+        
 
-        ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('You have successfully sold the product.'),
               backgroundColor: Colors.green, // Success color
             ),
           );
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => CommitSale()),
-          // );
+        }).catchError((error) => print("Failed to commit sale: $error"));
+      }
+    }).catchError((error) => print("Error checking product existence: $error"));
 
-          // Alternatively, you can pop the current screen
-          // Navigator.pop(context);
- 
-      }).catchError((error) => print("Failed to commit sale: $error"));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please fill all fields.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    updateProductQuantity(productId, int.parse(quantity));
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Please fill all fields.'),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
+}
+
 
   void updateProductQuantity(String productId, int soldQuantity) {
     // Get a reference to the product document
