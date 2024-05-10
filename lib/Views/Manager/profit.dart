@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'totalrevenue.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -28,7 +29,7 @@ class ProfitScreen extends StatelessWidget {
 
 
 Container(
-  height: 170, // Adjust the height as needed
+  height: 200, // Adjust the height as needed
   child: Card(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(15.0),
@@ -53,6 +54,7 @@ Container(
                     ),
                   ],
                 ),
+                // SizedBox(height: 20.0),
                 child: TextButton(
                   onPressed: () {
                     // Add your action here
@@ -155,6 +157,11 @@ Container(
               ),
               child: TextButton(
                 onPressed: () {
+                  Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => totalrevenue()),
+                        );
                   // Add your action here
                 },
                 style: TextButton.styleFrom(
