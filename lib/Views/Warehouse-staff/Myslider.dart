@@ -1,15 +1,17 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // import 'package:untitled/Views/HomeManager.dart';
-import 'package:untitled/Views/login.dart';
-import 'package:flutter/material.dart';
+// import 'package:untitled/Views/login.dart';
+// import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:pie_chart/pie_chart.dart';
+// import 'package:pie_chart/pie_chart.dart';
 // import 'CommitSale.dart';
-import 'package:carousel_slider/carousel_state.dart';
+// import 'package:carousel_slider/carousel_state.dart';
 // import 'package:carousel_slider/carousel_slider.dart';
+import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MySlider extends StatefulWidget {
   @override
@@ -22,55 +24,256 @@ class _MySliderState extends State<MySlider> {
   @override
   Widget build(BuildContext context) {
     List<Widget> carouselItems = [
-      Container(
+       Container(
         width: MediaQuery.of(context).size.width,
         margin: const EdgeInsets.symmetric(horizontal: 3),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(15)),
           color: Color.fromARGB(255, 3, 94, 147),
         ),
-        child: Center(child: Text('Rectangular Box 1')),
-      ),
-      Container(
-        width: MediaQuery.of(context).size.width,
-        margin: const EdgeInsets.symmetric(horizontal: 3),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-          color: Color.fromARGB(255, 3, 94, 147),
-        ),
         child: Column(
           children: [
-            SizedBox(
-              height: 30,
-            ),
-            Text(
-              "Lorem ipsum dolor sit amet.",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              height: 20,
-            ),
             Padding(
-              padding: EdgeInsets.only(left: 15, right: 10),
-              child: Text(
-                  "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-                  style: TextStyle(fontSize: 16, color: Colors.white)),
+              padding: const EdgeInsets.only(top: 18.0, left: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    'Yesterday  ',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 26.0,
+                      // fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    '${DateFormat.MMMM().format(DateTime.now().subtract(Duration(days: 1)))}', // Display month of yesterday
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22.0,
+                      // fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 5), // Adjust spacing between month and date
+                  Text(
+                    '${DateFormat.d().format(DateTime.now().subtract(Duration(days: 1)))}', // Display date of yesterday
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22.0,
+                      // fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20), // Add some spacing below the date
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    children: [
+                      Text(
+                        '320',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        'Total',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    height: 40,
+                    width: 1,
+                    color: Colors.white,
+                  ),
+                  Column(
+                    children: const [
+                      Text(
+                        '160',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        'Stock in',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    height: 40,
+                    width: 1,
+                    color: Colors.white,
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        '150',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        'Stock Out',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
-      Container(
-        width: MediaQuery.of(context).size.width,
-        margin: const EdgeInsets.symmetric(horizontal: 3),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-         color: Color.fromARGB(255, 3, 94, 147),
-        ),
-        // child: HeroSec("Today", "Aug 22"),
+     Container(
+      width: MediaQuery.of(context).size.width,
+      margin: const EdgeInsets.symmetric(horizontal: 3),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(15)),
+        color: Color.fromARGB(255, 3, 94, 147),
       ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 18.0, left: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(
+                  'Today  ',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 26.0,
+                  ),
+                ),
+                Text(
+                  '${DateFormat.MMMM().format(DateTime.now())}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22.0,
+                  ),
+                ),
+                SizedBox(width: 5),
+                Text(
+                  '${DateFormat.d().format(DateTime.now())}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22.0,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 20),
+          StreamBuilder(
+            stream: FirebaseFirestore.instance.collection('products').snapshots(),
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator(); // Show loading indicator while fetching data
+              }
+              if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              }
+              var data = snapshot.data!.docs;
+              var total = 0;
+              var stockIn = 0;
+              for (var doc in data) {
+                total += doc['quantity'];
+                stockIn += doc['stockIn'];
+              }
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Column(
+                      children: [
+                        Text(
+                          '$total',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.0,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          'Total',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      height: 40,
+                      width: 1,
+                      color: Colors.white,
+                    ),
+                    Column(
+                      children: [
+                        Text(
+                          '$stockIn',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.0,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          'Stock in',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    ),
+      
       Container(
         width: MediaQuery.of(context).size.width,
         margin: const EdgeInsets.symmetric(horizontal: 3),
