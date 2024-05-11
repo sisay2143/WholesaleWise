@@ -128,14 +128,14 @@ Container(
 
 
               SizedBox(height: 20.0),
-             Container(
+
+Container(
   height: 170, // Adjust the height as needed
   child: Card(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(15.0),
     ),
     color: Color.fromARGB(255, 3, 94, 147),
-    // margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 18.0),
     child: Padding(
       padding: const EdgeInsets.all(20.0),
       child: Stack(
@@ -152,35 +152,34 @@ Container(
                     blurRadius: 5,
                     offset: Offset(
                       0, 3), // changes position of shadow
-                  ),
-                ],
-              ),
-              child: TextButton(
-                onPressed: () {
-                  Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => totalrevenue()),
-                        );
-                  // Add your action here
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor:
-                      Color.fromARGB(255, 109, 163, 206), // Set background color
+                    ),
+                  ],
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => totalrevenue()),
+                    );
+                    // Add your action here
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor:
+                        Color.fromARGB(255, 109, 163, 206), // Set background color
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 15.0, vertical: 15.0),
-                  child: Text(
-                    'show more',
-                    style: TextStyle(
-                      color: Colors.white,
+                    child: Text(
+                      'show more',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
           // SizedBox(height: 5),
           Column(
             mainAxisSize: MainAxisSize.min,
@@ -204,12 +203,13 @@ Container(
                   }
                   double totalRevenue = 0.0;
                   if (snapshot.hasData) {
-   snapshot.data?.docs.forEach((doc) {
-  final sellingPrice = (doc.data() as Map<String, dynamic>?)?['sellingPrice'];
-  if (sellingPrice is String) {
-    totalRevenue += double.tryParse(sellingPrice) ?? 0.0;
-  }
-});
+                    snapshot.data?.docs.forEach((doc) {
+                      final sellingPrice = double.tryParse((doc.data() as Map<String, dynamic>?)?['sellingPrice'] ?? '0');
+                      final quantity = (doc.data() as Map<String, dynamic>?)?['quantity'];
+                      if (sellingPrice != null && quantity is num) {
+                        totalRevenue += (sellingPrice * quantity);
+                      }
+                    });
                   }
                   return Padding(
                     padding: const EdgeInsets.only(top: 10),
@@ -230,6 +230,7 @@ Container(
     ),
   ),
 ),
+
               const SizedBox(height: 20.0),
               Container(
   height: 170,
