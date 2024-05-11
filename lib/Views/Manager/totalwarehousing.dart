@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'bargraphrevenue.dart';
+// import 'totalrevenue.dart';
+import 'bargraphwarehousing.dart';
+
 void main() {
   runApp(MaterialApp(
-    home: totalrevenue(),
+    home: Totalwarehousing(),
   ));
 }
 
-class totalrevenue extends StatelessWidget {
+class Totalwarehousing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
-        title: Text('Total Revenue'),
+        title: Text('Total Warehousing'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -22,100 +27,103 @@ class totalrevenue extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 20.0),
-              Container(
-                height: 170, // Adjust the height as needed
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  color: Color.fromARGB(255, 3, 94, 147),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Stack(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8.0),
-                              boxShadow: [],
-                            ),
-                          ),
-                        ),
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Center(
-                              child: Text(
-                                'Your Total Revenue is',
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('sales_transaction')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  }
-                  double totalRevenue = 0.0;
-                  if (snapshot.hasData) {
-                    snapshot.data?.docs.forEach((doc) {
-                      final sellingPrice = double.tryParse((doc.data() as Map<String, dynamic>?)?['sellingPrice'] ?? '0');
-                      final quantity = (doc.data() as Map<String, dynamic>?)?['quantity'];
-                      if (sellingPrice != null && quantity is num) {
-                        totalRevenue += (sellingPrice * quantity);
-                      }
-                    });
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Text(
-                      '$totalRevenue\ birr !',
-                      style: TextStyle(
-                        fontSize: 22,
-                        color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  );
-                },
+Container(
+  height: 170, // Adjust the height as needed
+  child: Card(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(15.0),
+    ),
+    color: Color.fromARGB(255, 3, 94, 147),
+    child: Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Stack(
+        children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.0),
+               
+                ),
+                
               ),
-                          ],
-                        ),
-                      ],
+            ),
+            
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Text(
+                    'Your Total Warehousing',
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                 ),
-              ),
-
-
+                SizedBox(height: 16),
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance.collection('products').snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    }
+                    double totalWarehousing = 0.0;
+                    if (snapshot.hasData) {
+                      snapshot.data?.docs.forEach((doc) {
+                        final price = doc['price'] as num?;
+                        final quantity = doc['quantity'] as num?;
+                        if (price != null && quantity != null) {
+                          totalWarehousing += price.toDouble() * quantity.toDouble();
+                        }
+                      });
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Center(
+                        child: Text(
+                          '$totalWarehousing birr !',
+                          style: TextStyle(
+                            fontSize: 22,
+                            color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  ),
 SizedBox(height: 20),
+
+
 
               Card(
               elevation: 3,
               child: Column(
                 children: [
                   ListTile(
-                    title: Text('Revenue Overview'),
+                    title: Text('Warehousing Overview'),
                   ),
                   Container(
                     height: 220,
-                    child: buildBarChartCards(), // Real bar chart
+                    child: buildBarChartCardss(), // Real bar chart
                   ),
                 ],
               ),
             ),
 
 
-              SizedBox(height: 20), // Add space between widgets
-              SingleChildScrollView(
+              SizedBox(height: 20),
+SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Card(
                   margin: EdgeInsets.only(top: 30),
@@ -138,7 +146,7 @@ SizedBox(height: 20),
                               ),
                               Expanded(
                                 child: Text(
-                                  'sold at',
+                                  'Bought',
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                 ),
                               ),
@@ -150,7 +158,7 @@ SizedBox(height: 20),
                               ),
                               Expanded(
                                 child: Text(
-                                  'Trevenue',
+                                  'Total',
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                 ),
                               ),
@@ -168,7 +176,7 @@ SizedBox(height: 20),
                         SizedBox(height: 10),
                         // Placeholder for transaction table rows
                         StreamBuilder(
-                          stream: FirebaseFirestore.instance.collection('sales_transaction').snapshots(),
+                          stream: FirebaseFirestore.instance.collection('products').snapshots(),
                           builder: (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return CircularProgressIndicator(); // Placeholder while loading data
@@ -183,16 +191,17 @@ SizedBox(height: 20),
                                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                         children: [
                                           Expanded(
-                                            child: Text(documents[i]['productName']),
+                                            child: Text(documents[i]['name']),
                                           ),
                                           Expanded(
-                                            child: Text('${documents[i]['sellingPrice']}'),
+                                            child: Text('${documents[i]['price']}'),
                                           ),
                                           Expanded(
                                             child: Text('${documents[i]['quantity']}'),
                                           ),
                                           Expanded(
-                                            child: Text('${int.parse(documents[i]['sellingPrice'].toString()) * int.parse(documents[i]['quantity'].toString())}'),
+                                           child: Text('${(documents[i]['price'] as num) * (documents[i]['quantity'] as num)}'),
+
                                           ),
                                           Expanded(
                                             child: Text(documents[i]['timestamp'].toDate().toString()),
@@ -213,10 +222,11 @@ SizedBox(height: 20),
                   ),
                 ),
               ),
-            ],
-          ),
-        ),
+
+    ],
       ),
-    );
+    ),
+      )
+  );
   }
-}
+  }

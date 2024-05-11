@@ -278,6 +278,7 @@ class Reportings extends StatelessWidget {
                 ),
               ],
               animate: true,
+              
             ),
           ),
         ),

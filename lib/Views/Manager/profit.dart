@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'totalrevenue.dart';
+import 'totalwarehousing.dart';
+import 'totalprofit.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -57,6 +59,10 @@ Container(
                 // SizedBox(height: 20.0),
                 child: TextButton(
                   onPressed: () {
+                     Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Totalwarehousing()),
+                    );
                     // Add your action here
                   },
                   style: TextButton.styleFrom(
@@ -79,7 +85,7 @@ Container(
             
             Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   'Total Warehousing',
@@ -96,19 +102,20 @@ Container(
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return CircularProgressIndicator();
                     }
-                    double totalExpenditure = 0.0;
+                    double totalWarehousing = 0.0;
                     if (snapshot.hasData) {
                       snapshot.data?.docs.forEach((doc) {
                         final price = doc['price'] as num?;
-                        if (price != null) {
-                          totalExpenditure += price.toDouble();
+                        final quantity = doc['quantity'] as num?;
+                        if (price != null && quantity != null) {
+                          totalWarehousing += price.toDouble() * quantity.toDouble();
                         }
                       });
                     }
                     return Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: Text(
-                        '$totalExpenditure birr',
+                        '$totalWarehousing birr',
                         style: TextStyle(
                           fontSize: 22,
                           color: Colors.white,
@@ -124,6 +131,7 @@ Container(
       ),
     ),
   ),
+
 
 
 
@@ -232,7 +240,9 @@ Container(
 ),
 
               const SizedBox(height: 20.0),
-              Container(
+
+              
+             Container(
   height: 170,
   child: Card(
     shape: RoundedRectangleBorder(
@@ -261,6 +271,10 @@ Container(
                 ),
               child: TextButton(
                 onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => totalprofit()),
+                  );
                   // Add your action here
                 },
                 style: TextButton.styleFrom(
@@ -293,59 +307,68 @@ Container(
               ),
               SizedBox(height: 16),
               StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('products for sale').snapshots(),
-                builder: (context, productsSnapshot) {
-                  if (productsSnapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  }
+  stream: FirebaseFirestore.instance.collection('products').snapshots(),
+  builder: (context, productsSnapshot) {
+    if (productsSnapshot.connectionState == ConnectionState.waiting) {
+      return CircularProgressIndicator();
+    }
 
-                  double totalProductPrice = 0.0;
+    Map<String, double> itemProfits = {};
 
-                  if (productsSnapshot.hasData) {
-                    final productDocs = productsSnapshot.data!.docs;
-                    for (var productDoc in productDocs) {
-                   final productPrice = (productDoc.data() as Map<String, dynamic>?)?['price'] as num?;
-                      if (productPrice != null) {
-                        totalProductPrice += productPrice.toDouble();
-                      }
-                    }
-                  }
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('sales_transaction').snapshots(),
+      builder: (context, salesSnapshot) {
+        if (salesSnapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        }
 
-                  return StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance.collection('sales_transaction').snapshots(),
-                    builder: (context, salesSnapshot) {
-                      if (salesSnapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      }
+        if (salesSnapshot.hasData && productsSnapshot.hasData) {
+          final salesDocs = salesSnapshot.data!.docs;
+          final productDocs = productsSnapshot.data!.docs;
 
-                      double totalSellingPrice = 0.0;
+          // Iterate through products to calculate profits
+          for (var productDoc in productDocs) {
+            final productName = (productDoc.data() as Map<String, dynamic>)['name'] as String?;
+            final productPrice = (productDoc.data() as Map<String, dynamic>)['price'] as num?;
+            if (productName != null && productPrice != null) {
+              itemProfits[productName] = 0.0; // Initialize profit for each product
+            }
+          }
 
-                      if (salesSnapshot.hasData) {
-                        final salesDocs = salesSnapshot.data!.docs;
-                        for (var saleDoc in salesDocs) {
-                     final sellingPrice = double.tryParse((saleDoc.data() as Map<String, dynamic>?)?['sellingPrice'] as String? ?? '') ?? 0.0;
-                          if (sellingPrice != null) {
-                            totalSellingPrice += sellingPrice.toDouble();
-                          }
-                        }
-                      }
+          // Iterate through sales transactions to calculate profits
+          for (var saleDoc in salesDocs) {
+            final productName = (saleDoc.data() as Map<String, dynamic>)['productName'] as String?;
+            final sellingPrice = double.tryParse((saleDoc.data() as Map<String, dynamic>)['sellingPrice'] as String? ?? '') ?? 0.0;
+            final saleQuantity = (saleDoc.data() as Map<String, dynamic>)['quantity'] as num?;
+            if (productName != null && itemProfits.containsKey(productName) && saleQuantity != null) {
+              final productPrice = (productsSnapshot.data!.docs.firstWhere((doc) => doc['name'] == productName)['price']) as num?;
+              if (productPrice != null) {
+                itemProfits[productName] = itemProfits[productName]! + ((sellingPrice - productPrice) * saleQuantity.toDouble());
+              }
+            }
+          }
+        }
 
-                      final totalProfit = totalProductPrice - totalSellingPrice;
+        double totalProfit = 0.0;
+        itemProfits.forEach((key, value) {
+          totalProfit += value;
+        });
 
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Text(
-                          '$totalProfit\ birr',
-                          style: TextStyle(
-                            fontSize: 22,
-                            color: Colors.white,
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
+        return Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: Text(
+            '$totalProfit\ birr',
+            style: TextStyle(
+              fontSize: 22,
+              color: Colors.white,
+            ),
+          ),
+        );
+      },
+    );
+  },
+),
+
             ],
           ),
         ],

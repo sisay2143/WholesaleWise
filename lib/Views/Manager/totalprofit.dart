@@ -3,11 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'bargraphrevenue.dart';
 void main() {
   runApp(MaterialApp(
-    home: totalrevenue(),
+    home: totalprofit(),
   ));
 }
 
-class totalrevenue extends StatelessWidget {
+class totalprofit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,79 +42,99 @@ class totalrevenue extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Center(
-                              child: Text(
-                                'Your Total Revenue is',
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('sales_transaction')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  }
-                  double totalRevenue = 0.0;
-                  if (snapshot.hasData) {
-                    snapshot.data?.docs.forEach((doc) {
-                      final sellingPrice = double.tryParse((doc.data() as Map<String, dynamic>?)?['sellingPrice'] ?? '0');
-                      final quantity = (doc.data() as Map<String, dynamic>?)?['quantity'];
-                      if (sellingPrice != null && quantity is num) {
-                        totalRevenue += (sellingPrice * quantity);
-                      }
-                    });
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Text(
-                      '$totalRevenue\ birr !',
-                      style: TextStyle(
-                        fontSize: 22,
-                        color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  );
-                },
-              ),
-                          ],
-                        ),
-                      ],
-                    ),
+ Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: Text(
+                  'Your Total Profit is',
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),
+              SizedBox(height: 16),
+              StreamBuilder<QuerySnapshot>(
+  stream: FirebaseFirestore.instance.collection('products').snapshots(),
+  builder: (context, productsSnapshot) {
+    if (productsSnapshot.connectionState == ConnectionState.waiting) {
+      return CircularProgressIndicator();
+    }
 
+    Map<String, double> itemProfits = {};
 
-SizedBox(height: 20),
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('sales_transaction').snapshots(),
+      builder: (context, salesSnapshot) {
+        if (salesSnapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        }
 
-              Card(
-              elevation: 3,
-              child: Column(
-                children: [
-                  ListTile(
-                    title: Text('Revenue Overview'),
-                  ),
-                  Container(
-                    height: 220,
-                    child: buildBarChartCards(), // Real bar chart
-                  ),
-                ],
-              ),
+        if (salesSnapshot.hasData && productsSnapshot.hasData) {
+          final salesDocs = salesSnapshot.data!.docs;
+          final productDocs = productsSnapshot.data!.docs;
+
+          // Iterate through products to calculate profits
+          for (var productDoc in productDocs) {
+            final productName = (productDoc.data() as Map<String, dynamic>)['name'] as String?;
+            final productPrice = (productDoc.data() as Map<String, dynamic>)['price'] as num?;
+            if (productName != null && productPrice != null) {
+              itemProfits[productName] = 0.0; // Initialize profit for each product
+            }
+          }
+
+          // Iterate through sales transactions to calculate profits
+          for (var saleDoc in salesDocs) {
+            final productName = (saleDoc.data() as Map<String, dynamic>)['productName'] as String?;
+            final sellingPrice = double.tryParse((saleDoc.data() as Map<String, dynamic>)['sellingPrice'] as String? ?? '') ?? 0.0;
+            final saleQuantity = (saleDoc.data() as Map<String, dynamic>)['quantity'] as num?;
+            if (productName != null && itemProfits.containsKey(productName) && saleQuantity != null) {
+              final productPrice = (productsSnapshot.data!.docs.firstWhere((doc) => doc['name'] == productName)['price']) as num?;
+              if (productPrice != null) {
+                itemProfits[productName] = itemProfits[productName]! + ((sellingPrice - productPrice) * saleQuantity.toDouble());
+              }
+            }
+          }
+        }
+
+        double totalProfit = 0.0;
+        itemProfits.forEach((key, value) {
+          totalProfit += value;
+        });
+
+        return Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: Text(
+            '$totalProfit\ birr !',
+            style: TextStyle(
+              fontSize: 22,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
+          ),
+        );
+      },
+    );
+  },
+),
+
+            ],
+          ),
 
 
-              SizedBox(height: 20), // Add space between widgets
+
+        ],
+      ),
+    ),
+  ),
+),
+
+
+
+
+SizedBox(height: 20), // Add space between widgets
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Card(
@@ -213,10 +233,11 @@ SizedBox(height: 20),
                   ),
                 ),
               ),
-            ],
-          ),
-        ),
+
+  ],
       ),
-    );
+    ),
+      )
+  );
   }
-}
+  }
