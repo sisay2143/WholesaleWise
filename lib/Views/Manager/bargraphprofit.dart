@@ -3,17 +3,17 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
-  runApp(buildBarChartCards());
+  runApp(buildBarChartCardss());
 }
 
 class BarChartData {
-  final String day;
-  final double totalSales;
+  final String date;
+  final double totalDeductedValue;
 
-  BarChartData(this.day, this.totalSales);
+  BarChartData(this.date, this.totalDeductedValue);
 }
 
-Widget buildBarChartCards() {
+Widget buildBarChartCardss() {
   return FutureBuilder<List<BarChartData>>(
     future: _getChartDataFromFirestore(),
     builder: (context, snapshot) {
@@ -50,13 +50,15 @@ Widget _buildBarChart(List<BarChartData> data) {
         child: charts.BarChart(
           [
             charts.Series<BarChartData, String>(
-              id: 'Sales',
+              id: 'DeductedValue',
               data: data,
-              domainFn: (BarChartData sales, _) => sales.day,
-              measureFn: (BarChartData sales, _) => sales.totalSales,
+              domainFn: (BarChartData sales, _) => sales.date,
+              measureFn: (BarChartData sales, _) => sales.totalDeductedValue,
+              colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
             ),
           ],
           animate: true,
+          // Customize the appearance of the chart
           domainAxis: charts.OrdinalAxisSpec(
             renderSpec: charts.SmallTickRendererSpec(
               labelRotation: 45, // Rotate labels by 45 degrees
@@ -80,42 +82,28 @@ Future<List<BarChartData>> _getChartDataFromFirestore() async {
   snapshot.docs.forEach((doc) {
     Timestamp timestamp = doc['timestamp'];
     int quantity = doc['quantity'];
-   double sellingPrice;
-if (doc['sellingPrice'] is String) {
-  sellingPrice = double.tryParse(doc['sellingPrice']) ?? 0.0;
-} else {
-  sellingPrice = doc['sellingPrice'].toDouble();
-}
+    double sellingPrice;
+    if (doc['sellingPrice'] is String) {
+      sellingPrice = double.tryParse(doc['sellingPrice']) ?? 0.0;
+    } else {
+      sellingPrice = doc['sellingPrice'].toDouble();
+    }
 
     DateTime dateTime = timestamp.toDate(); // Convert Timestamp to DateTime
     String dateString =
         '${dateTime.year}-${dateTime.month}-${dateTime.day}'; // Format to display only date
     if (daySalesMap.containsKey(dateString)) {
       daySalesMap[dateString] ??= 0;
-daySalesMap[dateString] = (daySalesMap[dateString] ?? 0) + sellingPrice * quantity;
-
-
+      daySalesMap[dateString] = (daySalesMap[dateString] ?? 0) + sellingPrice * quantity;
     } else {
       daySalesMap[dateString] = sellingPrice * quantity;
     }
   });
 
   // Convert data to BarChartData objects
-  daySalesMap.forEach((day, totalSales) {
-    chartData.add(BarChartData(day, totalSales));
+  daySalesMap.forEach((date, totalDeductedValue) {
+    chartData.add(BarChartData(date, totalDeductedValue));
   });
 
   return chartData;
 }
-
-
-
-
-
-
-
-
-
-
-
-

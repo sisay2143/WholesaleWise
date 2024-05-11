@@ -3,7 +3,7 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
-  runApp(buildBarChartCards());
+  runApp(buildBarChartCardss());
 }
 
 class BarChartData {
@@ -13,7 +13,7 @@ class BarChartData {
   BarChartData(this.day, this.totalSales);
 }
 
-Widget buildBarChartCards() {
+Widget buildBarChartCardss() {
   return FutureBuilder<List<BarChartData>>(
     future: _getChartDataFromFirestore(),
     builder: (context, snapshot) {
@@ -57,6 +57,7 @@ Widget _buildBarChart(List<BarChartData> data) {
             ),
           ],
           animate: true,
+          // Customize the appearance of the chart
           domainAxis: charts.OrdinalAxisSpec(
             renderSpec: charts.SmallTickRendererSpec(
               labelRotation: 45, // Rotate labels by 45 degrees
@@ -73,28 +74,26 @@ Future<List<BarChartData>> _getChartDataFromFirestore() async {
 
   // Fetch data from Firestore
   QuerySnapshot snapshot =
-      await FirebaseFirestore.instance.collection('sales_transaction').get();
+      await FirebaseFirestore.instance.collection('products').get();
 
   // Process fetched data
   Map<String, double> daySalesMap = {};
   snapshot.docs.forEach((doc) {
     Timestamp timestamp = doc['timestamp'];
     int quantity = doc['quantity'];
-   double sellingPrice;
-if (doc['sellingPrice'] is String) {
-  sellingPrice = double.tryParse(doc['sellingPrice']) ?? 0.0;
-} else {
-  sellingPrice = doc['sellingPrice'].toDouble();
-}
+    double sellingPrice;
+    if (doc['price'] is String) {
+      sellingPrice = double.tryParse(doc['price']) ?? 0.0;
+    } else {
+      sellingPrice = doc['price'].toDouble();
+    }
 
     DateTime dateTime = timestamp.toDate(); // Convert Timestamp to DateTime
     String dateString =
         '${dateTime.year}-${dateTime.month}-${dateTime.day}'; // Format to display only date
     if (daySalesMap.containsKey(dateString)) {
       daySalesMap[dateString] ??= 0;
-daySalesMap[dateString] = (daySalesMap[dateString] ?? 0) + sellingPrice * quantity;
-
-
+      daySalesMap[dateString] = (daySalesMap[dateString] ?? 0) + sellingPrice * quantity;
     } else {
       daySalesMap[dateString] = sellingPrice * quantity;
     }
@@ -107,15 +106,3 @@ daySalesMap[dateString] = (daySalesMap[dateString] ?? 0) + sellingPrice * quanti
 
   return chartData;
 }
-
-
-
-
-
-
-
-
-
-
-
-
