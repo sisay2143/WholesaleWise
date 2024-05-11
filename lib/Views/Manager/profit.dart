@@ -31,7 +31,7 @@ class ProfitScreen extends StatelessWidget {
 
 
 Container(
-  height: 200, // Adjust the height as needed
+  height: 170, // Adjust the height as needed
   child: Card(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(15.0),
@@ -42,7 +42,7 @@ Container(
       child: Stack(
         children: [
           Align(
-            alignment: Alignment.centerRight,
+            alignment: Alignment.bottomRight,
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8.0),
@@ -85,7 +85,7 @@ Container(
             
             Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Total Warehousing',
@@ -119,6 +119,7 @@ Container(
                         style: TextStyle(
                           fontSize: 22,
                           color: Colors.white,
+                            fontWeight: FontWeight.bold,
                         ),
                       ),
                     );
@@ -149,7 +150,7 @@ Container(
       child: Stack(
         children: [
           Align(
-            alignment: Alignment.centerRight,
+            alignment: Alignment.bottomRight,
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8.0),
@@ -226,6 +227,7 @@ Container(
                       style: TextStyle(
                         fontSize: 22,
                         color: Colors.white,
+                          fontWeight: FontWeight.bold,
                       ),
                     ),
                   );
@@ -255,7 +257,7 @@ Container(
       child: Stack(
         children: [
           Align(
-            alignment: Alignment.centerRight,
+            alignment: Alignment.bottomRight,
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8.0),
@@ -303,6 +305,7 @@ Container(
                   fontSize: 25,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
+                  
                 ),
               ),
               SizedBox(height: 16),
@@ -361,6 +364,7 @@ Container(
             style: TextStyle(
               fontSize: 22,
               color: Colors.white,
+                fontWeight: FontWeight.bold,
             ),
           ),
         );

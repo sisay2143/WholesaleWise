@@ -55,7 +55,7 @@ Container(
               children: [
                 Center(
                   child: Text(
-                    'Your Total Warehousing',
+                    'Your total Warehousing',
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,

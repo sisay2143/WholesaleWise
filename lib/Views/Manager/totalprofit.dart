@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'bargraphrevenue.dart';
+import 'bargraphprofit.dart';
 void main() {
   runApp(MaterialApp(
     home: totalprofit(),
@@ -13,7 +13,7 @@ class totalprofit extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
-        title: Text('Total Revenue'),
+        title: Text('Total Profit'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -47,7 +47,7 @@ class totalprofit extends StatelessWidget {
             children: [
               Center(
                 child: Text(
-                  'Your Total Profit is',
+                  'Your total Profit is',
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
@@ -132,107 +132,180 @@ class totalprofit extends StatelessWidget {
 ),
 
 
+SizedBox(height: 20),
+
+              Card(
+              elevation: 3,
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text('Profit Overview'),
+                  ),
+                  Container(
+                    height: 220,
+                    child: buildBarChartCardsss(), // Real bar chart
+                  ),
+                ],
+              ),
+            ),
 
 
-SizedBox(height: 20), // Add space between widgets
+             
+SizedBox(height: 20),
+ // Add space between widgets
               SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Card(
-                  margin: EdgeInsets.only(top: 30),
-                  elevation: 2,
-                  child: Container(
-                    padding: EdgeInsets.all(20),
-                    width: MediaQuery.of(context).size.width * 1.5, // Adjust width as needed
-                    child: Column(
-                      children: [
-                        // Placeholder for transaction table columns
-                        Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  'Pname',
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  'sold at',
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  'Quantity',
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  'Trevenue',
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  'Date',
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Divider(), // Horizontal line between header and rows
-                        SizedBox(height: 10),
-                        // Placeholder for transaction table rows
-                        StreamBuilder(
-                          stream: FirebaseFirestore.instance.collection('sales_transaction').snapshots(),
-                          builder: (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return CircularProgressIndicator(); // Placeholder while loading data
-                            }
-                            final documents = snapshot.data!.docs;
-                            return Column(
-                              children: [
-                                for (int i = 0; i < documents.length; i++)
-                                  Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Expanded(
-                                            child: Text(documents[i]['productName']),
-                                          ),
-                                          Expanded(
-                                            child: Text('${documents[i]['sellingPrice']}'),
-                                          ),
-                                          Expanded(
-                                            child: Text('${documents[i]['quantity']}'),
-                                          ),
-                                          Expanded(
-                                            child: Text('${int.parse(documents[i]['sellingPrice'].toString()) * int.parse(documents[i]['quantity'].toString())}'),
-                                          ),
-                                          Expanded(
-                                            child: Text(documents[i]['timestamp'].toDate().toString()),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 10), // Spacing between rows
-                                      Divider(), // Horizontal line between rows
-                                      SizedBox(height: 10), // Spacing between rows
-                                    ],
-                                  ),
-                              ],
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+  scrollDirection: Axis.horizontal,
+  child: Card(
+    margin: EdgeInsets.only(top: 30),
+    elevation: 2,
+    child: Container(
+      padding: EdgeInsets.all(20),
+      width: MediaQuery.of(context).size.width * 1.9, // Adjust width as needed
+      child: Column(
+        children: [
+          // Placeholder for transaction table columns
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: Text(
+                    'Pname',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ),
-              ),
+                Expanded(
+                  child: Text(
+                    'Purchased',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    'sold at',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    'Quan_sold',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    'Revenue',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+                 Expanded(
+                  child: Text(
+                    'Profit',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    'Date_sold',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+               
+              ],
+            ),
+          ),
+          SizedBox(height: 10),
+          Divider(), // Horizontal line between header and rows
+          SizedBox(height: 10),
+          // Placeholder for transaction table rows
+          StreamBuilder(
+            stream: FirebaseFirestore.instance.collection('sales_transaction').snapshots(),
+            builder: (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator(); // Placeholder while loading data
+              }
+              final documents = snapshot.data!.docs;
+              return Column(
+                children: [
+                  for (int i = 0; i < documents.length; i++)
+                    Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              child: Text(documents[i]['productName']),
+                            ),
+                            Expanded(
+                              child: FutureBuilder(
+                                future: FirebaseFirestore.instance.collection('products').where('name', isEqualTo: documents[i]['productName']).get(),
+                                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return CircularProgressIndicator();
+                                  }
+                                  if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  }
+                                  if (snapshot.data!.docs.isEmpty) {
+                                    return Text('N/A');
+                                  }
+                                  return Text(snapshot.data!.docs[0]['price'].toString());
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              child: Text('${documents[i]['sellingPrice']}'),
+                            ),
+                            Expanded(
+                              child: Text('${documents[i]['quantity']}'),
+                            ),
+                            Expanded(
+                              child: Text('${int.parse(documents[i]['sellingPrice'].toString()) * int.parse(documents[i]['quantity'].toString())}'),
+                            ),
+                            Expanded(
+                              child: FutureBuilder(
+                                future: FirebaseFirestore.instance.collection('products').where('name', isEqualTo: documents[i]['productName']).get(),
+                                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return CircularProgressIndicator();
+                                  }
+                                  if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  }
+                                  if (snapshot.data!.docs.isEmpty) {
+                                    return Text('N/A');
+                                  }
+                                  // Calculate profit: (sold at - purchased) * quantity sold
+                                  final purchased = double.parse(snapshot.data!.docs[0]['price'].toString());
+                                  final soldAt = double.parse(documents[i]['sellingPrice'].toString());
+                                  final quantitySold = int.parse(documents[i]['quantity'].toString());
+                                  final profit = (soldAt - purchased) * quantitySold;
+                                  return Text(profit.toString());
+                                },
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(documents[i]['timestamp'].toDate().toString()),
+                            ),
+                            
+                          ],
+                        ),
+                        SizedBox(height: 10), // Spacing between rows
+                        Divider(), // Horizontal line between rows
+                        SizedBox(height: 10), // Spacing between rows
+                      ],
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    ),
+  ),
+),
+
+
 
   ],
       ),
