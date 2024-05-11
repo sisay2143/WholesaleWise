@@ -47,7 +47,7 @@ class totalrevenue extends StatelessWidget {
                           children: [
                             Center(
                               child: Text(
-                                'Your Total Revenue is',
+                                'Your total Revenue is',
                                 style: TextStyle(
                                   fontSize: 25,
                                   fontWeight: FontWeight.bold,
@@ -156,7 +156,7 @@ SizedBox(height: 20),
                               ),
                               Expanded(
                                 child: Text(
-                                  'Date',
+                                  'Date_sold',
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                 ),
                               ),

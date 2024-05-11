@@ -3,7 +3,7 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
-  runApp(buildBarChartCardss());
+  runApp(buildBarChartCardsss());
 }
 
 class BarChartData {
@@ -13,7 +13,7 @@ class BarChartData {
   BarChartData(this.date, this.totalDeductedValue);
 }
 
-Widget buildBarChartCardss() {
+Widget buildBarChartCardsss() {
   return FutureBuilder<List<BarChartData>>(
     future: _getChartDataFromFirestore(),
     builder: (context, snapshot) {
@@ -74,14 +74,25 @@ Future<List<BarChartData>> _getChartDataFromFirestore() async {
   List<BarChartData> chartData = [];
 
   // Fetch data from Firestore
-  QuerySnapshot snapshot =
+  QuerySnapshot salesSnapshot =
       await FirebaseFirestore.instance.collection('sales_transaction').get();
+  QuerySnapshot productsSnapshot =
+      await FirebaseFirestore.instance.collection('products').get();
 
   // Process fetched data
   Map<String, double> daySalesMap = {};
-  snapshot.docs.forEach((doc) {
+
+  // Map product names to their prices
+  Map<String, double?> productPrices = {};
+  productsSnapshot.docs.forEach((doc) {
+   productPrices[doc['name']] = doc['price'];
+
+  });
+
+  salesSnapshot.docs.forEach((doc) {
     Timestamp timestamp = doc['timestamp'];
     int quantity = doc['quantity'];
+    String productName = doc['productName'];
     double sellingPrice;
     if (doc['sellingPrice'] is String) {
       sellingPrice = double.tryParse(doc['sellingPrice']) ?? 0.0;
@@ -89,20 +100,23 @@ Future<List<BarChartData>> _getChartDataFromFirestore() async {
       sellingPrice = doc['sellingPrice'].toDouble();
     }
 
-    DateTime dateTime = timestamp.toDate(); // Convert Timestamp to DateTime
-    String dateString =
-        '${dateTime.year}-${dateTime.month}-${dateTime.day}'; // Format to display only date
-    if (daySalesMap.containsKey(dateString)) {
-      daySalesMap[dateString] ??= 0;
-      daySalesMap[dateString] = (daySalesMap[dateString] ?? 0) + sellingPrice * quantity;
-    } else {
-      daySalesMap[dateString] = sellingPrice * quantity;
+    if (productPrices.containsKey(productName)) {
+      double? productPrice = productPrices[productName];
+      if (productPrice != null) {
+        double deductedValue = (sellingPrice - productPrice) * quantity;
+
+        DateTime dateTime = timestamp.toDate(); // Convert Timestamp to DateTime
+        String dateString =
+            '${dateTime.year}-${dateTime.month}-${dateTime.day}'; // Format to display only date
+        daySalesMap[dateString] ??= 0;
+        daySalesMap[dateString] = daySalesMap[dateString]! + deductedValue;
+      }
     }
   });
 
   // Convert data to BarChartData objects
   daySalesMap.forEach((date, totalDeductedValue) {
-    chartData.add(BarChartData(date, totalDeductedValue));
+    chartData.add(BarChartData(date, totalDeductedValue ?? 0));
   });
 
   return chartData;
