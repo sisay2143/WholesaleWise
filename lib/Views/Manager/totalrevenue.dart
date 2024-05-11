@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-// import 'package:charts_flutter/flutter.dart' as charts;
-import 'linegraph.dart';
-
-
+import 'bargraphrevenue.dart';
 void main() {
   runApp(MaterialApp(
     home: totalrevenue(),
@@ -102,29 +96,35 @@ class totalrevenue extends StatelessWidget {
                   ),
                 ),
               ),
-              // SizedBox(height: 16),
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(vertical: 8.0),
-              //   child: SizedBox(
-              //     height: 300,
-              //     width: 700,
-                  
-              //     child: Card(
-              //       shape: RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(5.0),
-              //       ),
-              //       child: Padding(
-              //         padding: const EdgeInsets.all(1.0),
-              //         child: buildLineGraph(),
-              //       ),
-              //     ),
-              //   ),
-              // ),
-               Card(
+
+
+SizedBox(height: 20),
+
+              Card(
+              elevation: 3,
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text('Revenue Overview'),
+                  ),
+                  Container(
+                    height: 220,
+                    child: buildBarChartCards(), // Real bar chart
+                  ),
+                ],
+              ),
+            ),
+
+
+              SizedBox(height: 20), // Add space between widgets
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Card(
                   margin: EdgeInsets.only(top: 30),
                   elevation: 2,
                   child: Container(
                     padding: EdgeInsets.all(20),
+                    width: MediaQuery.of(context).size.width * 1.5, // Adjust width as needed
                     child: Column(
                       children: [
                         // Placeholder for transaction table columns
@@ -150,7 +150,12 @@ class totalrevenue extends StatelessWidget {
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                 ),
                               ),
-                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Trevenue',
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                              ),
                               Expanded(
                                 child: Text(
                                   'Date',
@@ -189,6 +194,9 @@ class totalrevenue extends StatelessWidget {
                                             child: Text('${documents[i]['quantity']}'),
                                           ),
                                           Expanded(
+                                            child: Text('${int.parse(documents[i]['sellingPrice'].toString()) * int.parse(documents[i]['quantity'].toString())}'),
+                                          ),
+                                          Expanded(
                                             child: Text(documents[i]['timestamp'].toDate().toString()),
                                           ),
                                         ],
@@ -206,6 +214,7 @@ class totalrevenue extends StatelessWidget {
                     ),
                   ),
                 ),
+              ),
             ],
           ),
         ),
@@ -213,90 +222,3 @@ class totalrevenue extends StatelessWidget {
     );
   }
 }
-
-//   Widget _buildLineGraph() {
-//   return charts.LineChart(
-//     _createSampleData(),
-//     animate: true,
-//     behaviors: [
-//       charts.ChartTitle(
-//         'X Axis Title',
-//         behaviorPosition: charts.BehaviorPosition.bottom,
-//         titleOutsideJustification:
-//             charts.OutsideJustification.middleDrawArea,
-//       ),
-//       charts.ChartTitle(
-//         'Y Axis Title',
-//         behaviorPosition: charts.BehaviorPosition.start,
-//         titleOutsideJustification:
-//             charts.OutsideJustification.middleDrawArea,
-//       ),
-//     ],
-//   );
-// }
-
-// List<charts.Series<LinearSales, int>> _createSampleData() {
-//   final List<LinearSales> data = [];
-
-//   // Fetch data from Firestore and populate the data list
-//   _fetchSalesData().then((salesData) {
-//     data.addAll(salesData);
-
-//     // Update the chart with the new data
-//     setState(() {});
-//   });
-
-//   return [
-//     charts.Series<LinearSales, int>(
-//       id: 'Sales',
-//       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-//       domainFn: (LinearSales sales, _) => sales.timestamp.day,
-//       measureFn: (LinearSales sales, _) => sales.sellingPrice,
-//       data: data,
-//     )
-//   ];
-// }
-
-// Future<List<LinearSales>> _fetchSalesData() async {
-//   final QuerySnapshot snapshot = await FirebaseFirestore.instance
-//       .collection('sales_transaction')
-//       .get();
-
-//   final List<LinearSales> data = [];
-//   int totalSalesForDay = 0;
-//   DateTime currentDay;
-
-//   snapshot.docs.forEach((doc) {
-//     final sellingPrice = doc['sellingPrice'] as int;
-//     final timestamp = (doc['timestamp'] as Timestamp).toDate();
-
-//     if (currentDay == null || !_isSameDay(currentDay, timestamp)) {
-//       if (currentDay != null) {
-//         data.add(LinearSales(currentDay, totalSalesForDay));
-//       }
-
-//       currentDay = timestamp;
-//       totalSalesForDay = 0;
-//     }
-
-//     totalSalesForDay += sellingPrice;
-//   });
-
-//   if (currentDay != null) {
-//     data.add(LinearSales(currentDay, totalSalesForDay));
-//   }
-
-//   return data;
-// }
-
-// bool _isSameDay(DateTime date1, DateTime date2) {
-//   return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
-// }
-
-// class LinearSales {
-//   final DateTime timestamp;
-//   final int sellingPrice;
-
-//   LinearSales(this.timestamp, this.sellingPrice);
-// }
-// }
