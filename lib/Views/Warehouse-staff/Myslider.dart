@@ -210,8 +210,8 @@ class _MySliderState extends State<MySlider> {
               var total = 0;
               var stockIn = 0;
               for (var doc in data) {
-                total += doc['quantity'];
-                stockIn += doc['stockIn'];
+                // total += doc['quantity'];
+                // stockIn += doc['stockIn'];
               }
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
