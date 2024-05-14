@@ -232,7 +232,6 @@ class _MySliderState extends State<MySlider> {
           },
         ),
       ),
-
       Container(
         width: MediaQuery.of(context).size.width,
         margin: const EdgeInsets.symmetric(horizontal: 3),
