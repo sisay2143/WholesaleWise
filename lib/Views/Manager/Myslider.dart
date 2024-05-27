@@ -12,6 +12,7 @@ import 'package:carousel_slider/carousel_state.dart';
 // import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
 import '../../Backend/slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MySlider extends StatefulWidget {
   @override
@@ -43,116 +44,145 @@ class _MySliderState extends State<MySlider> {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 26.0,
-                      // fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    '${DateFormat.MMMM().format(DateTime.now().subtract(Duration(days: 1)))}', // Display month of yesterday
+                    '${DateFormat.MMMM().format(DateTime.now().subtract(Duration(days: 1)))}',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 22.0,
-                      // fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(width: 5), // Adjust spacing between month and date
+                  SizedBox(width: 5),
                   Text(
-                    '${DateFormat.d().format(DateTime.now().subtract(Duration(days: 1)))}', // Display date of yesterday
+                    '${DateFormat.d().format(DateTime.now().subtract(Duration(days: 1)))}',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 22.0,
-                      // fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 20), // Add some spacing below the date
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Column(
+            SizedBox(height: 20),
+            StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('products')
+                  .where('timestamp',
+                      isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()
+                          .subtract(Duration(
+                              days:
+                                  2)))) // Filtering documents with timestamp within the day before yesterday
+                  .where('timestamp',
+                      isLessThan: Timestamp.fromDate(DateTime.now().subtract(
+                          Duration(
+                              days:
+                                  1)))) // Filtering documents with timestamp before yesterday
+                  .snapshots(),
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator(); // Show loading indicator while fetching data
+                }
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+                var data = snapshot.data!.docs;
+                var total = 0;
+                var stockIn = 0;
+                for (var doc in data) {
+                  var quantity = doc['quantity'] as int?;
+                  var stockInValue = doc['stockIn'] as int?;
+                  if (quantity != null) {
+                    total += quantity;
+                  }
+                  if (stockInValue != null) {
+                    stockIn += stockInValue;
+                  }
+                }
+                var stockOut = total -
+                    stockIn; // Calculate stock out by subtracting stock in from total quantity
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(
-                        '320',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
-                          // fontWeight: FontWeight.bold,
-                        ),
+                      Column(
+                        children: [
+                          Text(
+                            '$total',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'Total',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(
-                        height: 10,
+                      Container(
+                        height: 40,
+                        width: 1,
+                        color: Colors.white,
                       ),
-                      Text(
-                        'Total',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
-                          // fontWeight: FontWeight.bold,
-                        ),
+                      Column(
+                        children: [
+                          Text(
+                            '$stockIn',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'Stock in',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  Container(
-                    height: 40,
-                    width: 1,
-                    color: Colors.white,
-                  ),
-                  Column(
-                    children: const [
-                      Text(
-                        '160',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
-                          // fontWeight: FontWeight.bold,
-                        ),
+                      Container(
+                        height: 40,
+                        width: 1,
+                        color: Colors.white,
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        'Stock in',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
-                          // fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    height: 40,
-                    width: 1,
-                    color: Colors.white,
-                  ),
-                  Column(
-                    children: [
-                      Text(
-                        '150',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
-                          // fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        'Stock Out',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
-                          // fontWeight: FontWeight.bold,
-                        ),
+                      Column(
+                        children: [
+                          Text(
+                            '$stockOut',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'Stock Out',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                );
+              },
             ),
           ],
         ),
@@ -165,82 +195,136 @@ class _MySliderState extends State<MySlider> {
           borderRadius: BorderRadius.all(Radius.circular(15)),
           color: Color.fromARGB(255, 3, 94, 147),
         ),
-        child: FutureBuilder(
-          future: fetchStockData(), // Function to fetch stock data
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child:
-                    CircularProgressIndicator(), // Placeholder while loading data
-              );
-            }
-            if (snapshot.hasError) {
-              return Center(
-                child: Text('Error: ${snapshot.error}'),
-              );
-            }
-            if (snapshot.data == null || (snapshot.data as List).isEmpty) {
-              return Center(
-                child: Text('No data available'),
-              );
-            }
-
-            // Your logic to calculate total stock in and stock out goes here
-            // Calculate total stock in and stock out for today
-            int stockIn = 0;
-            int stockOut = 0;
-            if (snapshot.data != null) {
-              for (var data in snapshot.data as List) {
-                if (DateUtils.isToday(data['date'])) {
-                  // Accessing isToday method from utility class
-                  stockIn += (data['stockIn'] ?? 0)
-                      as int; // Convert to int and handle null values
-                  stockOut += (data['stockOut'] ?? 0)
-                      as int; // Convert to int and handle null values
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 18.0, left: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    'Today  ',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 26.0,
+                    ),
+                  ),
+                  Text(
+                    '${DateFormat.MMMM().format(DateTime.now())}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22.0,
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    '${DateFormat.d().format(DateTime.now())}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+            StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('products')
+                  .where('timestamp',
+                      isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()
+                          .subtract(Duration(
+                              days:
+                                  1)))) // Filtering documents with timestamp within the last 24 hours
+                  .snapshots(),
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator(); // Show loading indicator while fetching data
                 }
-              }
-            }
-
-// Display the stock in and stock out
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0, left: 12),
+                if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                }
+                var data = snapshot.data!.docs;
+                var totalQuantity = 0;
+                for (var doc in data) {
+                  var quantity = doc['quantity'] as int?;
+                  if (quantity != null) {
+                    totalQuantity += quantity;
+                  }
+                }
+                // Stock out is calculated solely based on the total quantity
+                var stockOut = totalQuantity;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(
-                        'Stock In: $stockIn', // Display stock in for today
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 30.0,
-                        ),
+                      Column(
+                        children: [
+                          Text(
+                            '$totalQuantity',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'Total',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(width: 20),
-                      Text(
-                        'Stock Out: $stockOut', // Display stock out for today
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 30.0,
-                        ),
+                      Container(
+                        height: 40,
+                        width: 1,
+                        color: Colors.white,
+                      ),
+                      // No need for the Stock In column as it's stored in the total quantity
+                      Column(
+                        children: [
+                          Text(
+                            '$stockOut',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'Stock out',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ),
-              ],
-            );
-          },
+                );
+              },
+            ),
+          ],
         ),
       ),
-      Container(
-        width: MediaQuery.of(context).size.width,
-        margin: const EdgeInsets.symmetric(horizontal: 3),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-          color: Color.fromARGB(255, 3, 94, 147),
-        ),
-        child: HeroSec("Today", "Aug 22"),
-      ),
+
+      // Container(
+      //   width: MediaQuery.of(context).size.width,
+      //   margin: const EdgeInsets.symmetric(horizontal: 3),
+      //   decoration: BoxDecoration(
+      //     borderRadius: BorderRadius.all(Radius.circular(10)),
+      //     color: Color.fromARGB(255, 3, 94, 147),
+      //   ),
+      //   child: HeroSec("gfg", "Aug 22"),
+      // ),
       // Container(
       //   width: MediaQuery.of(context).size.width,
       //   margin: const EdgeInsets.symmetric(horizontal: 3),
