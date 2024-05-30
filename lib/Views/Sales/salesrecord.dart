@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
-  runApp(SalesRecords());
-}
+// void main() {
+//   runApp(SalesRecords());
+// }
 
 class SalesRecords extends StatelessWidget {
   @override
@@ -77,11 +77,13 @@ class _ApprovalListState extends State<ApprovalList> {
           if (selectedStatus == 'Records') // Conditional rendering of transaction table
             Expanded(
               child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
                 child: Card(
-                  margin: EdgeInsets.only(top: 30),
-                  elevation: 2,
+                 margin: EdgeInsets.only(top: 30),
+    elevation: 2,
                   child: Container(
-                    padding: EdgeInsets.all(20),
+                      padding: EdgeInsets.all(20),
+      width: MediaQuery.of(context).size.width * 1.4, 
                     child: Column(
                       children: [
                         // Placeholder for transaction table columns
@@ -107,7 +109,20 @@ class _ApprovalListState extends State<ApprovalList> {
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                 ),
                               ),
+                              Expanded(
+                                child: Text(
+                                  'Category',
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                              ),
                               SizedBox(width: 8),
+                               Expanded(
+                                child: Text(
+                                  'Customer',
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                              ),
+                                  SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   'Date',
@@ -145,9 +160,17 @@ class _ApprovalListState extends State<ApprovalList> {
                                           Expanded(
                                             child: Text('${documents[i]['quantity']}'),
                                           ),
-                                          Expanded(
-                                            child: Text(documents[i]['timestamp'].toDate().toString()),
+                                           Expanded(
+                                            child: Text('${documents[i]['category']}'),
                                           ),
+                                           Expanded(
+                                            child: Text('${documents[i]['customerName']}'),
+                                          ),
+                                          Expanded(
+  child: Text(
+    documents[i]['timestamp'].toDate().toString().split(' ')[0],
+  ),
+),
                                         ],
                                       ),
                                       SizedBox(height: 10), // Spacing between rows

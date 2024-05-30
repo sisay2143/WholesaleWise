@@ -4,10 +4,6 @@ import 'ProductDetail.dart';
 import 'package:intl/intl.dart';
 
 
-// void main() {
-//   runApp(CommitSale());
-// }
-
 class CommitSale extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

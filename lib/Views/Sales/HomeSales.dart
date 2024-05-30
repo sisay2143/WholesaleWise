@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts; // Added charts_flutter import
+import 'package:untitled/Views/Sales/itemList.dart';
 // import 'package:untitled/Views/Manager/reporting.dart';
 import 'package:untitled/Views/Sales/order.dart';
 import 'package:untitled/Views/sales/NotificationSales.dart';
@@ -261,10 +262,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       iconData: Icons.list_alt,
                       backgroundColor: Color.fromARGB(255, 3, 94, 147),
                       onTap: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(builder: (context) => ItemsList()),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => itemsList()),
+                        );
                       },
                     ),
                     SizedBox(
@@ -301,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => SalesAnalytics()),
+                              builder: (context) => salesAnalytics()),
                         );
                       },
                     ),

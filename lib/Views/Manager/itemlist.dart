@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'ItemsCard.dart';
 import 'package:untitled/models/products.dart';
 import 'package:untitled/Services/database.dart';
+import 'HomeManager.dart';
 
 class ItemsList extends StatefulWidget {
   const ItemsList({Key? key}) : super(key: key);
@@ -56,17 +57,17 @@ class _itemListState extends State<ItemsList> {
           "Item List",
           style: TextStyle(color: Colors.white),
         ),
-        // leading: IconButton(
-        //   icon: Icon(Icons.arrow_back),
-        //   color: Colors.white,
-        //   onPressed: () {
-        //     Navigator.push(
-        //             context,
-        //             MaterialPageRoute(builder: (context) => HomepageManager()),
-        //           );
-        //         // Navigate to the home page using the named route '/'
-        //   },
-        // ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Colors.white,
+          onPressed: () {
+            Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomepageManager()),
+                  );
+                // Navigate to the home page using the named route '/'
+          },
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.search),

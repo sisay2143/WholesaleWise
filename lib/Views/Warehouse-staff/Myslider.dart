@@ -11,7 +11,7 @@ import 'package:pie_chart/pie_chart.dart';
 import 'package:carousel_slider/carousel_state.dart';
 // import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
-import '../../Backend/slider.dart';
+// import '../../Backend/slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MySlider extends StatefulWidget {
@@ -187,103 +187,187 @@ class _MySliderState extends State<MySlider> {
           ],
         ),
       ),
-
-      Container(
-        width: MediaQuery.of(context).size.width,
-        margin: const EdgeInsets.symmetric(horizontal: 3),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(15)),
-          color: Color.fromARGB(255, 3, 94, 147),
-        ),
-        child: Column(
+     Container(
+  width: MediaQuery.of(context).size.width,
+  margin: const EdgeInsets.symmetric(horizontal: 3),
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.all(Radius.circular(15)),
+    color: Color.fromARGB(255, 3, 94, 147),
+  ),
+  child: Column(
+    children: [
+      Padding(
+        padding: const EdgeInsets.only(top: 18.0, left: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 18.0, left: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'Today  ',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 26.0,
-                    ),
-                  ),
-                  Text(
-                    '${DateFormat.MMMM().format(DateTime.now())}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22.0,
-                    ),
-                  ),
-                  SizedBox(width: 5),
-                  Text(
-                    '${DateFormat.d().format(DateTime.now())}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22.0,
-                    ),
-                  ),
-                ],
+            Text(
+              'Today  ',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 26.0,
               ),
             ),
-            SizedBox(height: 20),
-            StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection('products')
-                  .where('timestamp',
-                      isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()
-                          .subtract(Duration(
-                              days:
-                                  1)))) // Filtering documents with timestamp within the last 24 hours
-                  .snapshots(),
-              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator(); // Show loading indicator while fetching data
-                }
-                if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                }
-                var data = snapshot.data!.docs;
-                var totalQuantity = 0;
-                var totalQuantityAdded = 0;
-                var currentDate =
-                    DateFormat('yyyy-MM-dd').format(DateTime.now());
+            Text(
+              '${DateFormat.MMMM().format(DateTime.now())}',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 22.0,
+              ),
+            ),
+            SizedBox(width: 5),
+            Text(
+              '${DateFormat.d().format(DateTime.now())}',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 22.0,
+              ),
+            ),
+          ],
+        ),
+      ),
+      SizedBox(height: 20),
+      StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('products')
+            .where('timestamp',
+                isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()
+                    .subtract(Duration(
+                        days:
+                            1)))) // Filtering documents with timestamp within the last 24 hours
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator(); // Show loading indicator while fetching data
+          }
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+          var data = snapshot.data!.docs;
+          var totalQuantity = 0;
+          var totalQuantityAdded = 0;
+          var totalStockOut = 0;
 
-                for (var doc in data) {
-                  var quantity = doc['quantity'] as int?;
-                  if (quantity != null) {
-                    totalQuantity += quantity;
-                  }
-                  var quantityAddedByDate =
-                      doc['quantityAddedByDate'] as Map<dynamic, dynamic>?;
-                  if (quantityAddedByDate != null &&
-                      quantityAddedByDate.containsKey(currentDate)) {
-                    var addedQuantity = quantityAddedByDate[currentDate];
-                    if (addedQuantity is int) {
-                      totalQuantityAdded += addedQuantity;
-                    } else if (addedQuantity is String) {
-                      var parsedQuantity = int.tryParse(addedQuantity);
-                      if (parsedQuantity != null) {
-                        totalQuantityAdded += parsedQuantity;
+          var currentDate =
+              DateFormat('yyyy-MM-dd').format(DateTime.now());
+          for (var doc in data) {
+            var quantity = doc['quantity'] as int?;
+            if (quantity != null) {
+              totalQuantity = totalQuantityAdded + totalStockOut;
+            }
+            var quantityAddedByDate =
+                doc['quantityAddedByDate'] as Map<dynamic, dynamic>?;
+            if (quantityAddedByDate != null &&
+                quantityAddedByDate.containsKey(currentDate)) {
+              var addedQuantity = quantityAddedByDate[currentDate];
+              if (addedQuantity is int) {
+                totalQuantityAdded += addedQuantity;
+              } else if (addedQuantity is String) {
+                var parsedQuantity = int.tryParse(addedQuantity);
+                if (parsedQuantity != null) {
+                  totalQuantityAdded += parsedQuantity;
+                }
+              }
+            }
+          }
+          bool isSameDay(DateTime date1, DateTime date2) {
+            return date1.year == date2.year &&
+                date1.month == date2.month &&
+                date1.day == date2.day;
+          }
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(children: [
+                  
+                  Text(
+                    '$totalStockOut',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.0,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  
+                  Text(
+                    'Total',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.0,
+                    ),
+                  ),
+                ]),
+                Container(
+                  height: 40,
+                  width: 1,
+                  color: Colors.white,
+                ),
+                Column(
+                  children: [
+                    Text(
+                      '$totalQuantityAdded',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      'stock in',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                  ],
+                ),
+                Container(
+                  height: 40,
+                  width: 1,
+                  color: Colors.white,
+                ),
+                StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('products for sale')
+                      // .where('status', isEqualTo: 'approved')
+                      .where('timestamp',
+                          isGreaterThanOrEqualTo: Timestamp.fromDate(
+                              DateTime.now().subtract(Duration(days: 1))))
+                      .snapshots(),
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    }
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
+                    var approvedRequests = snapshot.data!.docs;
+                    var currentDate =
+                        DateFormat('yyyy-MM-dd').format(DateTime.now());
+                    for (var request in approvedRequests) {
+                      var requestTimestamp =
+                          (request['timestamp'] as Timestamp).toDate();
+                      if (isSameDay(requestTimestamp, DateTime.now())) {
+                        var quantity = request['quantity'] as int?;
+                        if (quantity != null) {
+                          totalStockOut += quantity;
+                        }
                       }
                     }
-                  }
-                }
-                bool isSameDay(DateTime date1, DateTime date2) {
-                  return date1.year == date2.year &&
-                      date1.month == date2.month &&
-                      date1.day == date2.day;
-                }
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Column(children: [
+                    return Column(
+                      children: [
                         Text(
-                          '$totalQuantity',
+                          '$totalStockOut',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 18.0,
@@ -293,133 +377,24 @@ class _MySliderState extends State<MySlider> {
                           height: 10,
                         ),
                         Text(
-                          'Total',
+                          'Stock Out',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 18.0,
                           ),
                         ),
-                      ]),
-                      Container(
-                        height: 40,
-                        width: 1,
-                        color: Colors.white,
-                      ),
-                      Column(
-                        children: [
-                          Text(
-                            '$totalQuantityAdded',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18.0,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            'stock in',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18.0,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                        ],
-                      ),
-                      Container(
-                        height: 40,
-                        width: 1,
-                        color: Colors.white,
-                      ),
-                      StreamBuilder(
-                        stream: FirebaseFirestore.instance
-                            .collection('approval_requests')
-                            .where('status',
-                                isEqualTo:
-                                    'approved') // Listen for approved requests
-                            .where('timestamp',
-                                isGreaterThanOrEqualTo: Timestamp.fromDate(
-                                    DateTime.now().subtract(Duration(
-                                        days:
-                                            1)))) // Filter by timestamp within the last 24 hours
-                            .snapshots(),
-                        builder:
-                            (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return CircularProgressIndicator(); // Show loading indicator while fetching data
-                          }
-                          if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          }
-                          var approvedRequests = snapshot.data!.docs;
-                          var totalStockOut = 0;
-                          var currentDate =
-                              DateFormat('yyyy-MM-dd').format(DateTime.now());
-                          for (var request in approvedRequests) {
-                            // Process each approved request
-                            var requestTimestamp =
-                                (request['timestamp'] as Timestamp).toDate();
-                            if (isSameDay(requestTimestamp, DateTime.now())) {
-                              var quantity = request['quantity'] as int?;
-                              if (quantity != null) {
-                                totalStockOut += quantity;
-                              }
-                            }
-                          }
-                          return Column(
-                            children: [
-                              Text(
-                                '$totalStockOut',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18.0,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                'Stock Out',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18.0,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
+                      ],
+                    );
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
-
-      // Container(
-      //   width: MediaQuery.of(context).size.width,
-      //   margin: const EdgeInsets.symmetric(horizontal: 3),
-      //   decoration: BoxDecoration(
-      //     borderRadius: BorderRadius.all(Radius.circular(10)),
-      //     color: Color.fromARGB(255, 3, 94, 147),
-      //   ),
-      //   child: HeroSec("gfg", "Aug 22"),
-      // ),
-      // Container(
-      //   width: MediaQuery.of(context).size.width,
-      //   margin: const EdgeInsets.symmetric(horizontal: 3),
-      //   decoration: BoxDecoration(
-      //     borderRadius: BorderRadius.all(Radius.circular(10)),
-      //     color: Color.fromARGB(255, 3, 94, 147),
-      //   ),
-      //   child: HeroSec("Yesterday", "Aug 21"),
-      // ),
+    ],
+  ),
+),
     ];
 
     return Padding(

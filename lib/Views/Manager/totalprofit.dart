@@ -284,10 +284,11 @@ SizedBox(height: 20),
                                 },
                               ),
                             ),
-                            Expanded(
-                              child: Text(documents[i]['timestamp'].toDate().toString()),
-                            ),
-                            
+                          Expanded(
+  child: Text(
+    documents[i]['timestamp'].toDate().toString().split(' ')[0],
+  ),
+),
                           ],
                         ),
                         SizedBox(height: 10), // Spacing between rows

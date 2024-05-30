@@ -221,7 +221,7 @@ class _AddProductFormState extends State<AddProductForm> {
                     'Electronics ',
                     'Food Products',
                     'Household and Cleaning Supplies',
-                    'Home Deco',
+                    'Home Decoration',
                     // Add more categories as needed
                   ].map((String value) {
                     return DropdownMenuItem<String>(

@@ -194,9 +194,11 @@ SizedBox(height: 20),
                                           Expanded(
                                             child: Text('${int.parse(documents[i]['sellingPrice'].toString()) * int.parse(documents[i]['quantity'].toString())}'),
                                           ),
-                                          Expanded(
-                                            child: Text(documents[i]['timestamp'].toDate().toString()),
-                                          ),
+                                        Expanded(
+  child: Text(
+    documents[i]['timestamp'].toDate().toString().split(' ')[0],
+  ),
+),
                                         ],
                                       ),
                                       SizedBox(height: 10), // Spacing between rows

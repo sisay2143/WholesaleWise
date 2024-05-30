@@ -12,18 +12,19 @@ import 'reporting.dart';
 import 'profit.dart';
 import 'approval.dart';
 import 'package:badges/badges.dart';
+import 'piechart.dart';
 
-Map<String, double> dataMap = {
-  'Flutter': 3,
-  'React': 3,
-  'Xamarin': 2,
-};
+// Map<String, double> dataMap = {
+//   'Flutter': 3,
+//   'React': 3,
+//   'Xamarin': 2,
+// };
 
-List<Color> colorList = [
-  const Color.fromARGB(255, 4, 50, 88),
-  Colors.green,
-  Color.fromARGB(255, 33, 86, 87),
-];
+// List<Color> colorList = [
+//   const Color.fromARGB(255, 4, 50, 88),
+//   Colors.green,
+//   Color.fromARGB(255, 33, 86, 87),
+// ];
 
 class HomepageManager extends StatefulWidget {
   const HomepageManager({Key? key});
@@ -155,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
-        title: Text('Home Manager'),
+        title: Text('Home'),
         actions: [
           Stack(
             children: [
@@ -323,43 +324,63 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: SizedBox(
-                    height: 270, // Set the desired height
-                    width: 70, // Set the desired width
-                    child: Card(
-                      elevation: 0, // Add elevation for shadow effect
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0), // Add padding for spacing
-                        child: PieChart(
-                          dataMap: dataMap,
-                          colorList: colorList,
-                          chartRadius: MediaQuery.of(context).size.width / 2.2,
-                          chartType: ChartType.disc,
-                          legendOptions: LegendOptions(
-                            showLegends: true,
-                            legendPosition: LegendPosition.right,
-                            legendTextStyle: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          chartValuesOptions: ChartValuesOptions(
-                            showChartValueBackground: true,
-                            showChartValues: true,
-                            showChartValuesInPercentage: true,
-                            showChartValuesOutside: false,
-                            decimalPlaces: 1,
-                          ),
-                        ),
-                      ),
-                    ),
+
+
+
+            Card(
+              elevation: 3,
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text('Sales Overview'),
                   ),
-                ),
-              ],
+                  Container(
+                    height: 220,
+                    child: PieChartWidget(), // Real bar chart
+                  ),
+                ],
+              ),
             ),
+
+
+            
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.end,
+            //   children: [
+            //     Expanded(
+            //       child: SizedBox(
+            //         height: 270, // Set the desired height
+            //         width: 70, // Set the desired width
+            //         child: Card(
+            //           elevation: 0, // Add elevation for shadow effect
+            //           child: Padding(
+            //             padding: EdgeInsets.all(8.0), // Add padding for spacing
+            //             child: PieChart(
+            //               dataMap: dataMap,
+            //               colorList: colorList,
+            //               chartRadius: MediaQuery.of(context).size.width / 2.2,
+            //               chartType: ChartType.disc,
+            //               legendOptions: LegendOptions(
+            //                 showLegends: true,
+            //                 legendPosition: LegendPosition.right,
+            //                 legendTextStyle: TextStyle(
+            //                   fontWeight: FontWeight.bold,
+            //                 ),
+            //               ),
+            //               chartValuesOptions: ChartValuesOptions(
+            //                 showChartValueBackground: true,
+            //                 showChartValues: true,
+            //                 showChartValuesInPercentage: true,
+            //                 showChartValuesOutside: false,
+            //                 decimalPlaces: 1,
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),

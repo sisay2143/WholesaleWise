@@ -203,9 +203,11 @@ SingleChildScrollView(
                                            child: Text('${(documents[i]['price'] as num) * (documents[i]['quantity'] as num)}'),
 
                                           ),
-                                          Expanded(
-                                            child: Text(documents[i]['timestamp'].toDate().toString()),
-                                          ),
+                                        Expanded(
+  child: Text(
+    documents[i]['timestamp'].toDate().toString().split(' ')[0],
+  ),
+),
                                         ],
                                       ),
                                       SizedBox(height: 10), // Spacing between rows
