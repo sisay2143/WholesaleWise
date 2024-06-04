@@ -5,6 +5,8 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:untitled/Views/Manager/detailCategory.dart';
 import '../../Backend/sales_analytics_backend.dart';
 // import 'detailCategory.dart';
+import 'package:untitled/Views/Manager/barchartanalytics.dart';
+import 'package:untitled/Views/Manager/tablesales.dart';
 
 class salesAnalytics extends StatelessWidget {
   final SalesService salesService = SalesService();
@@ -34,8 +36,20 @@ class salesAnalytics extends StatelessWidget {
               ),
               const SizedBox(height: 10.0),
               _buildRunningoutProducts(),
-              _buildBarChart(),
-              _buildPlaceholderTableCard(),
+Card(
+                elevation: 3,
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Text('Sales Overview'),
+                    ),
+                    Container(
+                      height: 220,
+                      child: buildBarChartCards(), // Real bar chart
+                    ),
+                  ],
+                ),
+              ),              _buildPlaceholderTableCard(),
             ],
           ),
         ),
@@ -211,118 +225,131 @@ class salesAnalytics extends StatelessWidget {
     ),
   );
 }
-  Widget _buildBarChartCard() {
-    // Building the bar chart wrapped inside a Card widget
-    return Card(
-      child: Container(
-        height: 300, // Adjust the height as needed
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Sales Overview',
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-              ),
-              _buildBarChart(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+//   Widget _buildBarChartCard() {
+//     // Building the bar chart wrapped inside a Card widget
+//     return Card(
+//       child: Container(
+//         height: 300, // Adjust the height as needed
+//         child: Padding(
+//           padding: const EdgeInsets.all(16.0),
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               const Text(
+//                 'Sales Overview',
+//                 style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+//               ),
+//               _buildBarChart(),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
 
-  Widget _buildBarChart() {
-    // Example data for the bar chart
-    final List<SalesData> data = [
-      SalesData('Jan', 100),
-      SalesData('Feb', 150),
-      SalesData('Mar', 200),
-      SalesData('Apr', 180),
-    ];
+//   Widget _buildBarChart() {
+//     // Example data for the bar chart
+//     final List<SalesData> data = [
+//       SalesData('Jan', 100),
+//       SalesData('Feb', 150),
+//       SalesData('Mar', 200),
+//       SalesData('Apr', 180),
+//     ];
 
-    // Building the bar chart
-    return Card(
-      child: Container(
-        height: 250,
-        width: 400,
-        child: Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: charts.BarChart(
-              [
-                charts.Series<SalesData, String>(
-                  id: 'Sales',
-                  data: data,
-                  domainFn: (SalesData sales, _) => sales.month,
-                  measureFn: (SalesData sales, _) => sales.sales,
-                ),
-              ],
-              animate: true,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+//     // Building the bar chart
+//     return Card(
+//       child: Container(
+//         height: 250,
+//         width: 400,
+//         child: Expanded(
+//           child: Padding(
+//             padding: const EdgeInsets.all(10.0),
+//             child: charts.BarChart(
+//               [
+//                 charts.Series<SalesData, String>(
+//                   id: 'Sales',
+//                   data: data,
+//                   domainFn: (SalesData sales, _) => sales.month,
+//                   measureFn: (SalesData sales, _) => sales.sales,
+//                 ),
+//               ],
+//               animate: true,
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
-// Define SalesData class
-class SalesData {
-  final String month;
-  final int sales;
+// // Define SalesData class
+// class SalesData {
+//   final String month;
+//   final int sales;
 
-  SalesData(this.month, this.sales);
-}
+//   SalesData(this.month, this.sales);
+// }
 
 Widget _buildPlaceholderTableCard() {
-  return Card(
-    child: Container(
-      padding: EdgeInsets.all(15.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Placeholder table content goes here
-          Text(
-            'Transactions',
-            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 8.0),
-          // Add your placeholder table widget here
-          // For example:
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              columnSpacing: 30.0, // Adjust spacing between columns
-              columns: [
-                DataColumn(label: Text('Column 1')),
-                DataColumn(label: Text('Column 2')),
-                DataColumn(label: Text('Column 3')),
-              ],
-              rows: [
-                DataRow(cells: [
-                  DataCell(Text('Data 1')),
-                  DataCell(Text('Data 2')),
-                  DataCell(Text('Data 3')),
-                ]),
-                // Add more rows as needed
-              ],
+    return Card(
+      child: Container(
+        padding: EdgeInsets.all(15.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Placeholder table content goes here
+            Text(
+              'Transactions',
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
-          ),
-          SizedBox(height: 8.0),
-          // "More" button
-          TextButton(
-            onPressed: () {
-              // Handle "More" button press
-            },
-            child: Text('More'),
-          ),
-        ],
+            SizedBox(height: 8.0),
+            // Add your placeholder table widget here
+            // For example:
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columnSpacing: 30.0, // Adjust spacing between columns
+                columns: [
+                  DataColumn(label: Text('Pname')),
+                  DataColumn(label: Text('Price')),
+                  DataColumn(label: Text('Quantity')),
+                  DataColumn(label: Text('Category')),
+                  DataColumn(label: Text('Customer')),
+                  DataColumn(label: Text('Date')),
+                ],
+                rows: [
+                  // DataRow(cells: [
+                  //   DataCell(Text('Data 1')),
+                  //   DataCell(Text('Data 2')),
+                  //   DataCell(Text('Data 3')),
+                  // ]),
+                  // Add more rows as needed
+                ],
+              ),
+            ),
+            SizedBox(height: 8.0),
+            // "More" button
+            Builder(
+              builder: (BuildContext context) {
+                return TextButton(
+                  onPressed: () {
+                    // Navigate to the new screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => TransactionTableWidget()),
+                    );
+                  },
+                  child: Text('More'),
+                );
+              },
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
+
 
  Widget _buildTotalCategoryCircularIndicator(BuildContext context) {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -446,4 +473,5 @@ Widget _buildTotalItemsCircularIndicator(BuildContext context) {
       ),
     ),
   );
+}
 }

@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:charts_flutter/flutter.dart'
-    as charts; // Added charts_flutter import
-// import 'package:untitled/Views/Manager/itemlist.dart';
-// import 'package:untitled/Views/sales/NotificationSales.dart';
-// import 'package:untitled/Views/warehouse-staff/HomeWarehouse.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'ProfileWarehouse.dart';
 import 'HomeWarehouse.dart';
 import 'itemlist.dart';
 import 'Requests.dart';
-// import 'QRScanScreen.dart';
+import 'orders_fromSales.dart';
 
 class HomepageWH extends StatefulWidget {
   const HomepageWH({Key? key});
@@ -19,109 +15,117 @@ class HomepageWH extends StatefulWidget {
 
 class _HomepageWHState extends State<HomepageWH> {
   int _selectedIndex = 0;
+  bool hasNewRequests = false; // Variable to track new requests
 
   static List<Widget> _widgetOptions = <Widget>[
     HomePageWarehouse(),
     ItemsList(),
-    Approval(),
-    // Add Sales Records and Profile widgets here
+    OrderPage(),
     Profile(),
   ];
 
-  // static List<String> _appBarTitles = [
-  //   'Sales Home',
-  //   'Commit Sales',
-  //   'Sales Records',
-  //   'Profile',
-  // ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _checkForNewRequests();
   }
+
+ void _checkForNewRequests() {
+  // Implement your logic for checking if there are new requests
+  // For demonstration, let's set hasNewRequests to true randomly
+  setState(() {
+    hasNewRequests = DateTime.now().second % 2 == 0; // Random boolean
+  });
+}
+
+void _onItemTapped(int index) {
+  setState(() {
+    _selectedIndex = index;
+    if (_selectedIndex == 2) {
+      // Assume Requests tab is at index 2
+      // You need to implement your logic for detecting new requests here
+      _checkForNewRequests();
+    } else {
+      // If another tab is selected, mark requests as seen
+      hasNewRequests = false;
+    }
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: _selectedIndex < _widgetOptions.length
-            ? _widgetOptions.elementAt(_selectedIndex)
-            : Container(),
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(
-                  color: Colors.grey[
-                      300]!), // Add line at the top of bottom navigation bar
+      body: _selectedIndex < _widgetOptions.length
+          ? _widgetOptions.elementAt(_selectedIndex)
+          : Container(),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(
+              color: Colors.grey[300]!,
             ),
           ),
-          child: BottomNavigationBar(
-            elevation: 0.0,
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: SizedBox(
-                  width:
-                      30, // Adjust the width and height according to your preference
-                  height: 30,
-                  child: Icon(Icons.home,
-                      size: 30), // Adjust the size property of the Icon widget
-                ),
-                label: 'Home',
+        ),
+        child: BottomNavigationBar(
+          elevation: 0.0,
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.home,
+                size: 30,
               ),
-
-              BottomNavigationBarItem(
-                icon: SizedBox(
-                  width:
-                      30, // Adjust the width and height according to your preference
-                  height: 30,
-                  child: Icon(Icons.view_list,
-                      size: 30), // Adjust the size property of the Icon widget
-                ),
-                label: 'itemList',
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.view_list,
+                size: 30,
               ),
-              // Add Sales Records and Profile icons here
-
-              BottomNavigationBarItem(
-                icon: SizedBox(
-                  width:
-                      30, // Adjust the width and height according to your preference
-                  height: 30,
-                  child: Icon(Icons.approval_outlined,
-                      size: 30), // Adjust the size property of the Icon widget
-                ),
-                label: 'Requests',
+              label: 'itemList',
+            ),
+            BottomNavigationBarItem(
+              icon: Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  Icon(
+                    Icons.approval_outlined,
+                    size: 30,
+                  ),
+                  if (hasNewRequests)
+                    Positioned(
+                      right: 0,
+                      child: Container(
+                        padding: EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        constraints: BoxConstraints(
+                          minWidth: 12,
+                          minHeight: 12,
+                        ),
+                      ),
+                    ),
+                ],
               ),
-
-              BottomNavigationBarItem(
-                icon: SizedBox(
-                  width:
-                      30, // Adjust the width and height according to your preference
-                  height: 30,
-                  child: Icon(Icons.person,
-                      size: 30), // Adjust the size property of the Icon widget
-                ),
-                label: 'Profile',
+              label: 'Requests',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.person,
+                size: 30,
               ),
-            ],
-            currentIndex: _selectedIndex,
-            selectedItemColor: Color.fromARGB(255, 3, 94, 147),
-            unselectedItemColor: Colors.grey,
-            onTap: _onItemTapped,
-            showSelectedLabels: true, // Ensure that selected labels are visible
-            showUnselectedLabels:
-                true, // Ensure that unselected labels are visible
-          ),
-        ));
-  }
-}
-
-class unKnown extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey[200],
-      child: Center(
-        child: Text('Sales Records Page'),
+              label: 'Profile',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Color.fromARGB(255, 3, 94, 147),
+          unselectedItemColor: Colors.grey,
+          onTap: _onItemTapped,
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+        ),
       ),
     );
   }

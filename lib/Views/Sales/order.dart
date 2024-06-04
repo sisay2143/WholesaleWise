@@ -11,6 +11,7 @@ class order extends StatefulWidget {
 }
 
 class _orderState extends State<order> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   TextEditingController _productNameController = TextEditingController();
   TextEditingController _quantityController = TextEditingController();
 
@@ -24,6 +25,7 @@ class _orderState extends State<order> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
         title: Text('Order Request'),
@@ -64,7 +66,7 @@ class _orderState extends State<order> {
             SizedBox(height: 24.0),
             ElevatedButton(
               onPressed: () {
-                _submitOrderRequest(context);
+                _submitOrderRequest();
               },
               style: ElevatedButton.styleFrom(
                 primary: Color.fromARGB(255, 3, 94, 147),
@@ -87,7 +89,7 @@ class _orderState extends State<order> {
     );
   }
 
-  void _submitOrderRequest(BuildContext context) {
+  void _submitOrderRequest() {
   String productName = _productNameController.text.trim();
   String quantity = _quantityController.text.trim();
 
@@ -108,7 +110,7 @@ class _orderState extends State<order> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
-                _submitOrder(productName, int.parse(quantity), context); // Call the method to submit the order
+                _submitOrder(productName, int.parse(quantity)); // Call the method to submit the order
               },
               child: Text('Yes'),
             ),
@@ -126,38 +128,41 @@ class _orderState extends State<order> {
   }
 }
 
+  Future<void> _submitOrder(String productName, int quantity) async {
+  try {
+    // Access Firestore instance
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  Future<void> _submitOrder(String productName, int quantity, BuildContext context) async {
-    try {
-      // Access Firestore instance
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
+    // Define the order data
+    Map<String, dynamic> orderData = {
+      'productName': productName,
+      'quantity': quantity,
+      'timestamp': FieldValue.serverTimestamp(), // Timestamp of the order submission
+      'status': 'pending',
+    };
 
-      // Define the order data
-      Map<String, dynamic> orderData = {
-        'productName': productName,
-        'quantity': quantity,
-        'timestamp': FieldValue.serverTimestamp(), // Timestamp of the order submission
-      };
+    // Add the order data to Firestore
+    await firestore.collection('orders').add(orderData);
 
-      // Add the order data to Firestore
-      await firestore.collection('orders').add(orderData);
-
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Order request submitted successfully.'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } catch (e) {
-      // Show error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to submit order request. Please try again.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      print('Error submitting order: $e');
-    }
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Order request submitted successfully.'),
+        backgroundColor: Colors.green,
+      ),
+    );
+    // Clear the input fields
+    _productNameController.clear();
+    _quantityController.clear();
+  } catch (e) {
+    // Show error message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Failed to submit order request. Please try again.'),
+        backgroundColor: Colors.red,
+      ),
+    );
+    print('Error submitting order: $e');
   }
+}
 }

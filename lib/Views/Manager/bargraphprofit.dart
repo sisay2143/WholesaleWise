@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(buildBarChartCardsss());
@@ -106,8 +107,7 @@ Future<List<BarChartData>> _getChartDataFromFirestore() async {
         double deductedValue = (sellingPrice - productPrice) * quantity;
 
         DateTime dateTime = timestamp.toDate(); // Convert Timestamp to DateTime
-        String dateString =
-            '${dateTime.year}-${dateTime.month}-${dateTime.day}'; // Format to display only date
+      String dateString = _formatDate(dateTime); // Format to display only date
         daySalesMap[dateString] ??= 0;
         daySalesMap[dateString] = daySalesMap[dateString]! + deductedValue;
       }
@@ -121,3 +121,9 @@ Future<List<BarChartData>> _getChartDataFromFirestore() async {
 
   return chartData;
 }
+
+String _formatDate(DateTime date) {
+  // Format date as "MMM d" (e.g., "Jan 1", "Feb 15")
+  return DateFormat.MMMd().format(date);
+}
+

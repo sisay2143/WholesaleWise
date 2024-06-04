@@ -5,17 +5,19 @@ import 'package:intl/intl.dart';
 class TransactionTableWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Card(
-        margin: EdgeInsets.only(top: 30),
-        elevation: 2,
-        child: Container(
-          padding: EdgeInsets.all(20),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minWidth: MediaQuery.of(context).size.width,
-              minHeight: MediaQuery.of(context).size.height * 1.6,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 3, 94, 147),
+        title: Text('       Transactions'),
+      ),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Card(
+          margin: EdgeInsets.only(top: 30),
+          elevation: 2,
+          child: Container(
+            padding: EdgeInsets.all(20),
+            width: MediaQuery.of(context).size.width * 1.5,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -59,10 +61,14 @@ class TransactionTableWidget extends StatelessWidget {
 
   Widget _buildTableRows() {
     return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('sales_transaction').snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('sales_transaction')
+          .snapshots(),
       builder: (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator()); // Placeholder while loading data
+          return Center(
+              child:
+                  CircularProgressIndicator()); // Placeholder while loading data
         }
         final documents = snapshot.data!.docs;
         return ListView.separated(
@@ -87,7 +93,8 @@ class TransactionTableWidget extends StatelessWidget {
         _buildTableCell('${document['quantity']}'),
         _buildTableCell('${document['category']}'),
         _buildTableCell('${document['customerName']}'),
-        _buildTableCell(DateFormat('yyyy-MM-dd').format(document['timestamp'].toDate())),
+        _buildTableCell(
+            DateFormat('yyyy-MM-dd').format(document['timestamp'].toDate())),
       ],
     );
   }

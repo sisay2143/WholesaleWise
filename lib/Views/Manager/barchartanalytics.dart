@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(buildBarChartCards());
@@ -77,20 +78,19 @@ Future<List<BarChartData>> _getChartDataFromFirestore() async {
       await FirebaseFirestore.instance.collection('sales_transaction').get();
 
   // Process fetched data
-Map<String, int> categoryQuantityMap = {};
-snapshot.docs.forEach((doc) {
-  Timestamp timestamp = doc['timestamp'];
-
-  int quantity = doc['quantity'];
-  DateTime dateTime = timestamp.toDate(); // Convert Timestamp to DateTime
-  String dateString = '${dateTime.year}-${dateTime.month}-${dateTime.day}'; // Format to display only date
-  if (categoryQuantityMap.containsKey(dateString)) {
-    categoryQuantityMap[dateString] =
-        (categoryQuantityMap[dateString] ?? 0) + quantity;
-  } else {
-    categoryQuantityMap[dateString] = quantity;
-  }
-});
+  Map<String, int> categoryQuantityMap = {};
+  snapshot.docs.forEach((doc) {
+    Timestamp timestamp = doc['timestamp'];
+    int quantity = doc['quantity'];
+    DateTime dateTime = timestamp.toDate(); // Convert Timestamp to DateTime
+    String dateString = _formatDate(dateTime); // Format date as "Jan 1", "Feb 15", etc.
+    if (categoryQuantityMap.containsKey(dateString)) {
+      categoryQuantityMap[dateString] =
+          (categoryQuantityMap[dateString] ?? 0) + quantity;
+    } else {
+      categoryQuantityMap[dateString] = quantity;
+    }
+  });
 
   // Convert data to BarChartData objects
   categoryQuantityMap.forEach((category, quantity) {
@@ -98,4 +98,9 @@ snapshot.docs.forEach((doc) {
   });
 
   return chartData;
+}
+
+String _formatDate(DateTime date) {
+  // Format date as "MMM d" (e.g., "Jan 1", "Feb 15")
+  return DateFormat.MMMd().format(date);
 }

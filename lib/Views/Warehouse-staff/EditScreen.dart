@@ -77,7 +77,7 @@ class _EditScreenState extends State<EditScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(107, 59, 225, 1),
+        backgroundColor:Color.fromARGB(255, 3, 94, 147),
         title: Row(
           children: [
             SizedBox(
@@ -370,7 +370,7 @@ class _EditScreenState extends State<EditScreen> {
                 },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(
-                    Color.fromRGBO(107, 59, 225, 1),
+                    Color.fromARGB(255, 3, 94, 147),
                   ),
                 ),
                 child: Padding(

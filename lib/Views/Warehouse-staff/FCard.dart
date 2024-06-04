@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// import 'package:untitled/Views/Manager/approval.dart';
 import 'package:untitled/Views/Warehouse-staff/AddItem.dart';
 // import "package:inventory/AddItemScreen.dart";
 // import 'package:inventory/BottomNavigationBar.dart';
@@ -8,8 +9,7 @@ import 'package:untitled/Views/Warehouse-staff/AddItem.dart';
 // import 'package:inventory/stockout.dart';
 import 'stock-out.dart';
 import 'reporting.dart';
-// import 'itemrequest.dart';
-import 'orders_fromSales.dart';
+import 'Requests.dart';
 
 class ImageTextCard extends StatelessWidget {
   final String imagePath;
@@ -35,8 +35,8 @@ class ImageTextCard extends StatelessWidget {
                 return AddProductForm();
               } else if (text == "Inventory Count") {
                 return Reportings();
-              } else if (text == "Sales requests") {
-                return OrderPage();
+              } else if (text == "Approval") {
+                return Approval();
               } else {
                 return StockOutPage();
               }
@@ -119,7 +119,7 @@ class DisplayCard extends StatelessWidget {
               ),
               ImageTextCard(
                 imagePath: 'lib/assets/images/list.png',
-                text: 'Sales requests',
+                text: 'Approval',
                 isTrue: false,
               ),
             ],

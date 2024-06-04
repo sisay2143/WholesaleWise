@@ -17,10 +17,10 @@ class NotificationItem {
 }
 
 class NotificationPage extends StatefulWidget {
-   final List<NotificationItem> notifications;
+  final List<NotificationItem> notifications;
   final Function(List<NotificationItem>) onBackButtonPressed;
-  final Function(int) onNotificationUpdated; 
-const NotificationPage({
+  final Function(int) onNotificationUpdated;
+  const NotificationPage({
     Key? key,
     required this.notifications,
     required this.onBackButtonPressed,
@@ -42,18 +42,17 @@ class _NotificationPageState extends State<NotificationPage> {
     _fetchProducts();
   }
 
- Future<void> _fetchProducts() async {
-  try {
-    List<Product> products = await _firestoreService.getProducts();
-    setState(() {
-      _products = products;
-      notifications = generateNotificationItems();
-    });
-  } catch (e) {
-    print("Error fetching products: $e");
+  Future<void> _fetchProducts() async {
+    try {
+      List<Product> products = await _firestoreService.getProducts();
+      setState(() {
+        _products = products;
+        notifications = generateNotificationItems();
+      });
+    } catch (e) {
+      print("Error fetching products: $e");
+    }
   }
-}
-
 
   List<NotificationItem> generateNotificationItems() {
     List<NotificationItem> generatedItems = [];
@@ -80,25 +79,23 @@ class _NotificationPageState extends State<NotificationPage> {
     return generatedItems;
   }
 
- void _markAsRead(int index) {
-  setState(() {
-    notifications[index].isRead = true;
-    widget.onNotificationUpdated(
-        notifications.where((item) => !item.isRead).length); // Corrected
-    widget.onBackButtonPressed(notifications);
-  });
-}
+  void _markAsRead(int index) {
+    setState(() {
+      notifications[index].isRead = true;
+      widget.onNotificationUpdated(
+          notifications.where((item) => !item.isRead).length); // Corrected
+      widget.onBackButtonPressed(notifications);
+    });
+  }
 
-void _clearNotification(int index) {
-  setState(() {
-    notifications.removeAt(index);
-    widget.onNotificationUpdated(
-        notifications.where((item) => !item.isRead).length); // Corrected
-    widget.onBackButtonPressed(notifications);
-  });
-}
-
-
+  void _clearNotification(int index) {
+    setState(() {
+      notifications.removeAt(index);
+      widget.onNotificationUpdated(
+          notifications.where((item) => !item.isRead).length); // Corrected
+      widget.onBackButtonPressed(notifications);
+    });
+  }
 
   int getUnreadCount() {
     return notifications.where((item) => !item.isRead).length;

@@ -37,22 +37,22 @@ class AccountPage extends StatelessWidget {
               }
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              PopupMenuItem<String>(
-                value: 'settings',
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: const Color.fromARGB(255, 171, 126, 123),
-                  ),
-                  child: ListTile(
-                    leading: Icon(Icons.settings, color: Colors.white),
-                    title: Text(
-                      'Settings',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
+              // PopupMenuItem<String>(
+              //   value: 'settings',
+              //   child: Container(
+              //     decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(10),
+              //       color: const Color.fromARGB(255, 171, 126, 123),
+              //     ),
+              //     child: ListTile(
+              //       leading: Icon(Icons.settings, color: Colors.white),
+              //       title: Text(
+              //         'Settings',
+              //         style: TextStyle(color: Colors.white),
+              //       ),
+              //     ),
+              //   ),
+              // ),
               PopupMenuItem<String>(
                 value: 'logout',
                 child: Padding(
@@ -120,7 +120,7 @@ class AccountPage extends StatelessWidget {
                         padding:
                             EdgeInsets.symmetric(horizontal: 17, vertical: 15),
                         child: Text(
-                          'Manage My Account',
+                          'My Account',
                           style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                       ),

@@ -43,16 +43,16 @@ class _HomepageManagerState extends State<HomepageManager> {
     AccountPage(),
   ];
 
-  // static List<String> _appBarTitles = [
-  //   'Manager Home',
-  //   'Approval',
-  //   'Reporting',
-  //   'Profile',
-  // ];
+  // You can use this boolean to track whether there are new unseen requests
+  bool newRequestsAvailable = true;
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if (index == 1) {
+        // If "Approval" tab is selected, mark new requests as seen
+        newRequestsAvailable = false;
+      }
     });
   }
 
@@ -64,55 +64,55 @@ class _HomepageManagerState extends State<HomepageManager> {
         decoration: BoxDecoration(
           border: Border(
             top: BorderSide(
-                color: Colors.grey[
-                    300]!), // Add line at the top of bottom navigation bar
+              color: Colors.grey[300]!,
+            ),
           ),
         ),
         child: BottomNavigationBar(
           elevation: 0.0,
-          items: const <BottomNavigationBarItem>[
+          items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: SizedBox(
-                width:
-                    30, // Adjust the width and height according to your preference
-                height: 30,
-                child: Icon(Icons.home,
-                    size: 30), // Adjust the size property of the Icon widget
-              ),
+              icon: Icon(Icons.home),
               label: 'Home',
             ),
-
             BottomNavigationBarItem(
-              icon: SizedBox(
-                width:
-                    30, // Adjust the width and height according to your preference
-                height: 30,
-                child: Icon(Icons.check_circle,
-                    size: 30), // Adjust the size property of the Icon widget
+              icon: Stack(
+                children: [
+                  Icon(Icons.check_circle),
+                  if (newRequestsAvailable) // Show badge only if there are new requests
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Container(
+                        padding: EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        constraints: BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: Text(
+                          '!',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
               ),
               label: 'Approval',
             ),
-            // Add Sales Records and Profile icons here
-
             BottomNavigationBarItem(
-              icon: SizedBox(
-                width:
-                    30, // Adjust the width and height according to your preference
-                height: 30,
-                child: Icon(Icons.analytics,
-                    size: 30), // Adjust the size property of the Icon widget
-              ),
+              icon: Icon(Icons.analytics),
               label: 'Reporting',
             ),
-
             BottomNavigationBarItem(
-              icon: SizedBox(
-                width:
-                    30, // Adjust the width and height according to your preference
-                height: 30,
-                child: Icon(Icons.person_2_sharp,
-                    size: 30), // Adjust the size property of the Icon widget
-              ),
+              icon: Icon(Icons.person_2_sharp),
               label: 'Accounts',
             ),
           ],
@@ -120,14 +120,14 @@ class _HomepageManagerState extends State<HomepageManager> {
           selectedItemColor: Color.fromARGB(255, 3, 94, 147),
           unselectedItemColor: Colors.grey,
           onTap: _onItemTapped,
-          showSelectedLabels: true, // Ensure that selected labels are visible
-          showUnselectedLabels:
-              true, // Ensure that unselected labels are visible
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
         ),
       ),
     );
   }
 }
+
 class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -155,8 +155,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+         automaticallyImplyLeading: false,
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
-        title: Text('Home'),
+        title: Text('       Home'),
         actions: [
           Stack(
             children: [
@@ -335,7 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     title: Text('Sales Overview'),
                   ),
                   Container(
-                    height: 220,
+                    height: 209,
                     child: PieChartWidget(), // Real bar chart
                   ),
                 ],

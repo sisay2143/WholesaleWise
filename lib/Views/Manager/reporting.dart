@@ -409,6 +409,11 @@ Widget _buildBarChart(List<BarChartData> data) {
             ),
           ],
           animate: true,
+               domainAxis: charts.OrdinalAxisSpec(
+            renderSpec: charts.SmallTickRendererSpec(
+              labelRotation: 45, // Rotate labels by 45 degrees
+            ),
+          ),
         ),
       ),
     ),

@@ -61,7 +61,7 @@ class _HomePageWarehouseState extends State<HomePageWarehouse> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
-          'Warehouse staff Home',
+          'Home',
           style: TextStyle(color: Colors.black),
         ),
         actions: [

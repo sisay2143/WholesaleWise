@@ -290,11 +290,11 @@ class _AddProductFormState extends State<AddProductForm> {
                       setState(() {
                         _pickedImage = File('');
                       });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Product added successfully'),
-                        ),
-                      );
+                      // ScaffoldMessenger.of(context).showSnackBar(
+                      //   SnackBar(
+                      //     content: Text('Product added successfully'),
+                      //   ),
+                      // );
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
