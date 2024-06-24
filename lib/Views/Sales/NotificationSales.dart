@@ -62,13 +62,17 @@ class _NotificationSalesState extends State<NotificationSales> {
 
 
 // Inside your if statement:
-if (product.expiredate.isBefore(DateTime.now())) {
-  final formattedDate = DateFormat.yMMMMd().format(product.expiredate);
+// import 'package:intl/intl.dart';
+
+// Inside your if statement:
+if (product.expiredate != null && product.expiredate!.isBefore(DateTime.now())) {
+  final formattedDate = DateFormat.yMMMMd().format(product.expiredate!);
   generatedItems.add(NotificationItem(
     title: 'Expired Product: ${product.name}',
     details: 'Expired on $formattedDate',
   ));
 }
+
 
     }
 

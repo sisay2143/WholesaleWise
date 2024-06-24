@@ -13,11 +13,12 @@ class _OrderPageState extends State<OrderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
         title: Text('Order Management'),
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('orders').snapshots(),
+        stream: FirebaseFirestore.instance.collection('orders').orderBy('timestamp', descending: true).snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -34,6 +35,8 @@ class _OrderPageState extends State<OrderPage> {
               itemCount: snapshot.data!.docs.length,
               itemBuilder: (context, index) {
                 var order = snapshot.data!.docs[index];
+                final status = order['status'] ?? 'pending';
+                final isPending = status == 'pending';
                 return Card(
                   elevation: 3,
                   margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -44,14 +47,16 @@ class _OrderPageState extends State<OrderPage> {
                       children: [
                         Text('Quantity: ${order['quantity']}'),
                         SizedBox(height: 4),
-                        Text('Status: ${order['status'] ?? 'Pending'}'),
+                        Text('Status: $status'),
                       ],
                     ),
                     trailing: ElevatedButton(
-                      onPressed: () {
-                        _updateOrderStatus(order.reference);
-                      },
-                      child: Text('In Process'),
+                      onPressed: isPending
+                          ? () {
+                              _updateOrderStatus(order.reference);
+                            }
+                          : null,
+                      child: Text(isPending ? 'Accept' : 'In Process'),
                     ),
                   ),
                 );

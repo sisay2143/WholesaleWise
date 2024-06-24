@@ -243,8 +243,7 @@ Container(
 
               const SizedBox(height: 20.0),
 
-              
-             Container(
+          Container(
   height: 170,
   child: Card(
     shape: RoundedRectangleBorder(
@@ -380,6 +379,171 @@ Container(
     ),
   ),
 ),
+
+
+
+
+
+// new_profit_code
+// Container(
+//   height: 170,
+//   child: Card(
+//     shape: RoundedRectangleBorder(
+//       borderRadius: BorderRadius.circular(15.0),
+//     ),
+//     color: Color.fromARGB(255, 3, 94, 147),
+//     // margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+//     child: Padding(
+//       padding: const EdgeInsets.all(20.0),
+//       child: Stack(
+//         children: [
+//           Align(
+//             alignment: Alignment.bottomRight,
+//             child: Container(
+//               decoration: BoxDecoration(
+//                 borderRadius: BorderRadius.circular(8.0),
+//                 boxShadow: [
+//                   BoxShadow(
+//                     color: Colors.grey.withOpacity(0.5),
+//                     spreadRadius: 2,
+//                     blurRadius: 5,
+//                     offset: Offset(
+//                       0, 3), // changes position of shadow
+//                     ),
+//                   ],
+//                 ),
+//               child: TextButton(
+//                 onPressed: () {
+//                   Navigator.push(
+//                     context,
+//                     MaterialPageRoute(builder: (context) => totalprofit()),
+//                   );
+//                   // Add your action here
+//                 },
+//                 style: TextButton.styleFrom(
+//                   backgroundColor: Color.fromARGB(
+//                     255, 109, 163, 206), // Set background color
+//                   ),
+//                   child: Padding(
+//                     padding: const EdgeInsets.symmetric(
+//                       horizontal: 15.0, vertical: 15.0),
+//                     child: Text(
+//                       'show more',
+//                       style: TextStyle(
+//                         color: Colors.white,
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           Column(
+//             mainAxisSize: MainAxisSize.min,
+//             children: [
+//               Text(
+//                 'Total Profit',
+//                 style: TextStyle(
+//                   fontSize: 25,
+//                   fontWeight: FontWeight.bold,
+//                   color: Colors.white,
+                  
+//                 ),
+//               ),
+//               SizedBox(height: 16),
+//               StreamBuilder<QuerySnapshot>(
+//                 stream: FirebaseFirestore.instance.collection('products').snapshots(),
+//                 builder: (context, productsSnapshot) {
+//                   if (productsSnapshot.connectionState == ConnectionState.waiting) {
+//                     return CircularProgressIndicator();
+//                   }
+
+//                   Map<String, double> itemProfits = {};
+
+//                   return StreamBuilder<QuerySnapshot>(
+//                     stream: FirebaseFirestore.instance.collection('sales_transaction').snapshots(),
+//                     builder: (context, salesSnapshot) {
+//                       if (salesSnapshot.connectionState == ConnectionState.waiting) {
+//                         return CircularProgressIndicator();
+//                       }
+
+//                       if (salesSnapshot.hasData && productsSnapshot.hasData) {
+//                         final salesDocs = salesSnapshot.data!.docs;
+//                         final productDocs = productsSnapshot.data!.docs;
+
+//                         // Iterate through products to calculate profits
+//                         for (var productDoc in productDocs) {
+//                           final productName = (productDoc.data() as Map<String, dynamic>)['name'] as String?;
+//                           final productPrice = (productDoc.data() as Map<String, dynamic>)['price'] as num?;
+//                           if (productName != null && productPrice != null) {
+//                             itemProfits[productName] = 0.0; // Initialize profit for each product
+//                           }
+//                         }
+
+//                         // Iterate through sales transactions to calculate profits
+//                         for (var saleDoc in salesDocs) {
+//                           final productName = (saleDoc.data() as Map<String, dynamic>)['productName'] as String?;
+//                           final sellingPrice = double.tryParse((saleDoc.data() as Map<String, dynamic>)['sellingPrice'] as String? ?? '') ?? 0.0;
+//                           final saleQuantity = (saleDoc.data() as Map<String, dynamic>)['quantity'] as num?;
+//                           if (productName != null && itemProfits.containsKey(productName) && saleQuantity != null) {
+//                             final productPrice = (productsSnapshot.data!.docs.firstWhere((doc) => doc['name'] == productName)['price']) as num?;
+//                             if (productPrice != null) {
+//                               // Deduct product price from selling price and multiply by quantity
+//                               itemProfits[productName] = itemProfits[productName]! + ((productPrice - sellingPrice) * saleQuantity.toDouble());
+//                             }
+//                           }
+//                         }
+//                       }
+
+//                       double totalProfit = 0.0;
+//                       itemProfits.forEach((key, value) {
+//                         totalProfit += value;
+//                       });
+
+//                       return Padding(
+//                         padding: const EdgeInsets.only(top: 10),
+//                         child: Text(
+//                           '$totalProfit\ birr',
+//                           style: TextStyle(
+//                             fontSize: 22,
+//                             color: Colors.white,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                       );
+//                     },
+//                   );
+//                 },
+//               ),
+//             ],
+//           ),
+//         ],
+//       ),
+//     ),
+//   ),
+// ),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

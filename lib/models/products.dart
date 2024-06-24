@@ -6,7 +6,7 @@ class Product {
   late int quantity;
   late double price;
   late String category;
-  late DateTime expiredate; // Keep it as DateTime
+  late DateTime? expiredate; // Make it nullable
   late String imageUrl;
   late DateTime timestamp;
 
@@ -17,7 +17,7 @@ class Product {
     required this.quantity,
     required this.price,
     required this.category,
-    required this.expiredate,
+    this.expiredate, // Make it nullable
     required this.imageUrl,
     required this.timestamp,
   });
@@ -31,7 +31,9 @@ class Product {
       quantity: data['quantity'] ?? 0,
       price: data['price'] ?? 0.0,
       category: data['category'] ?? '',
-      expiredate: (data['expiredate'] as Timestamp).toDate(), // Convert Timestamp to DateTime
+      expiredate: data['expiredate'] != null
+          ? (data['expiredate'] as Timestamp).toDate()
+          : null, // Convert Timestamp to DateTime if not null
       imageUrl: data['imageUrl'] ?? '',
       timestamp: (data['timestamp'] as Timestamp).toDate(),
     );

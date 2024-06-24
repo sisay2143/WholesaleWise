@@ -111,7 +111,7 @@ SizedBox(height: 20),
               child: Column(
                 children: [
                   ListTile(
-                    title: Text('Warehousing Overview'),
+                    title: Text('Total Money Spent on Product Purchases by Date (in birr)'),
                   ),
                   Container(
                     height: 220,

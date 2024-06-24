@@ -40,7 +40,7 @@ class salesAnalytics extends StatelessWidget {
                 child: Column(
                   children: [
                     ListTile(
-                      title: Text('Sales Overview'),
+                      title: Text('Quantity Sales Trends by Date'),
                     ),
                     Container(
                       height: 220,

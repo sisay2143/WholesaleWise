@@ -8,6 +8,7 @@ import 'package:untitled/Views/ForgotPassword.dart';
 import 'package:untitled/Views/Manager/HomeManager.dart';
 import '../Backend/login_auth.dart';
 import '../controllers/VerifyEmail.dart';
+import 'package:connectivity/connectivity.dart';
 
 class LoginView extends StatefulWidget {
   @override
@@ -200,6 +201,20 @@ class _LoginViewState extends State<LoginView> {
       });
       return;
     }
+
+    // Check internet connectivity
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      // No internet connection
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'No internet connection. Please check your network settings.'),
+          backgroundColor: Colors.red, // Red background color for error
+        ),
+      );
+      return;
+    }
     try {
       setState(() {
         _isLoading = true;
@@ -208,12 +223,12 @@ class _LoginViewState extends State<LoginView> {
           await _authService.signInWithEmailAndPassword(email, password);
       if (user != null) {
         // if (!user.emailVerified) {
-          // If email is not verified, navigate to the verify email screen
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => EmailVerification()),
-          // );
-          // return;
+        // If email is not verified, navigate to the verify email screen
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => EmailVerification()),
+        // );
+        // return;
         // }
         final userRole = await _authService.getUserRole(user.uid);
         if (userRole == 'manager') {
@@ -241,6 +256,12 @@ class _LoginViewState extends State<LoginView> {
         }
       } else {
         print('User not found');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('User not found. Please check your credentials.'),
+            backgroundColor: Colors.red, // Set the background color to red
+          ),
+        );
       }
     } catch (e) {
       setState(() {

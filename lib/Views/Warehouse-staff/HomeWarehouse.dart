@@ -59,6 +59,7 @@ class _HomePageWarehouseState extends State<HomePageWarehouse> {
     String searchQuery = '';
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         title: Text(
           'Home',

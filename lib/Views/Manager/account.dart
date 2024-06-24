@@ -18,6 +18,7 @@ class AccountPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         elevation: 2,
         title: Text(
           'Accounts',
@@ -224,8 +225,8 @@ class AccountPage extends StatelessWidget {
     String role,
   ) {
     return Container(
-      padding: EdgeInsets.all(16),
-      margin: EdgeInsets.fromLTRB(20, 10, 20, 20),
+      padding: EdgeInsets.all(10),
+      margin: EdgeInsets.fromLTRB(10, 10, 10, 20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.blue, width: 2),
@@ -234,8 +235,8 @@ class AccountPage extends StatelessWidget {
         children: [
           profileImg.isNotEmpty
               ? Container(
-                  width: 80,
-                  height: 80,
+                  width: 60,
+                  height: 60,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     image: DecorationImage(
@@ -257,7 +258,7 @@ class AccountPage extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-          SizedBox(width: 20),
+          SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

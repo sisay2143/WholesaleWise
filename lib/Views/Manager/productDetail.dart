@@ -106,46 +106,46 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ],
             ),
             SizedBox(height: 25.0),
-            Center(
-              child: Container(
-                height: MediaQuery.of(context).size.height * .25,
-                width: MediaQuery.of(context).size.width * .85,
-                decoration: BoxDecoration(
-                    border: Border.all(
-                        color: Color.fromRGBO(107, 59, 225, 1), width: 2),
-                    borderRadius: BorderRadius.circular(10)),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      "Daily Activity",
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          decoration: TextDecoration.underline),
-                    ),
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: 40,
-                        ),
-                        SizedBox(
-                          height: 180.0,
-                          width: 180,
-                          child: charts.PieChart(
-                            data,
-                            animate: true,
-                          ),
-                        ),
-                        _buildLegend(),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            // Center(
+            //   child: Container(
+            //     height: MediaQuery.of(context).size.height * .25,
+            //     width: MediaQuery.of(context).size.width * .85,
+            //     decoration: BoxDecoration(
+            //         border: Border.all(
+            //             color: Color.fromRGBO(107, 59, 225, 1), width: 2),
+            //         borderRadius: BorderRadius.circular(10)),
+            //     child: Column(
+            //       children: [
+            //         SizedBox(
+            //           height: 10,
+            //         ),
+            //         Text(
+            //           "Daily Activity",
+            //           style: TextStyle(
+            //               fontSize: 20,
+            //               fontWeight: FontWeight.w600,
+            //               decoration: TextDecoration.underline),
+            //         ),
+            //         Row(
+            //           children: [
+            //             SizedBox(
+            //               width: 40,
+            //             ),
+            //             SizedBox(
+            //               height: 180.0,
+            //               width: 180,
+            //               child: charts.PieChart(
+            //                 data,
+            //                 animate: true,
+            //               ),
+            //             ),
+            //             _buildLegend(),
+            //           ],
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
             SizedBox(height: 16.0),
             SizedBox(height: 16.0),
             Text(

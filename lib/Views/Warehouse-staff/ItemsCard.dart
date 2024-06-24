@@ -5,6 +5,7 @@ import "package:flutter/material.dart";
 // import 'productDetail.dart';
 import 'package:untitled/models/products.dart' as pmodel;
 import 'productDetail.dart';
+
 class ItmeCard extends StatelessWidget {
   // final String imagePath;
   // final String name;
@@ -45,7 +46,7 @@ class ItmeCard extends StatelessWidget {
                 children: [
                   SizedBox(
                     height: 250,
-                    width: 200,
+                    width: 150,
                     child: ClipRRect(
                       borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.circular(10),

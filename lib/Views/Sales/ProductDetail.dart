@@ -248,12 +248,19 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       ),
     );
   }
+void _commitSale() async {
+  String quantity = _quantityController.text.trim();
+  String sellerName = _sellerNameController.text.trim();
+  String customerName = _customerNameController.text.trim();
 
-  void _commitSale() {
-    String quantity = _quantityController.text.trim();
-    String sellerName = _sellerNameController.text.trim();
-    String customerName = _customerNameController.text.trim();
+  // Get the current quantity from the "products for sale" collection
+  DocumentSnapshot productSnapshot = await FirebaseFirestore.instance
+      .collection('products for sale')
+      .doc(widget.productId)
+      .get();
+  int availableQuantity = productSnapshot.get('quantity');
 
+  if (int.parse(quantity) <= availableQuantity) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -279,7 +286,27 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         );
       },
     );
+  } else {
+    // Display an error message if the requested quantity is greater than the available quantity
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Insufficient Quantity'),
+          content: Text('The  quantity entered is greater than the available quantity.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
+}
 
   void _performSale(String quantity, String sellerName, String customerName, String productId) {
   if (quantity.isNotEmpty && sellerName.isNotEmpty && customerName.isNotEmpty) {

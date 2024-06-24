@@ -333,7 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 children: [
                   ListTile(
-                    title: Text('Sales Overview'),
+                    title: Text(' Sold Item Categories by Quantity'),
                   ),
                   Container(
                     height: 209,

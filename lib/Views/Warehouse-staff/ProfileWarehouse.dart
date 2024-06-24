@@ -136,20 +136,37 @@ class _ProfilePageState extends State<Profile> {
       );
     }
   }
-
+//l
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('              Profile')),
+        automaticallyImplyLeading: false,
+        title: (Text('        Profile')),
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
         actions: [
     PopupMenuButton(
       itemBuilder: (context) => [
-        PopupMenuItem(
-          child: Text("Logout"),
-          value: "logout",
-        ),
+       PopupMenuItem<String>(
+                value: 'logout',
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      vertical: 2), // Adjust padding as needed
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: const Color.fromARGB(255, 171, 126, 123),
+                    ),
+                    child: ListTile(
+                      leading: Icon(Icons.logout, color: Colors.white),
+                      title: Text(
+                        'Log Out',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),//
+                ),
+              ),
       ],
       onSelected: (value) {
         if (value == "logout") {

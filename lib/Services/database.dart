@@ -6,40 +6,6 @@ class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? user = FirebaseAuth.instance.currentUser;
 
-//  Future<void> updateProductQuantity(
-//   String productId, int newQuantity) async {
-//   try {
-//     await _firestore
-//         .collection('users')
-//         .doc(user!.uid)
-//         .collection('products')
-//         .doc('productId')
-//         .update({'quantity': newQuantity}); // Correct field name is 'quantity'
-//     print('DONE updating product quantity:');
-
-//   } catch (error) {
-//     print('Error updating product quantity: $error');
-//     throw error;
-//   }
-// }
-
-// Future<void> updateProductQuantity(String productId, int newQuantity) async {
-//     try {
-//       QuerySnapshot querySnapshot = await _firestore
-//           // .collection('users')
-//           // .doc(user!.uid)
-//           .collection('products')
-//           .where('productId', isEqualTo: productId)
-//           .get();
-//       if (querySnapshot.docs.isNotEmpty) {
-//         await querySnapshot.docs.first.reference..update({'quantity': newQuantity});
-//       }
-//     } catch (error) {
-//       print("not update");
-//       throw error;
-//     }
-//   }
-
   Future<void> updateProduct(String pid, Map<String, dynamic> data) async {
   try {
     await FirebaseFirestore.instance
@@ -52,8 +18,6 @@ class FirestoreService {
     throw error;
   }
 }
-
-
 
 Future<void> deleteProduct(String pid) async {
     try {

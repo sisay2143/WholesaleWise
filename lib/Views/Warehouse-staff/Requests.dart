@@ -163,7 +163,7 @@ class _ApprovalListState extends State<ApprovalList> {
                                   height: 150,
                                   fit: BoxFit.cover,
                                 ),
-                                width: 170,
+                                width: 120,
                                 height: 120,
                               ),
                               Expanded(
@@ -178,7 +178,7 @@ class _ApprovalListState extends State<ApprovalList> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     SizedBox(height: 10.0),
-                                    Text('Price: $price'),
+                                    Text('Bought: $price'),
                                     SizedBox(height: 10.0),
                                     Text('Quantity: $quantity'),
                                     SizedBox(height: 10.0),

@@ -66,8 +66,9 @@ class _NotificationPageState extends State<NotificationPage> {
         ));
       }
 
-      if (product.expiredate.isBefore(DateTime.now())) {
-        final formattedDate = DateFormat.yMMMMd().format(product.expiredate);
+      // Check if expiredate is not null before using it
+      if (product.expiredate != null && product.expiredate!.isBefore(DateTime.now())) {
+        final formattedDate = DateFormat.yMMMMd().format(product.expiredate!);
         generatedItems.add(NotificationItem(
           title: 'Expired Product: ${product.name}',
           details: 'Expired on $formattedDate',

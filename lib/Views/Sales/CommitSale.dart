@@ -43,28 +43,39 @@ class MyHomePage extends StatelessWidget {
             itemCount: documents.length,
             itemBuilder: (context, index) {
               final item = documents[index].data() as Map<String, dynamic>;
-              return InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => detailss(
-                        imageUrl: item['imageUrl'] ?? '',
-                        productName: item['name'] ?? '',
-                        sellingPrice: item['selling price'] ?? '',
-                        category: item['category'] ?? '',
-                        expireDate: item['expiredate'] ?? '',
-                        // Pass additional fields to the detail screen
-                        additionalFields: {
-                          // 'price': item['price'] ?? '',
-                          // 'productId':  documents[index].id,
-                          'quantity': item['quantity'] ?? '',
-                        },
-                         productId: documents[index].id, 
-                      ),
-                    ),
-                  );
-                },
+             
+return InkWell(
+  onTap: () {
+    if (item['quantity'] == 0) {
+      // Delete the item from the database
+      FirebaseFirestore.instance
+          .collection('products for sale')
+          .doc(documents[index].id)
+          .delete()
+          .then((_) {
+        print('Item deleted from the database');
+      }).catchError((error) {
+        print('Error deleting item: $error');
+      });
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => detailss(
+            imageUrl: item['imageUrl'] ?? '',
+            productName: item['name'] ?? '',
+            sellingPrice: item['selling price'] ?? '',
+            category: item['category'] ?? '',
+            expireDate: item['expiredate'] ?? '',
+            additionalFields: {
+              'quantity': item['quantity'] ?? '',
+            },
+            productId: documents[index].id,
+          ),
+        ),
+      );
+    }
+  },
                 child: Card(
                   margin: EdgeInsets.fromLTRB(25, 15, 25, 10),
                   shape: RoundedRectangleBorder(

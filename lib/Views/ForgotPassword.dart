@@ -28,7 +28,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     try {
       await AuthService.resetPassword(_emailController.text);
-      _showSnackBar('Password reset email sent successfully');
+      _showSnackBar('Password reset email sent successfully check your email!');
     } catch (error) {
       _showSnackBar('Failed to reset password: $error');
       print('Failed to reset password: $error');
@@ -37,6 +37,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     setState(() {
       _isLoading = false;
     });
+
+     // Clear the email text field
+  _emailController.clear();
   }
 
   @override

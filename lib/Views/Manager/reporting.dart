@@ -4,11 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'totalcategories.dart';
 
-// void main() {
-//   runApp(MaterialApp(
-//     home: Reportings(),
-//   ));
-// }
+
 
 class Reportings extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -18,6 +14,7 @@ class Reportings extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Color.fromARGB(255, 3, 94, 147),
         title: Text('Inventory report'),
       ),

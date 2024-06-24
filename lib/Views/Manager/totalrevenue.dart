@@ -103,7 +103,7 @@ SizedBox(height: 20),
               child: Column(
                 children: [
                   ListTile(
-                    title: Text('Revenue Overview'),
+                    title: Text('Total Revenue Generated from Product Sales by Date (in birr)'),
                   ),
                   Container(
                     height: 220,

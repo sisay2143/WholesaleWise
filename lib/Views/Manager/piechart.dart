@@ -15,6 +15,16 @@ class PieChartWidget extends StatefulWidget {
 class _PieChartWidgetState extends State<PieChartWidget> {
   Map<String, double> dataMap = {};
   List<Color> colorList = []; // Updated color list
+  List<Color> defaultColors = [
+    Colors.blue,
+    Colors.green,
+    Color.fromARGB(255, 5, 191, 205),
+    Color.fromARGB(255, 1, 92, 149),
+    Color.fromARGB(255, 52, 137, 227),
+    Color.fromARGB(255, 13, 79, 220),
+    Colors.teal,
+    Color.fromARGB(255, 16, 133, 229),
+  ];
 
   @override
   void initState() {
@@ -23,7 +33,8 @@ class _PieChartWidgetState extends State<PieChartWidget> {
   }
 
   void fetchData() async {
-    final QuerySnapshot salesSnapshot = await FirebaseFirestore.instance.collection('sales_transaction').get();
+    final QuerySnapshot salesSnapshot =
+        await FirebaseFirestore.instance.collection('sales_transaction').get();
 
     Map<String, double> categoryMap = {};
 
@@ -48,11 +59,18 @@ class _PieChartWidgetState extends State<PieChartWidget> {
   // Function to update color list dynamically
   void updateColorList() {
     Set<String> categories = dataMap.keys.toSet();
+    int index = 0;
     colorList = List.generate(
       categories.length,
       (index) {
-        final hue = (360 * index / categories.length).round();
-        return HSLColor.fromAHSL(1.0, hue.toDouble(), 0.7, 0.5).toColor();
+        // Assign default color if index is within the default color list length
+        if (index < defaultColors.length) {
+          return defaultColors[index];
+        } else {
+          // Generate random color if index exceeds default color list length
+          final hue = Random().nextInt(360);
+          return HSLColor.fromAHSL(1.0, hue.toDouble(), 0.7, 0.5).toColor();
+        }
       },
     );
   }

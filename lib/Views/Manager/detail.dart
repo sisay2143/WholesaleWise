@@ -117,17 +117,23 @@ Future<void> _approveRequest(DocumentSnapshot request) async {
           print('Existing product updated with new quantity.');
         } else {
           // Add the approved product to the 'products for sale' collection
-          await FirebaseFirestore.instance.collection('products for sale').add({
-            'name': productName,
-            'quantity': requestedQuantity,
-            'imageUrl': approvalRequestSnapshot['imageUrl'],
-            'pid': approvalRequestSnapshot['productId'],
-            'category': 'Default Category',
-            'expiredate': Timestamp.fromDate(DateTime.parse('2024-05-30 00:00:00')),
-            'selling price': _newPrice, // Assuming _newPrice is the selling price entered by the user
-            'productId': approvalRequestSnapshot.id, // Assuming this is the product ID in the "approval_requests" collection
-          });
-          print('Approval request approved. Product added to "products for sale" collection.');
+          // Check if the reason for stock out is "Worn Out"
+    if (reason != 'Worn Out') {
+      // Add the approved product to the 'products for sale' collection
+      await FirebaseFirestore.instance.collection('products for sale').add({
+        'name': productName,
+        'quantity': requestedQuantity,
+        'imageUrl': approvalRequestSnapshot['imageUrl'],
+        'pid': approvalRequestSnapshot['productId'],
+        'category': 'Default Category',
+        'expiredate': Timestamp.fromDate(DateTime.parse('2024-05-30 00:00:00')),
+        'selling price': _newPrice, // Assuming _newPrice is the selling price entered by the user
+        'productId': approvalRequestSnapshot.id, // Assuming this is the product ID in the "approval_requests" collection
+      });
+      print('Approval request approved. Product added to "products for sale" collection.');
+    } else {
+      print('Request is "Worn Out". Product will not be added to "products for sale" collection.');
+    }
         }
       } else {
         print('Error: Insufficient quantity available.');
@@ -206,19 +212,57 @@ Future<void> _approveRequest(DocumentSnapshot request) async {
   });
 }
 
+Future<void> _showConfirmationDialog(DocumentSnapshot request) async {
+  // Check if the reason is "Worn Out"
+  if (reason == 'Worn Out') {
+    // Show a dialog to confirm disposal of the product
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Disposal'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to dispose of this product?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Dispose'),
+              onPressed: () {
+                _approveRequest(widget.request); // Call approve function with request
+                Navigator.of(context).pop(); // Close the dialog
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Approval())); // Navigate back to the approval screen
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-
-
-
-  Future<void> _showConfirmationDialog(DocumentSnapshot request) async {
+  // Check if the _newPrice is empty
   if (_newPrice.isEmpty) {
-    // Show a snackbar to inform the user to fill in the selling price first
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('Please fill in the selling price first.'),
-    ));
+    // Check if the reason is "Worn Out" before showing the Snackbar
+    if (reason != 'Worn Out') {
+      // Show a snackbar to inform the user to fill in the selling price first
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Please fill in the selling price first.'),
+        backgroundColor: Colors.red, // Set background color to red
+      ));
+    }
     return;
   }
 
+  // Show confirmation dialog
   return showDialog<void>(
     context: context,
     builder: (BuildContext context) {
@@ -252,7 +296,6 @@ Future<void> _approveRequest(DocumentSnapshot request) async {
   );
 }
 
-
   @override
   @override
 Widget build(BuildContext context) {
@@ -268,89 +311,91 @@ Widget build(BuildContext context) {
     builder: (BuildContext context) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Product Details'),
+          title: Text('Product Approval'),
           backgroundColor: Color.fromARGB(255, 3, 94, 147),
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Card(
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Image.network(
-                        imageUrl, // Use Image.network to load imageUrl from Firestore
-                        width: double.infinity,
-                        height: 200,
-                        fit: BoxFit.cover,
-                      ),
-                      SizedBox(height: 20.0),
-                      Text(
-                        'Name: $name',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 10.0),
-                      Text('Quantity: $quantity'),
-                      Text('Reason: $reason'),
-                      SizedBox(height: 10.0),
-                      // Conditionally show the TextFormField based on the reason
-                      if (showPriceField)
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Set Price',
-                            hintText: 'Enter the selling price',
-                            border: OutlineInputBorder(),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              _newPrice = value;
-                            });
-                          },
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Card(
+                  elevation: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Image.network(
+                          imageUrl, // Use Image.network to load imageUrl from Firestore
+                          width: double.infinity,
+                          height: 200,
+                          fit: BoxFit.cover,
                         ),
-                    ],
+                        SizedBox(height: 20.0),
+                        Text(
+                          'Name: $name',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 10.0),
+                        Text('Quantity: $quantity'),
+                        Text('Reason: $reason'),
+                        SizedBox(height: 10.0),
+                        // Conditionally show the TextFormField based on the reason
+                        if (showPriceField)
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: 'Set Price',
+                              hintText: 'Enter the selling price',
+                              border: OutlineInputBorder(),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                _newPrice = value;
+                              });
+                            },
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 20.0),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      _showConfirmationDialog(widget.request); // Show confirmation dialog
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.green,
+              SizedBox(height: 20.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        _showConfirmationDialog(widget.request); // Show confirmation dialog
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.green,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        child: Text('Approve'),
+                      ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                      child: Text('Approve'),
+                    ElevatedButton(
+                      onPressed: () {
+                        _rejectRequest(widget.request); // Call reject function with request
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.red,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        child: Text('Reject'),
+                      ),
                     ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      _rejectRequest(widget.request); // Call reject function with request
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.red,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                      child: Text('Reject'),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     },
